@@ -268,14 +268,16 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 120px 0 80px;
+  padding-top: 100px;
+  padding-bottom: 30px;
   background: #111;
 }
 
 .rtp-hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.1);
+  
 }
 
 .rtp-hero h1 {
@@ -302,10 +304,6 @@ body {
   border-radius: 999px;
   font-weight: bold;
   margin-bottom: 10px;
-}
-
-.rtp-section {
-  padding: 120px 0;
 }
 
 /* =========================
@@ -388,9 +386,20 @@ body {
    ========================= */
 
 .rtp-cta {
+  margin-top: 50px;
   padding: 90px 20px;
   text-align: center;
   background: #e63946;
+}
+
+.btnCustom{
+  background-color: whitesmoke;
+  color: #222;
+  border: 1px solid #222;
+}
+
+.btnCustom:hover{
+  border: 1px solid whitesmoke;
 }
 
 /* =========================
