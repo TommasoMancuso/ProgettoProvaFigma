@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+    
+    <!-- NAVBAR -->
+    
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <!-- HERO -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        
+        <div class="rtp-container">
+            <div class="rtp-badge">RACE TECH PRO</div>
+            <h1>I NOSTRI <span>SERVIZI</span></h1>
+            <p>Tutto ciò che ti serve per correre al massimo, dal paddock alla bandiera a scacchi.</p>
+        </div>
+    </section>
+    
+    <!-- SERVICES -->
+    <section class="rtp-section" id="servizi">
+        <div class="rtp-container">
+            
+            <h2>Servizi Professionali per Piloti</h2>
+            
+            <div class="rtp-grid-2">
+                
+                <!-- SERVICE 1 -->
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1625811488513-12099f33ebe2" />
+                    <div class="rtp-card-body">
+                        <h3>Assistenza in Pista</h3>
+                        <p>Supporto tecnico completo durante la giornata in pista.</p>
+                        
+                        <ul>
+                            <li>Setting sospensioni personalizzato</li>
+                            <li>Analisi telemetria</li>
+                            <li>Manutenzione completa</li>
+                            <li>Assistenza h24</li>
+                        </ul>
+                        
+                        <button class="rtp-btn rtp-btn-primary">Prenota Assistenza</button>
+                    </div>
+                </div>
+                
+                <!-- SERVICE 2 -->
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1758887698691-c07adc3c09d0" />
+                    <div class="rtp-card-body">
+                        <h3>Preparazione Moto</h3>
+                        <p>Preparazione completa pre-evento e gara.</p>
+                        
+                        <ul>
+                            <li>Revisione motore</li>
+                            <li>Setup gara</li>
+                            <li>Data logger</li>
+                            <li>Collaudo pista</li>
+                        </ul>
+                        
+                        <button class="rtp-btn rtp-btn-primary">Richiedi Preventivo</button>
+                    </div>
+                </div>
+                
+                <!-- SERVICE 3 -->
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1523978577004-06ba57f175aa" />
+                    <div class="rtp-card-body">
+                        <h3>Assistenza Test</h3>
+                        <p>Analisi dati e ottimizzazione performance.</p>
+                        
+                        <ul>
+                            <li>Telemetria avanzata</li>
+                            <li>Debrief tecnico</li>
+                            <li>Setup progressivo</li>
+                            <li>Strategia gara</li>
+                        </ul>
+                        
+                        <button class="rtp-btn rtp-btn-primary">Pianifica Test</button>
+                    </div>
+                </div>
+                
+                <!-- SERVICE 4 -->
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1609630875171-b1321377ee65" />
+                    <div class="rtp-card-body">
+                        <h3>Noleggio Moto</h3>
+                        <p>Moto pronte gara per trackday e competizioni.</p>
+                        
+                        <ul>
+                            <li>Moto racing pronte</li>
+                            <li>Setup incluso</li>
+                            <li>Assistenza tecnica</li>
+                            <li>Weekend e giornate</li>
+                        </ul>
+                        
+                        <button class="rtp-btn rtp-btn-primary">Verifica Disponibilità</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- CHAMPIONSHIPS -->
+    <section class="rtp-section rtp-dark">
+        <div class="rtp-container">
+            
+            <h2>Campionati Supportati</h2>
+            
+            <div class="rtp-grid-4">
+                
+                <div class="rtp-mini-card">
+                    <div class="icon">🏆</div>
+                    <h3>CIV</h3>
+                    <p>Campionato Italiano Velocità</p>
+                </div>
+                
+                <div class="rtp-mini-card">
+                    <div class="icon">🎯</div>
+                    <h3>National Trophy</h3>
+                    <p>Yamaha Cup</p>
+                </div>
+                
+                <div class="rtp-mini-card">
+                    <div class="icon">⚡</div>
+                    <h3>MES</h3>
+                    <p>Superbike Series</p>
+                </div>
+                
+                <div class="rtp-mini-card">
+                    <div class="icon">🏁</div>
+                    <h3>Amatori</h3>
+                    <p>Trofeo Italiano</p>
+                </div>
+                
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- CIRCUITS -->
+    <section class="rtp-section">
+        <div class="rtp-container">
+            
+            <h2>Circuiti</h2>
+            
+            <div class="rtp-grid-3">
+                
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1516728513226-23c4045123a0">
+                    <div class="rtp-card-body">
+                        <h3>Mugello</h3>
+                        <p>5.245 km</p>
+                    </div>
+                </div>
+                
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1523978577004-06ba57f175aa">
+                    <div class="rtp-card-body">
+                        <h3>Misano</h3>
+                        <p>4.226 km</p>
+                    </div>
+                </div>
+                
+                <div class="rtp-card">
+                    <img src="https://images.unsplash.com/photo-1609630875171-b1321377ee65">
+                    <div class="rtp-card-body">
+                        <h3>Vallelunga</h3>
+                        <p>4.085 km</p>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- CTA -->
+    <section class="rtp-cta">
+        <h2>PRONTO A SCENDERE IN PISTA?</h2>
+        <button class="rtp-btn-light">PRENOTA ORA</button>
+    </section>
+    
+    <!-- FOOTER -->
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    
+    <!-- Script-->
+    
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+    
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>

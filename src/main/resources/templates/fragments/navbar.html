@@ -1,0 +1,24 @@
+<nav th:fragment="navbar" class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">🔧</span>
+                <span>RACE TECH PRO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#chi-siamo">CHI SIAMO</a></li>
+                <li><a href="#servizi">SERVIZI</a></li>
+                <li><a href="#contatti">CONTATTI</a></li>
+            </ul>
+            <button class="btn-primary">PRENOTA ORA</button>
+            <button id="menu-toggle" class="mobile-toggle">
+                ☰
+            </button>
+        </div>
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="#home">HOME</a>
+            <a href="#chi-siamo">CHI SIAMO</a>
+            <a href="#servizi">SERVIZI</a>
+            <a href="#contatti">CONTATTI</a>
+        </div>
+    </nav>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+    
+    <!-- NAVBAR -->
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <!-- HERO -->
+    
+    <section th:replace="~{fragments/hero :: hero}"></section>
+    
+    <!-- CHI SIAMO -->
+    <section id="chi-siamo" class="section dark-section">
+        <div class="container grid-two">
+            <div>
+                <img
+                src="https://images.unsplash.com/photo-1767480351161-c9eca1214368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+                alt="Workshop"
+                class="section-image"
+                />
+            </div>
+            <div> 
+                <span class="badge">
+                    CHI SIAMO
+                </span>
+                <h2>
+                    Passione e Competenza al Servizio dei Piloti
+                </h2>
+                <p>
+                    Race Tech Pro è un team di tecnici specializzati
+                    nell'assistenza motociclistica per eventi in circuito.
+                </p>
+                <div class="stats">
+                    <div>
+                        <h3>500+</h3>
+                        <span>Eventi Supportati</span>
+                    </div>
+                    <div>
+                        <h3>200+</h3>
+                        <span>Piloti Assistiti</span>
+                    </div>
+                    <div>
+                        <h3>98%</h3>
+                        <span>Soddisfazione Cliente</span>
+                    </div>
+                </div>
+            </div>
+        </div>     
+    </section>
+    
+    <!-- SERVIZI -->
+    <section id="servizi" class="section">
+        <div class="container grid-two">
+            <div>               
+                <span class="badge">
+                    I NOSTRI SERVIZI
+                </span>               
+                <h2>
+                    Tutto Ciò di Cui Hai Bisogno per Correre
+                </h2>               
+                <div class="service">
+                    <h3>🔧 Assistenza Tecnica Completa</h3>
+                    <p>
+                        Setup personalizzato e supporto tecnico in pista.
+                    </p>
+                </div>                
+                <div class="service">
+                    <h3>🏍️ Noleggio Moto da Pista</h3>
+                    <p>
+                        Moto sportive perfettamente preparate.
+                    </p>
+                </div>               
+                <div class="service">
+                    <h3>📊 Coaching & Telemetria</h3>
+                    <p>
+                        Analisi dati e coaching professionale.
+                    </p>
+                </div>
+            </div>           
+            <div>
+                <img
+                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+                alt="Servizi"
+                class="section-image"/>
+            </div>          
+        </div>        
+    </section>
+    
+    <!-- FOOTER -->
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- Script -->
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+    
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>
