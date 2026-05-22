@@ -417,6 +417,22 @@ body {
   gap: 40px;
 }
 
+hr{
+  border: none;
+  height: 2px;
+  background: #333;
+  margin: 20px 0;
+}
+
+.underFooter{
+ color: whitesmoke;
+ text-decoration: none;
+}
+
+.underFooter:hover{
+  color: #e63946;
+}
+
 /* =========================
    MOBILE
    ========================= */
