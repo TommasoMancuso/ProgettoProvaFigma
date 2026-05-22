@@ -6,9 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class UserController {
 
-    // Mappa get per la homepage
+    // Rotta get per la homepage
     @GetMapping("/")
     public String home() {
         return "home";
+    }
+
+    // Rotta get per i nostri servizi
+    @GetMapping("/services")
+    public String servicesIndex(){
+        return "services";
     }
 }

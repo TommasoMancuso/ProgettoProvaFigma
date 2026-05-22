@@ -24,11 +24,20 @@ function initMobileMenu() {
     mobileMenu.classList.toggle("hidden");
   });
 
-  // Chiudi menu quando clicchi un link
-  document.querySelectorAll(".nav-links a").forEach(link => {
+  // Chiudi menu quando clicchi un link mobile
+  document.querySelectorAll("#mobile-menu a").forEach(link => {
     link.addEventListener("click", () => {
       mobileMenu.classList.add("hidden");
     });
+  });
+
+  // Reset automatico tornando desktop
+  window.addEventListener("resize", () => {
+
+    if (window.innerWidth > 768) {
+      mobileMenu.classList.add("hidden");
+    }
+
   });
 }
 
