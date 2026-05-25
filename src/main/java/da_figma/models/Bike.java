@@ -1,10 +1,13 @@
 package da_figma.models;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,4 +47,9 @@ public class Bike {
     @NotBlank
     @Size(max = 50)
     private String category;
+
+    // Relazioni
+
+    @OneToMany(mappedBy = "bike")
+    private List<BookingBikeAllocation> bikeAllocations;
 }
