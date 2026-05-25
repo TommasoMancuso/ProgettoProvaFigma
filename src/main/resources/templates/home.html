@@ -12,6 +12,49 @@
     <!-- HERO -->
     
     <section th:replace="~{fragments/hero :: hero}"></section>
+
+    <!-- SERVIZI -->
+    <section id="servizi" class="section">
+        <div class="container grid-two">
+            <div>               
+                <span class="badge">
+                    I NOSTRI SERVIZI
+                </span>               
+                <h2>
+                    Tutto Ciò di Cui Hai Bisogno per Correre
+                </h2>               
+                <div class="service">
+                    <h3>🔧 Assistenza Tecnica Completa</h3>
+                    <p>
+                        Setup personalizzato e supporto tecnico in pista.
+                    </p>
+                </div>                
+                <div class="service">
+                    <h3>🏍️ Noleggio Moto da Pista</h3>
+                    <p>
+                        Moto sportive perfettamente preparate.
+                    </p>
+                </div>               
+                <div class="service">
+                    <h3>📊 Coaching & Telemetria</h3>
+                    <p>
+                        Analisi dati e coaching professionale.
+                    </p>
+                </div>
+                <div class="">
+                    <a th:href="@{/services}">
+                        <button  class="btn-primary">Scopri i servizi</button>
+                    </a>
+                </div>     
+            </div>           
+            <div>
+                <img
+                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+                alt="Servizi"
+                class="section-image"/>
+            </div>     
+        </div>        
+    </section>
     
     <!-- CHI SIAMO -->
     <section id="chi-siamo" class="section dark-section">
@@ -48,46 +91,13 @@
                         <span>Soddisfazione Cliente</span>
                     </div>
                 </div>
+                <div class="pt-3">
+                    <a th:href="@{/aboutus}">
+                        <button class="btn-primary">Chi siamo</button>
+                    </a>
+                </div>
             </div>
         </div>     
-    </section>
-    
-    <!-- SERVIZI -->
-    <section id="servizi" class="section">
-        <div class="container grid-two">
-            <div>               
-                <span class="badge">
-                    I NOSTRI SERVIZI
-                </span>               
-                <h2>
-                    Tutto Ciò di Cui Hai Bisogno per Correre
-                </h2>               
-                <div class="service">
-                    <h3>🔧 Assistenza Tecnica Completa</h3>
-                    <p>
-                        Setup personalizzato e supporto tecnico in pista.
-                    </p>
-                </div>                
-                <div class="service">
-                    <h3>🏍️ Noleggio Moto da Pista</h3>
-                    <p>
-                        Moto sportive perfettamente preparate.
-                    </p>
-                </div>               
-                <div class="service">
-                    <h3>📊 Coaching & Telemetria</h3>
-                    <p>
-                        Analisi dati e coaching professionale.
-                    </p>
-                </div>
-            </div>           
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Servizi"
-                class="section-image"/>
-            </div>          
-        </div>        
     </section>
     
     <!-- FOOTER -->
