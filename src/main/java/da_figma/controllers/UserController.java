@@ -17,4 +17,10 @@ public class UserController {
     public String servicesIndex(){
         return "services";
     }
+
+    // Rotta Chi siamo
+    @GetMapping("/aboutus")
+    public String aboutUsIndex(){
+        return "aboutus";
+    }
 }
