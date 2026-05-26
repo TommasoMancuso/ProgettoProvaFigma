@@ -58,31 +58,6 @@ CREATE TABLE services (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE event_service_prices (
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (id),
-
-    event_id BIGINT NOT NULL,
-    service_id BIGINT NOT NULL,
-
-    price_one_day DECIMAL(10,2) NOT NULL,
-    price_two_days DECIMAL(10,2),
-    price_full_event DECIMAL(10,2),
-
-    CONSTRAINT fk_esp_event
-        FOREIGN KEY (event_id)
-        REFERENCES events(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_esp_service
-        FOREIGN KEY (service_id)
-        REFERENCES services(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT uq_event_service
-        UNIQUE (event_id, service_id)
-);
-
 CREATE TABLE users (
     id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
@@ -131,13 +106,10 @@ CREATE TABLE events (
     end_date DATE NOT NULL,
 
     max_participants INT,
-    current_participants INT DEFAULT 0,
+
+    current_participants INT NOT NULL DEFAULT 0,
 
     status VARCHAR(30) NOT NULL DEFAULT 'AVAILABLE',
-
-    price_one_day DECIMAL(10,2),
-    price_multiple_days DECIMAL(10,2),
-    price_full_event DECIMAL(10,2),
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -146,12 +118,38 @@ CREATE TABLE events (
         REFERENCES circuits(id)
 );
 
+CREATE TABLE event_service_prices (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+
+    event_id BIGINT NOT NULL,
+    service_id BIGINT NOT NULL,
+
+    price_one_day DECIMAL(10,2) NOT NULL,
+    price_two_days DECIMAL(10,2),
+    price_full_event DECIMAL(10,2),
+
+    CONSTRAINT fk_esp_event
+        FOREIGN KEY (event_id)
+        REFERENCES events(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_esp_service
+        FOREIGN KEY (service_id)
+        REFERENCES services(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_event_service
+        UNIQUE (event_id, service_id)
+);
+
 CREATE TABLE bookings (
     id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
 
     user_id BIGINT NOT NULL,
     event_id BIGINT NOT NULL,
+    bike_id BIGINT NULL,
 
     status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
 
@@ -169,7 +167,32 @@ CREATE TABLE bookings (
 
     CONSTRAINT fk_bookings_events
         FOREIGN KEY (event_id)
-        REFERENCES events(id)
+        REFERENCES events(id),
+
+    CONSTRAINT fk_bookings_bikes
+        FOREIGN KEY (bike_id)
+        REFERENCES bikes(id)
+);
+
+CREATE TABLE booking_bike_allocations (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+
+    booking_id BIGINT NOT NULL,
+    bike_id BIGINT NOT NULL,
+
+    rental_start_date DATE NOT NULL,
+    rental_end_date DATE NOT NULL,
+
+    CONSTRAINT fk_bba_booking
+        FOREIGN KEY (booking_id)
+        REFERENCES bookings(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_bba_bike
+        FOREIGN KEY (bike_id)
+        REFERENCES bikes(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE booking_services (

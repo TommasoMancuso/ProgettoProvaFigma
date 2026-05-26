@@ -20,13 +20,9 @@ public class EventService {
     @Transactional
     public void registerBooking(Event event) {
 
-        int current = (event.getCurrentParticipants() == null)
-                ? 0
-                : event.getCurrentParticipants();
-
-        event.setCurrentParticipants(current + 1);
-
-        evaluateStatus(event);
+        event.setCurrentParticipants(
+            event.getCurrentParticipants() + 1
+        );
 
         eventRepository.save(event);
     }

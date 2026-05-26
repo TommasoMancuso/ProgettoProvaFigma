@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,8 +60,8 @@ public class User {
     @NotBlank
     private String phone;
 
-    @Column(nullable = false)
-    @NotBlank
+    @Column(name = "birth_date", nullable = false)
+    @NotNull
     private LocalDate birthDate;
 
     @Column(nullable = true, columnDefinition = "TEXT")

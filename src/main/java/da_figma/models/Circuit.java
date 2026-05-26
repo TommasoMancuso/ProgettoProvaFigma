@@ -37,7 +37,7 @@ public class Circuit {
     @Size(max = 100)
     private String country;
 
-    @Column(name = "length_km", precision = 5, scale = 2)
+    @Column(name = "length_meters")
     private Long lengthMeters;
 
     @Column(columnDefinition = "TEXT")

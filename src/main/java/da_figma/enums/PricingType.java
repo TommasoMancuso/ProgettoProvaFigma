@@ -2,5 +2,7 @@ package da_figma.enums;
 
 public enum PricingType {
     FIXED,
-    MANUAL
+    MANUAL,
+    BIKE_BASED,
+    EVENT_BASED
 }

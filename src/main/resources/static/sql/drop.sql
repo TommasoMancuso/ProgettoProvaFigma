@@ -1,11 +1,10 @@
-
 DROP TABLE IF EXISTS booking_services;
 
 DROP TABLE IF EXISTS booking_bike_allocations;
 
-DROP TABLE IF EXISTS event_service_prices;
-
 DROP TABLE IF EXISTS bookings;
+
+DROP TABLE IF EXISTS event_service_prices;
 
 DROP TABLE IF EXISTS events;
 

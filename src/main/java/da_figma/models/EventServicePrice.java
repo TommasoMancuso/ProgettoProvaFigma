@@ -2,8 +2,6 @@ package da_figma.models;
 
 import java.math.BigDecimal;
 
-import org.springframework.stereotype.Service;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -59,5 +57,5 @@ public class EventServicePrice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
-    private Service service;
+    private TeamService service;
 }
