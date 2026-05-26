@@ -1,108 +1,146 @@
 package da_figma.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import da_figma.dtos.BookingRequestDto;
+import da_figma.enums.BookingStatus;
 import da_figma.models.*;
 import da_figma.repositories.*;
 
 @Service
 public class BookingManagerService {
 
-    @Autowired
-    private BookingRepository bookingRepository;
+    @Autowired private BookingRepository bookingRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private EventRepository eventRepository;
+    @Autowired private BikeRepository bikeRepository;
+    @Autowired private TeamServiceRepository serviceRepository;
+    @Autowired private EventServicePriceRepository eventServicePriceRepository;
+    @Autowired private BookingBikeAllocationRepository bookingBikeAllocationRepository;
+    @Autowired private EventService eventService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private ServiceRepository serviceRepository;
-
-    @Autowired
-    private BikeRepository bikeRepository;
-
-    @Autowired
-    private BookingServiceRepository bookingServiceRepository;
-
-    // ==================================================
-    // CREATE BOOKING COMPLETO
-    // ==================================================
-
+    // =========================
+    // CREATE BOOKING
+    // =========================
     @Transactional
-    public Booking createFullBooking(BookingRequestDto request) {
+    public Booking createBooking(BookingRequestDto request) {
 
+        // =========================
         // 1. USER
+        // =========================
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User non trovato"));
 
-        // 2. EVENT
-        Event event = eventRepository.findById(request.getEventId())
+        // =========================
+        // 2. EVENT (PESSIMISTIC LOCK)
+        // =========================
+        Event event = eventRepository.findByIdForUpdate(request.getEventId())
                 .orElseThrow(() -> new RuntimeException("Event non trovato"));
 
-        // 3. CREATE BOOKING BASE
-        Booking booking = new Booking();
-        booking.setUser(user);
-        booking.setEvent(event);
-        booking.setStatus("PENDING");
-        booking.setPaymentStatus("UNPAID");
+        eventService.validateBooking(event);
 
-        booking = bookingRepository.save(booking);
+        // =========================
+        // 3. BIKE (OPTIONAL)
+        // =========================
+        Bike bike = null;
 
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        if (request.getBikeId() != null) {
 
-        // ==================================================
-        // 4. SERVICES
-        // ==================================================
-        if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
+            boolean available = bikeRepository.isAvailable(
+                    request.getBikeId(),
+                    event.getStartDate(),
+                    event.getEndDate()
+            );
 
-            for (Long serviceId : request.getServiceIds()) {
-
-                da_figma.models.Service service = serviceRepository.findById(serviceId)
-                        .orElseThrow(() -> new RuntimeException("Service non trovato"));
-
-                BookingService bs = new BookingService();
-                bs.setBooking(booking);
-                bs.setService(service);
-
-                // snapshot prezzo
-                bs.setPriceAtBooking(service.getBasePrice());
-
-                bookingServiceRepository.save(bs);
-
-                booking.getServices().add(bs);
-
-                if (service.getBasePrice() != null) {
-                    totalPrice = totalPrice.add(service.getBasePrice());
-                }
+            if (available) {
+                bike = bikeRepository.findById(request.getBikeId())
+                        .orElse(null);
             }
         }
 
-        // ==================================================
-        // 5. BIKE (OPZIONALE)
-        // ==================================================
-        if (request.getBikeId() != null) {
+        // =========================
+        // 4. BOOKING BASE
+        // =========================
+        Booking booking = new Booking();
+        booking.setUser(user);
+        booking.setEvent(event);
+        booking.setBike(bike);
+        booking.setBookingServices(new ArrayList<>());
+        booking.setStatus(BookingStatus.PENDING);
 
-            Bike bike = bikeRepository.findById(request.getBikeId())
-                    .orElseThrow(() -> new RuntimeException("Bike non trovata"));
+        // =========================
+        // 5. SERVICES + QUOTE SYSTEM
+        // =========================
+        BigDecimal total = BigDecimal.ZERO;
 
-            booking.setBike(bike);
+        if (request.getServiceIds() != null) {
 
-            // prezzo base noleggio (placeholder logico)
-            totalPrice = totalPrice.add(new BigDecimal("600"));
+            for (Long serviceId : request.getServiceIds()) {
+
+                TeamService service = serviceRepository.findById(serviceId)
+                        .orElse(null);
+
+                if (service == null) continue;
+
+                EventServicePrice esp = eventServicePriceRepository
+                        .findByEventIdAndServiceId(event.getId(), serviceId)
+                        .orElse(null);
+
+                BookingService bookingService = new BookingService();
+                bookingService.setBooking(booking);
+                bookingService.setService(service);
+
+                if (esp != null && esp.getPriceOneDay() != null) {
+
+                    bookingService.setPriceAtBooking(esp.getPriceOneDay());
+                    total = total.add(esp.getPriceOneDay());
+                }
+
+                booking.getBookingServices().add(bookingService);
+            }
         }
 
-        // ==================================================
-        // 6. TOTAL PRICE
-        // ==================================================
-        booking.setTotalPrice(totalPrice);
+        // =========================
+        // 6. CAPACITY CHECK
+        // =========================
+        if (event.getMaxParticipants() != null &&
+            event.getCurrentParticipants() >= event.getMaxParticipants()) {
 
+            booking.setStatus(BookingStatus.WAITING_LIST);
+
+        } else {
+
+            booking.setStatus(BookingStatus.CONFIRMED);
+            eventService.registerBooking(event);
+        }
+
+        // =========================
+        // 7. BIKE ALLOCATION (ONLY IF CONFIRMED)
+        // =========================
+        if (bike != null && booking.getStatus() == BookingStatus.CONFIRMED) {
+
+            BookingBikeAllocation allocation = new BookingBikeAllocation();
+            allocation.setBike(bike);
+            allocation.setBooking(booking);
+            allocation.setRentalStartDate(event.getStartDate());
+            allocation.setRentalEndDate(event.getEndDate());
+
+            bookingBikeAllocationRepository.save(allocation);
+        }
+
+        // =========================
+        // 8. TOTAL PRICE
+        // =========================
+        booking.setTotalPrice(total);
+
+        // =========================
+        // 9. SAVE
+        // =========================
         return bookingRepository.save(booking);
     }
 }

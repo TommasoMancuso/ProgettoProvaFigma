@@ -1,18 +1,61 @@
 package da_figma.repositories;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import da_figma.models.Bike;
+import jakarta.persistence.LockModeType;
 
-@Repository
 public interface BikeRepository extends JpaRepository<Bike, Long> {
 
-    List<Bike> findByBrandContainingIgnoreCase(String brand);
+    // =========================
+    // LOCK SINGOLA BIKE (SAFE UPDATE)
+    // =========================
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT b FROM Bike b WHERE b.id = :id")
+    Optional<Bike> findByIdForUpdate(@Param("id") Long id);
 
-    List<Bike> findByCategory(String category);
+    // =========================
+    // DISPONIBILITÀ (LISTA)
+    // =========================
+    @Query("""
+        SELECT b
+        FROM Bike b
+        WHERE b.id NOT IN (
+            SELECT ba.bike.id
+            FROM BookingBikeAllocation ba
+            WHERE NOT (
+                ba.rentalEndDate < :startDate
+                OR ba.rentalStartDate > :endDate
+            )
+        )
+    """)
+    List<Bike> findAvailableBikes(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
-    List<Bike> findByModelContainingIgnoreCase(String model);
+    // =========================
+    // CHECK SINGOLA BIKE (USATA DAL SERVICE)
+    // =========================
+    @Query("""
+        SELECT CASE WHEN COUNT(ba) = 0 THEN true ELSE false END
+        FROM BookingBikeAllocation ba
+        WHERE ba.bike.id = :bikeId
+        AND NOT (
+            ba.rentalEndDate < :startDate
+            OR ba.rentalStartDate > :endDate
+        )
+    """)
+    boolean isAvailable(
+            @Param("bikeId") Long bikeId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

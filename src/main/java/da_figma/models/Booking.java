@@ -1,11 +1,17 @@
 package da_figma.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import da_figma.enums.BookingStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,14 +38,21 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // =========================
+    // STATUS (FIXED -> ENUM)
+    // =========================
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String status = "PENDING";
+    private BookingStatus status = BookingStatus.PENDING;
 
-    @Column(name = "total_price", precision = 10, scale = 2)
-    private Double totalPrice;
-
+    // =========================
+    // PAYMENT
+    // =========================
     @Column(name = "payment_status", nullable = false, length = 30)
     private String paymentStatus = "UNPAID";
+
+    @Column(name = "total_price", precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,36 +61,30 @@ public class Booking {
     private LocalDate cancellationDeadline;
 
     // =========================
-    // AUTO CREATED_AT
-    // =========================
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
-    // Relazioni
-
-    // =========================
-    // USER
+    // RELATIONS
     // =========================
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // =========================
-    // EVENT
-    // =========================
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @OneToMany(mappedBy = "booking")
-    private List<BookingService> bookingServices;
+    // 🔥 MISSING BEFORE (CAUSA ERRORE SETBIKE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bike_id")
+    private Bike bike;
 
-    @OneToMany(mappedBy = "booking")
-    private List<BookingBikeAllocation> bikeAllocations;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookingService> bookingServices = new ArrayList<>();
 
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookingBikeAllocation> bikeAllocations = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

@@ -13,9 +13,12 @@ CREATE TABLE circuits (
 
     name VARCHAR(100) NOT NULL,
     country VARCHAR(100),
-    length_km DECIMAL(5,2),
 
-    description TEXT
+    length_meters BIGINT NOT NULL,
+
+    description TEXT,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE bikes (
@@ -24,9 +27,18 @@ CREATE TABLE bikes (
 
     brand VARCHAR(50) NOT NULL,
     model VARCHAR(50) NOT NULL,
+
     year INT NOT NULL,
 
-    category VARCHAR(50) NOT NULL
+    category VARCHAR(50) NOT NULL,
+
+    chassis_number VARCHAR(255) NOT NULL UNIQUE,
+
+    current_km BIGINT NOT NULL DEFAULT 0,
+
+    daily_price DECIMAL(10,2),
+
+    status VARCHAR(30) NOT NULL DEFAULT 'AVAILABLE'
 );
 
 CREATE TABLE services (
@@ -44,6 +56,31 @@ CREATE TABLE services (
     active BOOLEAN NOT NULL DEFAULT TRUE,
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE event_service_prices (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id),
+
+    event_id BIGINT NOT NULL,
+    service_id BIGINT NOT NULL,
+
+    price_one_day DECIMAL(10,2) NOT NULL,
+    price_two_days DECIMAL(10,2),
+    price_full_event DECIMAL(10,2),
+
+    CONSTRAINT fk_esp_event
+        FOREIGN KEY (event_id)
+        REFERENCES events(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_esp_service
+        FOREIGN KEY (service_id)
+        REFERENCES services(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_event_service
+        UNIQUE (event_id, service_id)
 );
 
 CREATE TABLE users (
@@ -84,19 +121,23 @@ CREATE TABLE events (
     PRIMARY KEY (id),
 
     name VARCHAR(150) NOT NULL,
+    description TEXT,
+
+    organizer VARCHAR(150),
 
     circuit_id BIGINT NOT NULL,
 
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
 
-    organizer VARCHAR(150),
-
-    description TEXT,
-
     max_participants INT,
+    current_participants INT DEFAULT 0,
 
-    status VARCHAR(50) NOT NULL DEFAULT 'AVAILABLE',
+    status VARCHAR(30) NOT NULL DEFAULT 'AVAILABLE',
+
+    price_one_day DECIMAL(10,2),
+    price_multiple_days DECIMAL(10,2),
+    price_full_event DECIMAL(10,2),
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

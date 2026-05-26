@@ -1,9 +1,15 @@
 package da_figma.models;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import da_figma.enums.BikeCategory;
+import da_figma.enums.BikeStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,13 +49,39 @@ public class Bike {
     @NotNull
     private Integer year;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    @NotBlank
-    @Size(max = 50)
-    private String category;
+    private BikeCategory category;
 
-    // Relazioni
+    // =========================
+    // TECHNICAL INFO
+    // =========================
 
-    @OneToMany(mappedBy = "bike")
+    @Column(name = "chassis_number", nullable = false, unique = true)
+    private String chassisNumber;
+
+    @Column(name = "current_km", nullable = false)
+    private Long currentKm = 0L;
+
+    // =========================
+    // RENTAL
+    // =========================
+
+    @Column(name = "daily_price", precision = 10, scale = 2)
+    private BigDecimal dailyPrice;
+
+    // =========================
+    // STATUS
+    // =========================
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BikeStatus status = BikeStatus.AVAILABLE;
+
+    // =========================
+    // RELATIONS
+    // =========================
+
+    @OneToMany(mappedBy = "bike", fetch = FetchType.LAZY)
     private List<BookingBikeAllocation> bikeAllocations;
 }

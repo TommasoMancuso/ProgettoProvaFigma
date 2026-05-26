@@ -1,19 +1,13 @@
 package da_figma.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import da_figma.enums.PricingType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "services")
 public class TeamService {
 
@@ -39,13 +32,17 @@ public class TeamService {
     @NotBlank
     private String description;
 
-    @Column(name = "pricing_type", nullable = false, length = 20)
-    @NotBlank
-    @Size(max = 20)
-    private String pricingType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PricingType pricingType;
 
+    // SOLO PER FIXED
     @Column(name = "base_price", precision = 10, scale = 2)
-    private Double basePrice;
+    private BigDecimal basePrice;
+
+    // se in futuro vuoi MANUAL override dal manager
+    @Column(name = "manual_price", precision = 10, scale = 2)
+    private BigDecimal manualPrice;
 
     @Column(nullable = false)
     private boolean active = true;
@@ -57,8 +54,6 @@ public class TeamService {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
-    // Relazioni
 
     @OneToMany(mappedBy = "service")
     private List<BookingService> bookingServices;

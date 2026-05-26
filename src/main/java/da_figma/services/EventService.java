@@ -1,15 +1,11 @@
 package da_figma.services;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import da_figma.models.Circuit;
+import da_figma.enums.EventStatus;
 import da_figma.models.Event;
-import da_figma.repositories.CircuitRepository;
 import da_figma.repositories.EventRepository;
 
 @Service
@@ -18,64 +14,100 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
-    private CircuitRepository circuitRepository;
-
+    // =========================
+    // BOOKING REGISTRATION
+    // =========================
     @Transactional
-    public Event createEvent(Event event, Long circuitId) {
+    public void registerBooking(Event event) {
 
-        Circuit circuit = circuitRepository.findById(circuitId)
-                .orElseThrow(() -> new RuntimeException("Circuito non trovato"));
+        int current = (event.getCurrentParticipants() == null)
+                ? 0
+                : event.getCurrentParticipants();
 
-        event.setCircuit(circuit);
+        event.setCurrentParticipants(current + 1);
 
-        if (event.getStatus() == null || event.getStatus().isBlank()) {
-            event.setStatus("AVAILABLE");
+        evaluateStatus(event);
+
+        eventRepository.save(event);
+    }
+
+    // =========================
+    // BOOKING CANCELLATION
+    // =========================
+    @Transactional
+    public void unregisterBooking(Event event) {
+
+        int current = (event.getCurrentParticipants() == null)
+                ? 0
+                : event.getCurrentParticipants();
+
+        event.setCurrentParticipants(Math.max(0, current - 1));
+
+        evaluateStatus(event);
+
+        eventRepository.save(event);
+    }
+
+    // =========================
+    // STATUS ENGINE (SINGLE SOURCE OF TRUTH)
+    // =========================
+    private void evaluateStatus(Event event) {
+
+        // blocco totale manuale
+        if (event.getStatus() == EventStatus.CANCELLED) {
+            return;
         }
 
-        return eventRepository.save(event);
+        // evento completato manualmente
+        if (event.getStatus() == EventStatus.COMPLETED) {
+            return;
+        }
+
+        // sold out logic
+        if (event.getMaxParticipants() != null
+                && event.getCurrentParticipants() >= event.getMaxParticipants()) {
+
+            event.setStatus(EventStatus.SOLD_OUT);
+        } else {
+            event.setStatus(EventStatus.AVAILABLE);
+        }
     }
 
-    public Event getEventById(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+    // =========================
+    // BOOKING VALIDATION
+    // =========================
+    public void validateBooking(Event event) {
+
+        if (event.getStatus() == EventStatus.CANCELLED) {
+            throw new RuntimeException("Evento annullato");
+        }
+
+        if (event.getStatus() == EventStatus.COMPLETED) {
+            throw new RuntimeException("Evento terminato");
+        }
+
+        if (event.getStatus() == EventStatus.SOLD_OUT) {
+            throw new RuntimeException("Evento al completo");
+        }
     }
 
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
-    }
-
-    public List<Event> getFutureEvents() {
-        return eventRepository.findByStartDateAfter(LocalDate.now());
-    }
-
-    public List<Event> getPastEvents() {
-        return eventRepository.findByEndDateBefore(LocalDate.now());
-    }
-
-    public List<Event> searchByName(String name) {
-        return eventRepository.findByNameContainingIgnoreCase(name);
-    }
-
-    public List<Event> searchByOrganizer(String organizer) {
-        return eventRepository.findByOrganizerContainingIgnoreCase(organizer);
-    }
-
-    public List<Event> searchByCircuit(String circuitName) {
-        return eventRepository.findByCircuit_NameContainingIgnoreCase(circuitName);
-    }
-
+    // =========================
+    // ADMIN: COMPLETE EVENT
+    // =========================
     @Transactional
-    public Event updateStatus(Long eventId, String status) {
+    public void completeEvent(Event event) {
 
-        Event event = getEventById(eventId);
-        event.setStatus(status);
-
-        return eventRepository.save(event);
+        event.setStatus(EventStatus.COMPLETED);
+        eventRepository.save(event);
     }
 
+    // =========================
+    // ADMIN: CANCEL EVENT
+    // =========================
     @Transactional
-    public void deleteEvent(Long eventId) {
-        eventRepository.deleteById(eventId);
+    public void cancelEvent(Event event) {
+
+        event.setStatus(EventStatus.CANCELLED);
+        eventRepository.save(event);
     }
 }

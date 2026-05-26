@@ -1,5 +1,7 @@
 package da_figma.models;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,7 +32,7 @@ public class BookingService {
     private Integer quantity = 1;
 
     @Column(name = "price_at_booking", precision = 10, scale = 2)
-    private Double priceAtBooking;
+    private BigDecimal priceAtBooking;
 
     // Relazioni
 

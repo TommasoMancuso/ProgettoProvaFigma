@@ -28,29 +28,26 @@ public class BookingBikeAllocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // =========================
+    // RENTAL PERIOD
+    // =========================
     @Column(name = "rental_start_date", nullable = false)
     private LocalDate rentalStartDate;
 
     @Column(name = "rental_end_date", nullable = false)
     private LocalDate rentalEndDate;
 
-    // Relazioni
-
     // =========================
-    // BOOKING
+    // RELATION: BOOKING
     // =========================
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
     // =========================
-    // BIKE
+    // RELATION: BIKE
     // =========================
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bike_id", nullable = false)
     private Bike bike;
-
-
 }

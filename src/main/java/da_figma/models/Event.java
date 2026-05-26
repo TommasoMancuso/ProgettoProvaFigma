@@ -4,8 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import da_figma.enums.EventStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,10 +19,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +27,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "events")
 public class Event {
 
@@ -36,32 +35,33 @@ public class Event {
     private Long id;
 
     @Column(nullable = false, length = 150)
-    @NotBlank
-    @Size(max = 150)
     private String name;
-
-    @Column(name = "start_date", nullable = false)
-    @NotNull
-    private LocalDate startDate;
-
-    @Column(name = "end_date", nullable = false)
-    @NotNull
-    private LocalDate endDate;
-
-    @Column(length = 150)
-    @Size(max = 150)
-    private String organizer;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(length = 150)
+    private String organizer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "circuit_id", nullable = false)
+    private Circuit circuit;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
+
     @Column(name = "max_participants")
     private Integer maxParticipants;
 
-    @Column(nullable = false, length = 50)
-    @NotBlank
-    @Size(max = 50)
-    private String status = "AVAILABLE";
+    @Column(name = "current_participants", nullable = false)
+    private Integer currentParticipants = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private EventStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -71,13 +71,10 @@ public class Event {
         createdAt = LocalDateTime.now();
     }
 
-    // Relazioni
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "circuit_id", nullable = false)
-    private Circuit circuit;
+    // =========================
+    // RELAZIONE PRICING NUOVA
+    // =========================
 
-
-    @OneToMany(mappedBy = "event")
-    private List<Booking> bookings;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventServicePrice> servicePrices;
 }
