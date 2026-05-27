@@ -23,4 +23,10 @@ public class UserController {
     public String aboutUsIndex(){
         return "aboutus";
     }
+
+    // Rotta per register
+    @GetMapping("/register")
+    public String register(){
+        return "auth/register";
+    }
 }

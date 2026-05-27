@@ -9,6 +9,8 @@
                 <li><a th:href="@{/aboutus}">CHI SIAMO</a></li>
                 <li><a th:href="@{/services}">SERVIZI</a></li>
                 <li><a href="#contatti">CONTATTI</a></li>
+                <li><a href="#">ACCEDI</a></li>
+                <li><a th:href="@{/register}">REGISTRATI</a></li>
             </ul>
             <button class="btn-primary">PRENOTA ORA</button>
             <button id="menu-toggle" class="mobile-toggle">
@@ -16,9 +18,11 @@
             </button>
         </div>
         <div id="mobile-menu" class="mobile-menu hidden">
-            <a href="#home">HOME</a>
-            <a href="#chi-siamo">CHI SIAMO</a>
-            <a href="#servizi">SERVIZI</a>
+            <a th:href="@{/}">HOME</a>
+            <a th:href="@{/aboutus}">CHI SIAMO</a>
+            <a th:href="@{/services}">SERVIZI</a>
             <a href="#contatti">CONTATTI</a>
+            <a href="#">ACCEDI</a>
+            <a th:href="@{/register}">REGISTRATI</a>
         </div>
     </nav>

@@ -435,6 +435,13 @@ hr{
   color: #e63946;
 }
 
+/* TITOLI */
+.titles{
+  margin-top: 80px;
+  font-size: 72px;
+  padding: 20px;
+}
+
 /* =========================
    MOBILE
    ========================= */
