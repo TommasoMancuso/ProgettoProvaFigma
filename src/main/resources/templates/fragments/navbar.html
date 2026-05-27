@@ -1,4 +1,4 @@
-<nav th:fragment="navbar" class="navbar">
+<nav th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="navbar">
         <div class="container nav-content">
             <div class="logo">
                 <span class="logo-icon">🔧</span>
@@ -9,8 +9,27 @@
                 <li><a th:href="@{/aboutus}">CHI SIAMO</a></li>
                 <li><a th:href="@{/services}">SERVIZI</a></li>
                 <li><a href="#contatti">CONTATTI</a></li>
-                <li><a href="#">ACCEDI</a></li>
-                <li><a th:href="@{/register}">REGISTRATI</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/login}">ACCEDI</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/register}">REGISTRATI</a></li>
+                <li sec:authorize="isAuthenticated()" class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Benvenuto 
+                        <span sec:authentication="principal.user.name"></span>
+                        <span sec:authentication="principal.user.surname"></span>
+                   </a>
+                   <ul class="dropdown-menu">
+                         <li><a class="dropdown-item" th:href="@{/profile}">Profilo</a></li>
+                         <li><form th:action="@{/logout}" method="post">
+                            <input type="hidden"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+
+                            <button type="submit"
+                                    class="dropdown-item">
+                                Logout
+                            </button>
+                         </form></a></li>
+                   </ul>
+                </li>
             </ul>
             <button class="btn-primary">PRENOTA ORA</button>
             <button id="menu-toggle" class="mobile-toggle">
@@ -22,7 +41,7 @@
             <a th:href="@{/aboutus}">CHI SIAMO</a>
             <a th:href="@{/services}">SERVIZI</a>
             <a href="#contatti">CONTATTI</a>
-            <a href="#">ACCEDI</a>
+            <a th:href="@{/login}">ACCEDI</a>
             <a th:href="@{/register}">REGISTRATI</a>
         </div>
     </nav>

@@ -2,19 +2,90 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
-
+    
     <nav th:replace="~{fragments/navbar :: navbar}"></nav>
-
     
-        <h1 class="text-center titles">REGISTRATI</h1>
     
-
-
-
+    
+    
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h1 class="text-center titles">REGISTRATI</h1>
+            </div>
+            <div class="col-12 col-md-9">
+                <form class="row g-3 p-4" method="post" th:action="@{/registerUser}" enctype="multipart/form-data">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <div class="col-md-4">
+                        <label for="validationDefault01" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="validationDefault01" name="name" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefault02" class="form-label">Cognome</label>
+                        <input type="text" class="form-control" id="validationDefault02" name="surname">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="inputGroupPrepend2">@</span>
+                            <input type="email" class="form-control" id="email" aria-describedby="inputGroupPrepend2" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Cellulare</label>
+                        <input type="number" class="form-control" id="number" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="birthDate" class="form-label">Data di nascita</label>
+                        <input type="date" class="form-control" id="birthDate" name="birthDate">
+                    </div>
+                    <div class="form-floating">
+                        <label class="form-label" for="floatingTextarea2"></label>
+                        <textarea class="form-control" placeholder="Parlaci di te" id="floatingTextarea2" style="height: 100px" name="bio"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Inserisci immagine</label>
+                        <input class="form-control" type="file" id="formFile" name="imageFile">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Profilo Instagram</label>
+                        <input type="url" class="form-control" id="url" name="instagram">
+                    </div>
+                    <div class="col-12 col-md-6 pt-5 px-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+                            <label class="form-check-label" for="invalidCheck2">
+                                Agree to terms and conditions
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 p-2">
+                        <a class="d-flex justify-content-center  text-decoration-none" th:href="@{/registerUser}">
+                            <button class="btn-primary" type="submit">REGISTRATI</button>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6 pt-3 p-2">
+                        <p class="d-flex justify-content-center">
+                            Sei già registrato? 
+                            <a class="text-white px-2" href="#"> ACCEDI</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
     <footer th:replace="~{fragments/footer :: footer}"></footer>
-
+    
     <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
-
+    
     <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
     
 </body>
