@@ -1,7 +1,6 @@
 package da_figma.repositories;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,5 +18,4 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 
     boolean existsByTeamRole_Name(String name);
 
-    Optional<TeamUser> findByKeycloakId(String keycloakId);
 }

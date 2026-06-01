@@ -9,39 +9,42 @@ import org.springframework.stereotype.Service;
 public class UserContextService {
 
     // =========================
-    // KEYCLOAK ID UTENTE LOGGATO
+    // AUTH UTILITY
+    // =========================
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    // =========================
+    // KEYCLOAK ID (SUB)
     // =========================
     public String getCurrentKeycloakId() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = getAuthentication();
 
         if (auth == null || auth.getPrincipal() == null) {
             throw new RuntimeException("Utente non autenticato");
         }
 
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof Jwt jwt) {
+        if (auth.getPrincipal() instanceof Jwt jwt) {
             return jwt.getSubject();
         }
 
-        return auth.getName();
+        throw new RuntimeException("Principal non valido per JWT Keycloak");
     }
 
     // =========================
-    // EMAIL (UTILE PER FUTURO BUSINESS / DEBUG)
+    // EMAIL UTENTE
     // =========================
     public String getCurrentEmail() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = getAuthentication();
 
         if (auth == null || auth.getPrincipal() == null) {
             return null;
         }
 
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof Jwt jwt) {
+        if (auth.getPrincipal() instanceof Jwt jwt) {
             return jwt.getClaimAsString("email");
         }
 
@@ -49,11 +52,11 @@ public class UserContextService {
     }
 
     // =========================
-    // CONTROLLO GENERICO LOGIN
+    // CHECK LOGIN
     // =========================
     public boolean isAuthenticated() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = getAuthentication();
 
         return auth != null && auth.isAuthenticated();
     }

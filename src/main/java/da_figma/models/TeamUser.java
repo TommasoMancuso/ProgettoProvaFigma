@@ -29,12 +29,12 @@ import lombok.Setter;
 @Table(name = "team_users")
 public class TeamUser {
 
+    // =========================
+    // ID
+    // =========================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(unique = true)
-    private String keycloakId;
 
     // =========================
     // ANAGRAFICA
@@ -68,15 +68,21 @@ public class TeamUser {
 
     private String instagram;
 
+    // =========================
+    // TIMESTAMP
+    // =========================
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // =========================
+    // RUOLO STAFF
+    // =========================
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_role_id", nullable = false)
     private TeamRole teamRole;
 
     // =========================
-    // CREAZIONE AUTOMATICA
+    // CREAZIONE
     // =========================
     @PrePersist
     protected void onCreate() {
