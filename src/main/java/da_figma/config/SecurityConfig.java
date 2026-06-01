@@ -2,74 +2,53 @@ package da_figma.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
-    // =========================
-    // PASSWORD ENCODER
-    // =========================
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    // =========================
-    // AUTHENTICATION MANAGER
-    // =========================
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    // =========================
-    // SECURITY FILTER CHAIN
-    // =========================
-    @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
+        http
+            // =========================
+            // AUTORIZZAZIONI
+            // =========================
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/assets/**").permitAll()
+                .requestMatchers(
                     "/",
-                    "/register",
-                    "/registerUser",
-                    "/login",
                     "/services",
-                    "/aboutus",
-                    "/css/**",
-                    "/js/**",
-                    "/images/**"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
+                    "/aboutus"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
 
-        .csrf(csrf -> csrf
-            .ignoringRequestMatchers("/registerUser")
-        )
+            // =========================
+            // LOGIN KEYCLOAK (OAUTH2)
+            // =========================
+            .oauth2Login(oauth2 -> oauth2
+                .defaultSuccessUrl("/", true)
+            )
 
-        .formLogin(form -> form
-            .loginPage("/login")
-            .defaultSuccessUrl("/", true)
-            .permitAll()
-        )
+            // =========================
+            // LOGOUT
+            // =========================
+            .logout(logout -> logout
+            .logoutSuccessHandler((request, response, authentication) -> {
 
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/")
-            .permitAll()
+                String keycloakLogoutUrl =
+                        "http://localhost:8180/realms/dafigma/protocol/openid-connect/logout"
+                        + "?redirect_uri=http://localhost:8080/";
+
+                response.sendRedirect(keycloakLogoutUrl);
+            })
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .deleteCookies("JSESSIONID")
         );
 
-    return http.build();
-}
+        return http.build();
+    }
 }

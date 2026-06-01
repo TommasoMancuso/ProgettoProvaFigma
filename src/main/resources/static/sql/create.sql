@@ -1,4 +1,4 @@
-CREATE TABLE roles (
+CREATE TABLE team_roles (
     id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
 
@@ -58,37 +58,27 @@ CREATE TABLE services (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE users (
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (id),
+CREATE TABLE team_users (
+    keycloak_id VARCHAR(255) NOT NULL,
+    PRIMARY KEY (keycloak_id),
 
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(50) NOT NULL,
 
-    email VARCHAR(100) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-
     phone VARCHAR(20) NOT NULL,
-
     birth_date DATE NOT NULL,
 
     bio TEXT,
     profile_image VARCHAR(255),
     instagram VARCHAR(100),
 
-    enabled BOOLEAN NOT NULL DEFAULT TRUE,
-
     created_at TIMESTAMP NOT NULL,
 
-    role_id BIGINT NOT NULL,
+    team_role_id BIGINT NOT NULL,
 
-    UNIQUE (email),
-
-    INDEX idx_users_role_id (role_id),
-
-    CONSTRAINT fk_users_roles
-        FOREIGN KEY (role_id)
-        REFERENCES roles(id)
+    CONSTRAINT fk_team_users_team_roles
+        FOREIGN KEY (team_role_id)
+        REFERENCES team_roles(id)
 );
 
 CREATE TABLE events (
@@ -147,7 +137,7 @@ CREATE TABLE bookings (
     id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
 
-    user_id BIGINT NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
     event_id BIGINT NOT NULL,
     bike_id BIGINT NULL,
 
@@ -163,7 +153,7 @@ CREATE TABLE bookings (
 
     CONSTRAINT fk_bookings_users
         FOREIGN KEY (user_id)
-        REFERENCES users(id),
+        REFERENCES team_users(keycloak_id),
 
     CONSTRAINT fk_bookings_events
         FOREIGN KEY (event_id)
@@ -214,4 +204,3 @@ CREATE TABLE booking_services (
         FOREIGN KEY (service_id)
         REFERENCES services(id)
 );
-

@@ -2,7 +2,6 @@ package da_figma.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -28,13 +26,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "team_users")
+public class TeamUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String keycloakId;
+
+    // =========================
+    // ANAGRAFICA
+    // =========================
     @Column(nullable = false, length = 50)
     @Size(max = 50)
     @NotBlank
@@ -45,16 +49,6 @@ public class User {
     @NotBlank
     private String surname;
 
-    @Column(nullable = false, unique = true, length = 100)
-    @Size(max = 100)
-    @NotBlank
-    private String email;
-
-    @Column(nullable = false, length = 255)
-    @Size(max = 255)
-    @NotBlank
-    private String password;
-
     @Column(nullable = false, length = 20)
     @Size(max = 20)
     @NotBlank
@@ -64,37 +58,28 @@ public class User {
     @NotNull
     private LocalDate birthDate;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    // =========================
+    // PROFILO
+    // =========================
+    @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(nullable = true)
     private String profileImage;
 
-    @Column(nullable = true)
     private String instagram;
-
-    @Column(nullable = false)
-    private boolean enabled = true;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // =========================
-    // CREATED AT AUTOMATICO
-    // =========================
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_role_id", nullable = false)
+    private TeamRole teamRole;
 
+    // =========================
+    // CREAZIONE AUTOMATICA
+    // =========================
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
-    // Relazioni
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-
-    @OneToMany(mappedBy = "user")
-    private List<Booking> bookings;
-
 }

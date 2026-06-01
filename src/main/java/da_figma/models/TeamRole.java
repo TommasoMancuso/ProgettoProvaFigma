@@ -17,8 +17,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "roles")
-public class Role {
+@Table(name = "team_roles")
+public class TeamRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

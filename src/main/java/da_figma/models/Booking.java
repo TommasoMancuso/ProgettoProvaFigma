@@ -16,7 +16,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -34,12 +33,21 @@ import lombok.Setter;
 @Table(name = "bookings")
 public class Booking {
 
+    // =========================
+    // ID
+    // =========================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // =========================
-    // STATUS (FIXED -> ENUM)
+    // KEYCLOAK USER (CLIENTE)
+    // =========================
+    @Column(name = "user_keycloak_id", nullable = false)
+    private String userKeycloakId;
+
+    // =========================
+    // STATUS
     // =========================
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -54,6 +62,9 @@ public class Booking {
     @Column(name = "total_price", precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    // =========================
+    // TIMESTAMP
+    // =========================
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -61,20 +72,15 @@ public class Booking {
     private LocalDate cancellationDeadline;
 
     // =========================
-    // RELATIONS
+    // RELATIONS BUSINESS
     // =========================
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
+    @jakarta.persistence.JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    // 🔥 MISSING BEFORE (CAUSA ERRORE SETBIKE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bike_id")
+    @jakarta.persistence.JoinColumn(name = "bike_id")
     private Bike bike;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -83,6 +89,9 @@ public class Booking {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingBikeAllocation> bikeAllocations = new ArrayList<>();
 
+    // =========================
+    // CREATION
+    // =========================
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

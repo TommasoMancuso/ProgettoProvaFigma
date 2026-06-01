@@ -3,41 +3,70 @@ package da_figma.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import da_figma.dtos.BookingRequestDto;
 import da_figma.enums.BookingStatus;
-import da_figma.models.*;
-import da_figma.repositories.*;
+import da_figma.models.Bike;
+import da_figma.models.Booking;
+import da_figma.models.BookingBikeAllocation;
+import da_figma.models.BookingService;
+import da_figma.models.Event;
+import da_figma.models.EventServicePrice;
+import da_figma.models.TeamService;
+import da_figma.repositories.BikeRepository;
+import da_figma.repositories.BookingBikeAllocationRepository;
+import da_figma.repositories.BookingRepository;
+import da_figma.repositories.EventRepository;
+import da_figma.repositories.EventServicePriceRepository;
+import da_figma.repositories.TeamServiceRepository;
 
 @Service
 public class BookingManagerService {
 
-    @Autowired private BookingRepository bookingRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private EventRepository eventRepository;
-    @Autowired private BikeRepository bikeRepository;
-    @Autowired private TeamServiceRepository serviceRepository;
-    @Autowired private EventServicePriceRepository eventServicePriceRepository;
-    @Autowired private BookingBikeAllocationRepository bookingBikeAllocationRepository;
-    @Autowired private EventService eventService;
+    private final BookingRepository bookingRepository;
+    private final EventRepository eventRepository;
+    private final BikeRepository bikeRepository;
+    private final TeamServiceRepository serviceRepository;
+    private final EventServicePriceRepository eventServicePriceRepository;
+    private final BookingBikeAllocationRepository bookingBikeAllocationRepository;
+    private final EventService eventService;
+    private final UserContextService userContextService;
+
+    public BookingManagerService(
+            BookingRepository bookingRepository,
+            EventRepository eventRepository,
+            BikeRepository bikeRepository,
+            TeamServiceRepository serviceRepository,
+            EventServicePriceRepository eventServicePriceRepository,
+            BookingBikeAllocationRepository bookingBikeAllocationRepository,
+            EventService eventService,
+            UserContextService userContextService
+    ) {
+        this.bookingRepository = bookingRepository;
+        this.eventRepository = eventRepository;
+        this.bikeRepository = bikeRepository;
+        this.serviceRepository = serviceRepository;
+        this.eventServicePriceRepository = eventServicePriceRepository;
+        this.bookingBikeAllocationRepository = bookingBikeAllocationRepository;
+        this.eventService = eventService;
+        this.userContextService = userContextService;
+    }
 
     // =========================
-    // CREATE BOOKING
+    // CREATE BOOKING (KEYCLOAK USER)
     // =========================
     @Transactional
     public Booking createBooking(BookingRequestDto request) {
 
         // =========================
-        // 1. USER
+        // 1. USER LOGGATO (KEYCLOAK)
         // =========================
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User non trovato"));
+        String keycloakId = userContextService.getCurrentKeycloakId();
 
         // =========================
-        // 2. EVENT (PESSIMISTIC LOCK)
+        // 2. EVENT
         // =========================
         Event event = eventRepository.findByIdForUpdate(request.getEventId())
                 .orElseThrow(() -> new RuntimeException("Event non trovato"));
@@ -67,14 +96,16 @@ public class BookingManagerService {
         // 4. BOOKING BASE
         // =========================
         Booking booking = new Booking();
-        booking.setUser(user);
+
+        booking.setUserKeycloakId(keycloakId);
+
         booking.setEvent(event);
         booking.setBike(bike);
         booking.setBookingServices(new ArrayList<>());
         booking.setStatus(BookingStatus.PENDING);
 
         // =========================
-        // 5. SERVICES + QUOTE SYSTEM
+        // 5. SERVICES
         // =========================
         BigDecimal total = BigDecimal.ZERO;
 
@@ -96,7 +127,6 @@ public class BookingManagerService {
                 bookingService.setService(service);
 
                 if (esp != null && esp.getPriceOneDay() != null) {
-
                     bookingService.setPriceAtBooking(esp.getPriceOneDay());
                     total = total.add(esp.getPriceOneDay());
                 }
@@ -120,7 +150,7 @@ public class BookingManagerService {
         }
 
         // =========================
-        // 7. BIKE ALLOCATION (ONLY IF CONFIRMED)
+        // 7. BIKE ALLOCATION
         // =========================
         if (bike != null && booking.getStatus() == BookingStatus.CONFIRMED) {
 

@@ -14,8 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BookingRequestDto {
 
-    private Long userId;
-
     private Long eventId;
 
     private LocalDate bikeStartDate;

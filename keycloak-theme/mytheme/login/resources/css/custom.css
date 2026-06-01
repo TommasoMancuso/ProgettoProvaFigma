@@ -1,0 +1,25 @@
+/* TITOLI */
+.login-pf-page h1 {
+    font-size: 72px;
+    margin-top: 80px;
+    padding: 20px;
+    color: #e63946;
+}
+
+/* FORM */
+.pf-v5-c-form-control {
+    border: 2px solid #e63946 !important;
+}
+
+/* BORDI FORM */
+form {
+    border-top: 1px solid #e63946;
+    border-bottom: 1px solid #e63946;
+    padding: 20px;
+}
+
+/* BOTTONI */
+.pf-v5-c-button.pf-m-primary {
+    background-color: #e63946 !important;
+    border-color: #e63946 !important;
+}

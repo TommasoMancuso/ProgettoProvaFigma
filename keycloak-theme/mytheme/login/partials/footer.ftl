@@ -1,0 +1,71 @@
+<footer id="contatti" class="footer">
+
+    <div class="container footer-grid">
+
+        <div>
+
+            <div class="logo py-2">
+                <span class="logo-icon">🔧</span>
+                <span>RACE TECH PRO</span>
+            </div>
+
+            <div>
+                <p class="py-2">
+                    Il tuo partner di fiducia per la pista.
+                </p>
+            </div>
+
+        </div>
+
+        <div>
+            <h4>Contatti</h4>
+            <p>+39 320 123 4567</p>
+            <p>info@racetechpro.it</p>
+            <p>Modena, Italia</p>
+        </div>
+
+        <div>
+            <h4>Servizi</h4>
+            <p>Assistenza tecnica</p>
+            <p>Noleggio moto</p>
+            <p>Setup personalizzato</p>
+            <p>Acquisizione dati</p>
+        </div>
+
+        <div>
+            <h4>Link rapidi</h4>
+            <p>Home</p>
+            <p>Chi siamo</p>
+            <p>Servizi</p>
+            <p>Contatti</p>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="container d-flex justify-content-center pt-2">
+
+        <p class="px-3">
+            © 2026 Race Tech Pro. Tutti i diritti riservati.
+        </p>
+
+        <div class="d-flex px-3">
+
+            <a class="px-2 underFooter" href="#">
+                Privacy policy
+            </a>
+
+            <a class="px-2 underFooter" href="#">
+                Termini e condizioni
+            </a>
+
+            <a class="px-2 underFooter" href="#">
+                Cookie policy
+            </a>
+
+        </div>
+
+    </div>
+
+</footer>
