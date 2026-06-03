@@ -1,6 +1,7 @@
 <#macro mainLayout>
 <!DOCTYPE html>
-<html>
+<html lang="it">
+
 <head>
     <#include "partials/head.ftl">
 </head>
@@ -15,6 +16,8 @@
 
     <#include "partials/footer.ftl">
     <#include "partials/bootstrap.ftl">
+
+    <script src="${url.resourcesPath}/js/custom.js"></script>
 
 </body>
 </html>

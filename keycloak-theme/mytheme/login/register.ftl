@@ -22,48 +22,52 @@
                     </div>
                 </#if>
 
-                <#-- CAMPI STANDARD KEYCLOAK -->
                 <div class="row g-3">
 
+                    <!-- USERNAME -->
                     <div class="col-md-6">
-                        <label>Email</label>
+                        <label class="form-label">Username</label>
                         <input class="form-control"
-                               name="email"
+                               type="text"
+                               name="username"
+                               value="${(register.formData.username!'')}"
+                               required>
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input class="form-control"
                                type="email"
-                               required />
+                               name="email"
+                               value="${(register.formData.email!'')}"
+                               required>
                     </div>
 
+                    <!-- PASSWORD (KEYCLOAK MANAGED - NO CUSTOM UI) -->
                     <div class="col-md-6">
-                        <label>Password</label>
+                        <label class="form-label">Password</label>
                         <input class="form-control"
-                               name="password"
                                type="password"
-                               required />
+                               name="password"
+                               required>
                     </div>
 
-                    <#-- ATTRIBUTI CUSTOM -->
-                    <#list profile.attributes as attribute>
-                        <div class="col-md-6">
-
-                            <label class="form-label">
-                                ${attribute.displayName!attribute.name}
-                            </label>
-
-                            <input class="form-control"
-                                   type="text"
-                                   name="${attribute.name}"
-                                   value="${(attribute.value!'')}" />
-
-                        </div>
-                    </#list>
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="col-md-6">
+                        <label class="form-label">Conferma Password</label>
+                        <input class="form-control"
+                               type="password"
+                               name="password-confirm"
+                               required>
+                    </div>
 
                 </div>
 
-                <div class="text-center py-3">
+                <!-- SUBMIT -->
+                <div class="text-center py-4">
 
-                    <input class="btn-primary"
-                           type="submit"
-                           value="REGISTRATI">
+                    <input type="submit" class="btn-primary" value="REGISTRATI">
 
                 </div>
 

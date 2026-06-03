@@ -16,10 +16,12 @@ public class SecurityConfig {
             // AUTORIZZAZIONI
             // =========================
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/assets/**").permitAll()
                 .requestMatchers(
                     "/",
                     "/services",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
                     "/aboutus"
                 ).permitAll()
                 .anyRequest().authenticated()

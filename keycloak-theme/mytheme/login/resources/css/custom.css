@@ -1,25 +1,247 @@
-/* TITOLI */
-.login-pf-page h1 {
-    font-size: 72px;
-    margin-top: 80px;
-    padding: 20px;
-    color: #e63946;
+/* =========================
+   RESET & BASE KEYCLOAK
+   ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* FORM */
-.pf-v5-c-form-control {
-    border: 2px solid #e63946 !important;
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
-/* BORDI FORM */
+/* BODY KEYCLOAK */
+body,
+.login-pf-page {
+  font-family: Arial, sans-serif;
+  background: #0f0f0f !important;
+  color: white !important;
+  line-height: 1.6;
+}
+
+/* =========================
+   LINK BASE
+   ========================= */
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #e63946;
+}
+
+/* =========================
+   CONTAINER
+   ========================= */
+
+.container,
+.pf-c-page__main-section {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =========================
+   NAVBAR (CUSTOM KEYCLOAK)
+   ========================= */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  background: #111;
+  z-index: 1000;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+}
+
+.nav-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #e63946;
+}
+
+/* =========================
+   LOGO
+   ========================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logo-icon {
+  background-color: red;
+  font-size: xx-large;
+  border-radius: 10%;
+  padding: 2px 6px;
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.btn-primary {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  background: #e63946;
+  color: white;
+  display: inline-block;
+}
+
+/* =========================
+   KEYCLOAK FORMS (IMPORTANTISSIMO)
+   ========================= */
+
 form {
-    border-top: 1px solid #e63946;
-    border-bottom: 1px solid #e63946;
-    padding: 20px;
+  border-top: 1px solid #e63946;
+  border-bottom: 1px solid #e63946;
+  padding: 20px;
 }
 
-/* BOTTONI */
+/* INPUT KEYCLOAK + BOOTSTRAP */
+input,
+select,
+textarea {
+  border: 2px solid #e63946 !important;
+  background: #111 !important;
+  color: white !important;
+}
+
+/* =========================
+   TITLES
+   ========================= */
+
+.titles {
+  margin-top: 120px;
+  font-size: 72px;
+  padding: 20px;
+}
+
+/* =========================
+   REGISTER / LOGIN PAGE WRAPPER
+   ========================= */
+
+.login-pf-page {
+  padding-top: 120px;
+}
+
+/* =========================
+   ALERT ERROR KEYCLOAK
+   ========================= */
+
+.alert {
+  margin-top: 90px;
+  padding: 10px;
+  background: #e63946;
+  color: white;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.footer {
+  background: #111;
+  padding: 50px 0 40px;
+}
+
+/* Rimuove gli eye icon duplicati Keycloak */
+.pf-c-form-control + button,
+.pf-v5-c-text-input-group__utilities,
+button[aria-label="Show password"],
+button[aria-label="Hide password"] {
+    display: none !important;
+}
+
+/* =========================
+   KEYCLOAK BUTTON FIX (NO HOVER, MATCH THYMELEAF)
+   ========================= */
+
+/* annulla stile PatternFly */
+.pf-v5-c-button,
 .pf-v5-c-button.pf-m-primary {
-    background-color: #e63946 !important;
-    border-color: #e63946 !important;
+    background: #e63946 !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: none !important;
+}
+
+/* forza anche Bootstrap-like btn-primary */
+.btn-primary,
+button.btn-primary,
+input.btn-primary,
+.btn.btn-primary {
+    background: #e63946 !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: none !important;
+}
+
+/* IMPORTANTISSIMO: elimina hover ovunque */
+.pf-v5-c-button:hover,
+.pf-v5-c-button.pf-m-primary:hover,
+.btn-primary:hover,
+button.btn-primary:hover,
+input.btn-primary:hover {
+    background: #e63946 !important;
+    color: white !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* =========================
+   DISABLE KEYCLOAK PASSWORD VISIBILITY ICONS (ROBUST)
+   ========================= */
+
+/* elimina qualsiasi bottone associato ai campi password */
+input[type="password"] ~ *,
+input[type="password"] + *,
+input[type="password"] ~ button,
+input[type="password"] + button {
+    display: none !important;
+}
+
+/* elimina container utilities PatternFly */
+.pf-v5-c-text-input-group__utilities {
+    display: none !important;
+}
+
+/* elimina eventuali toggle injectati da JS Keycloak */
+button[aria-label*="password"],
+button[aria-label*="Password"],
+button[title*="password"],
+button[title*="Password"] {
+    display: none !important;
 }

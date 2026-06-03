@@ -67,5 +67,6 @@
         </div>
 
     </div>
+    <script src="${url.resourcesPath}/js/custom.js"></script>
 
 </footer>

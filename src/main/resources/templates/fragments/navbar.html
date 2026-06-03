@@ -23,10 +23,6 @@
                 <a th:href="@{/oauth2/authorization/keycloak}">ACCEDI</a>
             </li>
 
-            <li sec:authorize="isAnonymous()">
-                <a th:href="@{/oauth2/authorization/keycloak}">REGISTRATI</a>
-            </li>
-
             <!-- LOGGATO -->
             <li sec:authorize="isAuthenticated()" class="dropdown">
 
@@ -87,11 +83,6 @@
         <a sec:authorize="isAnonymous()"
            th:href="@{/oauth2/authorization/keycloak}">
             ACCEDI
-        </a>
-
-        <a sec:authorize="isAnonymous()"
-           th:href="@{/oauth2/authorization/keycloak}">
-            REGISTRATI
         </a>
 
         <a sec:authorize="isAuthenticated()"
