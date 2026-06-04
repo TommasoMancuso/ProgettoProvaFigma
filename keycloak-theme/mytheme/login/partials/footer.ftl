@@ -1,4 +1,4 @@
-<footer id="contatti" class="footer">
+<footer id="contatti" class="footer mt-auto">
 
     <div class="container footer-grid">
 
@@ -44,13 +44,13 @@
 
     <hr>
 
-    <div class="container d-flex justify-content-center pt-2">
+    <div class="container d-flex justify-content-center pt-2 flex-wrap text-center">
 
-        <p class="px-3">
+        <p class="px-3 mb-0">
             © 2026 Race Tech Pro. Tutti i diritti riservati.
         </p>
 
-        <div class="d-flex px-3">
+        <div class="d-flex px-3 flex-wrap justify-content-center">
 
             <a class="px-2 underFooter" href="#">
                 Privacy policy
@@ -67,6 +67,5 @@
         </div>
 
     </div>
-    <script src="${url.resourcesPath}/js/custom.js"></script>
 
 </footer>

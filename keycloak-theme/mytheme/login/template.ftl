@@ -6,15 +6,16 @@
     <#include "partials/head.ftl">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <#include "partials/navbar.ftl">
 
-    <main>
+    <main class="flex-grow-1">
         <#nested>
     </main>
 
     <#include "partials/footer.ftl">
+
     <#include "partials/bootstrap.ftl">
 
     <script src="${url.resourcesPath}/js/custom.js"></script>

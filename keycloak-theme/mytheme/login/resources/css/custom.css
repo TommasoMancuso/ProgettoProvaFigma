@@ -177,6 +177,12 @@ textarea {
   padding: 50px 0 40px;
 }
 
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
 /* Rimuove gli eye icon duplicati Keycloak */
 .pf-c-form-control + button,
 .pf-v5-c-text-input-group__utilities,
@@ -209,7 +215,7 @@ input.btn-primary,
     box-shadow: none !important;
 }
 
-/* IMPORTANTISSIMO: elimina hover ovunque */
+/* elimina hover ovunque */
 .pf-v5-c-button:hover,
 .pf-v5-c-button.pf-m-primary:hover,
 .btn-primary:hover,
@@ -244,4 +250,11 @@ button[aria-label*="Password"],
 button[title*="password"],
 button[title*="Password"] {
     display: none !important;
+}
+
+/* Icona calendario bianca */
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.2);
+    opacity: 0.9;
 }

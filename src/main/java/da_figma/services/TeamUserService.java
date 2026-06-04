@@ -98,7 +98,7 @@ public class TeamUserService {
             return uploadToStorage(file);
         }
 
-        return "/images/default-user.png";
+        return "/images/default.png";
     }
 
     private String uploadToStorage(MultipartFile file) {

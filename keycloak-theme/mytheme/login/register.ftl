@@ -44,7 +44,7 @@
                                required>
                     </div>
 
-                    <!-- PASSWORD (KEYCLOAK MANAGED - NO CUSTOM UI) -->
+                    <!-- PASSWORD -->
                     <div class="col-md-6">
                         <label class="form-label">Password</label>
                         <input class="form-control"
@@ -62,13 +62,55 @@
                                required>
                     </div>
 
+                    <!-- ========================= -->
+                    <!-- USER PROFILE ATTRIBUTES -->
+                    <!-- ========================= -->
+
+                    <!-- IMPORTANTISSIMO:
+                         Qui NON inventiamo strutture FreeMarker.
+                         Keycloak User Profile viene gestito backend-side.
+                         Gli attributi custom funzionano SOLO via naming convention -->
+
+                    <!-- FIRST NAME -->
+                    <div class="col-md-6">
+                        <label class="form-label">Nome</label>
+                        <input class="form-control"
+                               type="text"
+                               name="firstName"
+                               value="${(register.formData.firstName!'')}">
+                    </div>
+
+                    <!-- LAST NAME -->
+                    <div class="col-md-6">
+                        <label class="form-label">Cognome</label>
+                        <input class="form-control"
+                               type="text"
+                               name="lastName"
+                               value="${(register.formData.lastName!'')}">
+                    </div>
+
+                    <!-- PHONE (CUSTOM ATTRIBUTE) -->
+                    <div class="col-md-6">
+                        <label class="form-label">Telefono</label>
+                        <input class="form-control"
+                               type="text"
+                               name="user.attributes.phone"
+                               value="${(register.formData['phone']!'')}">
+                    </div>
+
+                    <!-- BIRTHDATE (CUSTOM ATTRIBUTE) -->
+                    <div class="col-md-6">
+                        <label class="form-label">Data di nascita</label>
+                        <input class="form-control"
+                               type="date"
+                               name="user.attributes.birthDate"
+                               value="${(register.formData['birthDate']!'')}">
+                    </div>
+
                 </div>
 
-                <!-- SUBMIT -->
                 <div class="text-center py-4">
-
                     <input type="submit" class="btn-primary" value="REGISTRATI">
-
                 </div>
 
             </form>
