@@ -1,65 +1,42 @@
-<nav th:fragment="navbar"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-     class="navbar">
-
+<nav th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="navbar">
     <div class="container nav-content">
-
+        
         <!-- LOGO -->
         <div class="logo">
             <span class="logo-icon">🔧</span>
             <span>RACE TECH PRO</span>
         </div>
-
+        
         <!-- NAV LINKS -->
-        <ul class="nav-links">
-
+        <ul class="nav-links">            
             <li><a th:href="@{/}">HOME</a></li>
             <li><a th:href="@{/aboutus}">CHI SIAMO</a></li>
             <li><a th:href="@{/services}">SERVIZI</a></li>
             <li><a href="#contatti">CONTATTI</a></li>
-
+            
             <!-- NON LOGGATO -->
             <li sec:authorize="isAnonymous()">
                 <a th:href="@{/oauth2/authorization/keycloak}">ACCEDI</a>
             </li>
-
+            
             <!-- LOGGATO -->
-            <li sec:authorize="isAuthenticated()" class="dropdown">
-
-                <a class="dropdown-toggle"
-                   href="#"
-                   role="button"
-                   data-bs-toggle="dropdown">
-
+            <!-- Loggato bootstrap -->
+            <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Benvenuto&nbsp;
-
-                    <!-- DATI DAL DB (NON KEYCLOAK) -->
-                    <span th:text="${user.name}"></span>
-                    <span th:text="${user.surname}"></span>
-
-                    <span th:text="'(' + user.teamRole.name + ')'"></span>
-
+                            <span th:text="${#authentication.principal.attributes['given_name']}"></span>
                 </a>
-
                 <ul class="dropdown-menu">
-
+                    <li><a class="dropdown-item" href="#">Il tuo profilo</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item" th:href="@{/profile}">
-                            Profilo
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="dropdown-item"
-                           th:href="@{'http://localhost:8180/realms/dafigma/protocol/openid-connect/logout?post_logout_redirect_uri=http://localhost:8080/'}">
+                        <a class="dropdown-item" th:href="@{/logout}">
                             Logout
                         </a>
                     </li>
-
                 </ul>
-
             </li>
-
         </ul>
 
         <!-- CTA -->
@@ -69,32 +46,24 @@
         <button id="menu-toggle" class="mobile-toggle">
             ☰
         </button>
-
     </div>
 
     <!-- MOBILE MENU -->
     <div id="mobile-menu" class="mobile-menu hidden">
-
+        
         <a th:href="@{/}">HOME</a>
         <a th:href="@{/aboutus}">CHI SIAMO</a>
         <a th:href="@{/services}">SERVIZI</a>
-        <a href="#contatti">CONTATTI</a>
-
-        <a sec:authorize="isAnonymous()"
-           th:href="@{/oauth2/authorization/keycloak}">
+        <a href="#contatti">CONTATTI</a>        
+        <a sec:authorize="isAnonymous()" th:href="@{/oauth2/authorization/keycloak}">
             ACCEDI
         </a>
-
-        <a sec:authorize="isAuthenticated()"
-           th:href="@{/profile}">
+        <a sec:authorize="isAuthenticated()" th:href="@{/profile}">
             PROFILO
         </a>
-
         <a sec:authorize="isAuthenticated()"
-           th:href="@{'http://localhost:8180/realms/dafigma/protocol/openid-connect/logout?post_logout_redirect_uri=http://localhost:8080/'}">
+            th:href="@{'http://localhost:8180/realms/dafigma/protocol/openid-connect/logout?post_logout_redirect_uri=http://localhost:8080/'}">
             LOGOUT
         </a>
-
     </div>
-
 </nav>

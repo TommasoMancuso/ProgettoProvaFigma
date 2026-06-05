@@ -25,19 +25,4 @@ public class UserController {
         return "aboutus";
     }
 
-    // =========================
-    // AUTH PAGES (KEYCLOAK HANDLED)
-    // =========================
-
-    @GetMapping("/login")
-    public String login() {
-        // opzionale: redirect verso Keycloak login
-        return "auth/login";
-    }
-
-    @GetMapping("/register")
-    public String register() {
-        // opzionale: pagina che reindirizza a Keycloak registration
-        return "auth/register";
-    }
 }

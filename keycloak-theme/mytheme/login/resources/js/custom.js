@@ -75,3 +75,18 @@ function initFormValidationHighlight() {
   });
 
 }
+
+// VALIDAZIONE DATA DI NASCITA IN REGISTER
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("birthDate");
+    if (!input) return;
+
+    const today = new Date();
+    today.setDate(today.getDate() - 1);
+
+    const maxDate = today.toISOString().split("T")[0];
+
+    input.setAttribute("max", maxDate);
+
+});

@@ -8,41 +8,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserContextService {
 
-    // =========================
-    // AUTH UTILITY
-    // =========================
     private Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    // =========================
-    // KEYCLOAK ID (SUB)
-    // =========================
     public String getCurrentKeycloakId() {
 
         Authentication auth = getAuthentication();
-
-        if (auth == null || auth.getPrincipal() == null) {
-            throw new RuntimeException("Utente non autenticato");
-        }
 
         if (auth.getPrincipal() instanceof Jwt jwt) {
             return jwt.getSubject();
         }
 
-        throw new RuntimeException("Principal non valido per JWT Keycloak");
+        throw new RuntimeException("Utente non autenticato o JWT non valido");
     }
 
-    // =========================
-    // EMAIL UTENTE
-    // =========================
     public String getCurrentEmail() {
 
         Authentication auth = getAuthentication();
-
-        if (auth == null || auth.getPrincipal() == null) {
-            return null;
-        }
 
         if (auth.getPrincipal() instanceof Jwt jwt) {
             return jwt.getClaimAsString("email");
@@ -51,13 +34,8 @@ public class UserContextService {
         return null;
     }
 
-    // =========================
-    // CHECK LOGIN
-    // =========================
     public boolean isAuthenticated() {
-
         Authentication auth = getAuthentication();
-
         return auth != null && auth.isAuthenticated();
     }
 }

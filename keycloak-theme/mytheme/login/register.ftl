@@ -101,10 +101,12 @@
                     <!-- BIRTHDATE (CUSTOM ATTRIBUTE) -->
                     <div class="col-md-6">
                         <label class="form-label">Data di nascita</label>
+
                         <input class="form-control"
-                               type="date"
-                               name="user.attributes.birthDate"
-                               value="${(register.formData['birthDate']!'')}">
+                            type="date"
+                            name="user.attributes.birthDate"
+                            id="birthDate"
+                            required>
                     </div>
 
                 </div>

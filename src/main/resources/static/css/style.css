@@ -87,6 +87,28 @@ body {
 }
 
 /* =========================
+   DROPDOWN NAVBAR
+   ========================= */
+
+.dropdown-menu {
+  background-color: #111;
+  border: 1px solid #222;
+}
+
+.dropdown-item {
+  color: white;
+}
+
+.dropdown-item:hover {
+  background-color: #e63946;
+  color: white !important;
+}
+
+.dropdown-divider {
+  border-color: #333;
+}
+
+/* =========================
    BUTTONS
    ========================= */
 
