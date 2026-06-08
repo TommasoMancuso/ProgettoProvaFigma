@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>        
+        <div class="rtp-container">
+            <h1>CREA IL TUO <span>STAFF</span></h1>
+            <p>La pagina dove creare uno ad uno i preziosi membri del tuo team!</p>
+        </div>
+    </section>
+
+    <!-- FORM DI CREAZIONE STAFF -->
+     <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+                <form class="row g-3 p-4" method="post" th:action="@{/createStaff}" enctype="multipart/form-data">
+                    <div class="col-md-6">
+                        <label for="validationDefault01" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="validationDefault01" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault02" class="form-label">Cognome</label>
+                        <input type="text" class="form-control" id="validationDefault02" name="surname">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefaultUsername" class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="inputGroupPrepend2">@</span>
+                            <input type="email" class="form-control" id="email" aria-describedby="inputGroupPrepend2" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Cellulare</label>
+                        <input type="number" class="form-control" id="number" name="phone" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="birthDate" class="form-label">Data di nascita</label>
+                        <input type="date" class="form-control" id="birthDate" name="birthDate">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Profilo Instagram</label>
+                        <input type="url" class="form-control" id="url" name="instagram">
+                    </div>
+                    <div>
+                        <label class="form-label" for="floatingTextarea2">Descrizione</label>
+                        <textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="bio"></textarea>
+                    </div>
+                    <div>
+                        <label for="formFile" class="form-label">Inserisci immagine</label>
+                        <input class="form-control" type="file" id="formFile" name="imageFile">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>

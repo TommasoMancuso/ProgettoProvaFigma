@@ -54,6 +54,11 @@ public class TeamUser {
     @NotBlank
     private String phone;
 
+    @Column(nullable = false, length = 50)
+    @Size(max = 50)
+    @NotBlank
+    private String email;
+
     @Column(name = "birth_date", nullable = false)
     @NotNull
     private LocalDate birthDate;

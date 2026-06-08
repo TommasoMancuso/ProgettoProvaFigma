@@ -143,8 +143,8 @@ input,
 select,
 textarea {
   border: 2px solid #e63946 !important;
-  background: #111 !important;
-  color: white !important;
+  background: white !important;
+  color: #111 !important;
 }
 
 /* =========================

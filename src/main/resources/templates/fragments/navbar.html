@@ -27,7 +27,17 @@
                             <span th:text="${#authentication.principal.attributes['given_name']}"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Il tuo profilo</a></li>
+                    <!-- Menù per ADMIN -->
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a class="dropdown-item" th:href="@{/admin/staff}">
+                            Il tuo staff
+                        </a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a class="dropdown-item" th:href="@{/admin/bikes}">
+                            Le tue moto
+                        </a>
+                    </li>
                     <li><a class="dropdown-item" href="#">Another action</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
@@ -35,6 +45,7 @@
                             Logout
                         </a>
                     </li>
+                    <!-- Menù per USER -->
                 </ul>
             </li>
         </ul>
@@ -58,9 +69,11 @@
         <a sec:authorize="isAnonymous()" th:href="@{/oauth2/authorization/keycloak}">
             ACCEDI
         </a>
-        <a sec:authorize="isAuthenticated()" th:href="@{/profile}">
-            PROFILO
-        </a>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a class="dropdown-item" th:href="@{/admin/dashboard}">
+                Admin Dashboard
+            </a>
+        </li>
         <a sec:authorize="isAuthenticated()"
             th:href="@{'http://localhost:8180/realms/dafigma/protocol/openid-connect/logout?post_logout_redirect_uri=http://localhost:8080/'}">
             LOGOUT

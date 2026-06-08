@@ -60,6 +60,9 @@ CREATE TABLE team_users (
     surname VARCHAR(50) NOT NULL,
 
     phone VARCHAR(20) NOT NULL,
+
+    email VARCHAR(50) NOT NULL,
+    
     birth_date DATE NOT NULL,
 
     bio TEXT,
