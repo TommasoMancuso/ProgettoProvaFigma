@@ -1,15 +1,52 @@
 package da_figma.config;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
+    @Bean
+    public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
+
+        OidcUserService delegate = new OidcUserService();
+
+        return userRequest -> {
+            OidcUser oidcUser = delegate.loadUser(userRequest);
+
+            Map<String, Object> realmAccess =
+                    (Map<String, Object>) oidcUser.getAttributes().get("realm_access");
+
+            List<String> roles = realmAccess == null
+                    ? List.of()
+                    : (List<String>) realmAccess.get("roles");
+
+            Set<GrantedAuthority> mappedAuthorities = new HashSet<>(oidcUser.getAuthorities());
+
+            for (String role : roles) {
+                mappedAuthorities.add(new SimpleGrantedAuthority(role));
+            }
+
+            return new DefaultOidcUser(mappedAuthorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
+        };
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -17,10 +54,10 @@ public class SecurityConfig {
             ClientRegistrationRepository clientRegistrationRepository
     ) throws Exception {
 
-        OidcClientInitiatedLogoutSuccessHandler logoutSuccessHandler =
+        OidcClientInitiatedLogoutSuccessHandler logoutHandler =
                 new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
 
-        logoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/");
+        logoutHandler.setPostLogoutRedirectUri("{baseUrl}/");
 
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -34,7 +71,9 @@ public class SecurityConfig {
                     "/js/**",
                     "/images/**"
                 ).permitAll()
+
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+
                 .anyRequest().authenticated()
             )
 
@@ -43,7 +82,7 @@ public class SecurityConfig {
             )
 
             .logout(logout -> logout
-                .logoutSuccessHandler(logoutSuccessHandler)
+                .logoutSuccessHandler(logoutHandler)
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
