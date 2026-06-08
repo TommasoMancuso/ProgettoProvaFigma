@@ -481,6 +481,10 @@ form{
   border: 2px solid #e63946;
 }
 
+.form-select{
+  border: 2px solid #e63946;
+}
+
 /* =========================
    MOBILE
    ========================= */

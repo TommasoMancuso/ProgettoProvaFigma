@@ -15,24 +15,29 @@ public class TeamUserService {
 
     private final TeamUserRepository userRepository;
     private final TeamRoleRepository roleRepository;
+    private final SupabaseStorageService storageService;
 
     public TeamUserService(TeamUserRepository userRepository,
-                           TeamRoleRepository roleRepository) {
+                           TeamRoleRepository roleRepository,
+                           SupabaseStorageService storageService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.storageService = storageService;
     }
 
     // =========================
-    // CREATE STAFF (ADMIN ONLY)
+    // CREATE STAFF
     // =========================
     @Transactional
-    public TeamUser createTeamUser(TeamUser user, MultipartFile imageFile) {
+    public TeamUser createTeamUser(TeamUser user, Long roleId, MultipartFile imageFile) {
 
-        // ruolo obbligatorio scelto dall'admin
-        if (user.getTeamRole() == null) {
-            throw new RuntimeException("Ruolo staff obbligatorio");
-        }
+        // assegna ruolo
+        user.setTeamRole(
+                roleRepository.findById(roleId)
+                        .orElseThrow(() -> new RuntimeException("Ruolo non trovato"))
+        );
 
+        // immagine
         user.setProfileImage(resolveProfileImage(imageFile));
 
         return userRepository.save(user);
@@ -42,7 +47,7 @@ public class TeamUserService {
     // UPDATE STAFF
     // =========================
     @Transactional
-    public TeamUser updateTeamUser(Long id, TeamUser updated, MultipartFile imageFile) {
+    public TeamUser updateTeamUser(Long id, TeamUser updated, Long roleId, MultipartFile imageFile) {
 
         TeamUser existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TeamUser non trovato"));
@@ -53,10 +58,14 @@ public class TeamUserService {
         existing.setBirthDate(updated.getBirthDate());
         existing.setBio(updated.getBio());
         existing.setInstagram(updated.getInstagram());
-        existing.setTeamRole(updated.getTeamRole());
+
+        existing.setTeamRole(
+                roleRepository.findById(roleId)
+                        .orElseThrow(() -> new RuntimeException("Ruolo non trovato"))
+        );
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            existing.setProfileImage(uploadToStorage(imageFile));
+            existing.setProfileImage(storageService.uploadFile(imageFile));
         }
 
         return userRepository.save(existing);
@@ -79,33 +88,28 @@ public class TeamUserService {
     // READ
     // =========================
     public TeamUser getUserById(Long id) {
-
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TeamUser non trovato"));
     }
 
     public List<TeamUser> getAllUsers() {
-
         return userRepository.findAll();
     }
 
     // =========================
-    // IMMAGINI
+    // IMAGE DEFAULT LOGIC
     // =========================
     private String resolveProfileImage(MultipartFile file) {
 
         if (file != null && !file.isEmpty()) {
-            return uploadToStorage(file);
+            return storageService.uploadFile(file);
         }
 
-        return "/images/default.png";
+        // fallback consigliato (nel bucket Supabase)
+        return supabasePublicUrl() + "/default-profile.png";
     }
 
-    private String uploadToStorage(MultipartFile file) {
-
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-        // FUTURO: storage reale (Supabase / S3)
-        return "https://YOUR_BUCKET_URL/" + fileName;
+    private String supabasePublicUrl() {
+        return "https://eyyrktpxarucykgzhaiy.supabase.co/storage/v1/object/public/daFigma";
     }
 }
