@@ -15,11 +15,9 @@ import lombok.Setter;
 public class TeamUserDto {
 
     private Long id;
-
-    private String keycloakId; // opzionale
-
     private String name;
     private String surname;
+    private String email;
 
     private String phone;
     private LocalDate birthDate;
@@ -29,4 +27,8 @@ public class TeamUserDto {
     private String instagram;
 
     private TeamRole teamRole;
+
+    public String getFullName() {
+        return String.format("%s %s", name, surname).trim();
+    }
 }
