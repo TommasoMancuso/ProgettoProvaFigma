@@ -29,7 +29,7 @@ public class AdminController {
 
          model.addAttribute("users", teamUserService.getAllUsers());
 
-        return "admin/staff";
+        return "admin/staff/staff";
     }
 
     // Rotta per pagina create staff
@@ -39,7 +39,7 @@ public class AdminController {
         model.addAttribute("roles", roleService.findAll());
         model.addAttribute("teamUser", new TeamUser());
 
-        return "admin/newStaff";
+        return "admin/staff/newStaff";
     }
 
     // Rotta per creazione nuovo membro staff
@@ -50,7 +50,7 @@ public class AdminController {
 
         teamUserService.createTeamUser(user, roleId, imageFile);
 
-        return "redirect:/admin/staff";
+        return "redirect:/admin/staff/staff";
     }
 
     // Rotta pagina di dettaglio
@@ -61,13 +61,45 @@ public class AdminController {
 
         model.addAttribute("user", user);
 
-        return "admin/staffDetail";
+        return "admin/staff/staffDetail";
+    }
+
+    // Rotta per form di modifica
+    @GetMapping("/admin/staff/editUser/{id}")
+    public String editUser(@PathVariable Long id, Model model) {
+
+        TeamUser user = teamUserService.getUserById(id);
+
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.findAll());
+
+        return "admin/staff/editUser";
+    }
+
+    // Rotta per salvare modifica
+    @PostMapping("/admin/staff/update/{id}")
+    public String updateUser(@PathVariable Long id,
+                            @ModelAttribute TeamUser updatedUser,
+                            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        teamUserService.updateTeamUser(id, updatedUser, image);
+
+        return "redirect:/admin/staff";
+    }
+
+    // Rotta cancellazione utente
+    @GetMapping("/admin/staff/delete/{id}")
+    public String deleteUser(@PathVariable Long id) {
+
+        teamUserService.deleteTeamUser(id);
+
+        return "redirect:/admin/staff";
     }
 
     // MOTO
     @GetMapping("/admin/bikes")
     public String adminMoto(){
-        return "admin/bikes";
+        return "admin/bikes/bikes";
     }
 
 }

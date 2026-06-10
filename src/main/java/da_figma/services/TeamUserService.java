@@ -51,19 +51,17 @@ public class TeamUserService {
 
         if (!existing.getEmail().equals(updated.getEmail())
                 && userRepository.existsByEmail(updated.getEmail())) {
-
             throw new RuntimeException("Email già registrata");
         }
 
         if (!existing.getPhone().equals(updated.getPhone())
                 && userRepository.existsByPhone(updated.getPhone())) {
-
             throw new RuntimeException("Numero di telefono già registrato");
         }
     }
 
     // =========================
-    // CREATE STAFF
+    // CREATE
     // =========================
     @Transactional
     public TeamUser createTeamUser(TeamUser user,
@@ -83,12 +81,11 @@ public class TeamUserService {
     }
 
     // =========================
-    // UPDATE STAFF
+    // UPDATE (QUESTO È QUELLO GIUSTO)
     // =========================
     @Transactional
     public TeamUser updateTeamUser(Long id,
                                    TeamUser updated,
-                                   Long roleId,
                                    MultipartFile imageFile) {
 
         TeamUser existing = userRepository.findById(id)
@@ -104,39 +101,39 @@ public class TeamUserService {
         existing.setBio(updated.getBio());
         existing.setInstagram(updated.getInstagram());
 
-        existing.setTeamRole(
-                roleRepository.findById(roleId)
-                        .orElseThrow(() -> new RuntimeException("Ruolo non trovato"))
-        );
+        // ruolo aggiornabile direttamente da entity (se presente)
+        existing.setTeamRole(updated.getTeamRole());
 
+        // immagine opzionale
         if (imageFile != null && !imageFile.isEmpty()) {
-
-            existing.setProfileImage(
-                    storageService.uploadFile(imageFile)
-            );
+            existing.setProfileImage(storageService.uploadFile(imageFile));
         }
 
         return userRepository.save(existing);
     }
 
     // =========================
-    // DELETE STAFF
+    // DELETE
     // =========================
     @Transactional
     public void deleteTeamUser(Long id) {
 
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("TeamUser non trovato");
+        TeamUser user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TeamUser non trovato"));
+
+        // 1. elimino immagine da Supabase (se esiste)
+        if (user.getProfileImage() != null && !user.getProfileImage().isBlank()) {
+            storageService.deleteFile(user.getProfileImage());
         }
 
-        userRepository.deleteById(id);
+        // 2. elimino record DB
+        userRepository.delete(user);
     }
 
     // =========================
     // READ
     // =========================
     public TeamUser getUserById(Long id) {
-
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TeamUser non trovato"));
     }
@@ -146,13 +143,11 @@ public class TeamUserService {
     }
 
     public TeamUser getUserByEmail(String email) {
-
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
 
     public TeamUser getUserByPhone(String phone) {
-
         return userRepository.findByPhone(phone)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
@@ -166,7 +161,7 @@ public class TeamUserService {
     }
 
     // =========================
-    // IMAGE LOGIC
+    // IMAGE DEFAULT LOGIC
     // =========================
     private String resolveProfileImage(MultipartFile file) {
 

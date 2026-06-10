@@ -9,16 +9,13 @@
     <section class="rtp-hero">
         <div class="rtp-hero-overlay"></div>        
         <div class="rtp-container">
-            <h1>DASHBOARD DELL' <span>AMMINISTRATORE</span></h1>
+            <h1>AMMINISTRA IL  <span>TUO STAFF</span></h1>
             <p>La pagina progettata appositamente per permetterti di gestire al meglio il tuo team.</p>
         </div>
     </section>
 
     <!-- MEMBRI DEL TEAM -->
     <section class="rtp-section" id="membri staff">
-        <div class="rtp-container">
-            <h2 class="text-center p-5">Il tuo staff</h2>
-        </div>
         <!-- TABELLA -->
         <div class="container">
             <div class="row justify-content-center">
@@ -40,13 +37,13 @@
                                 <td th:text="${user.birthDate}"></td>
                                 <td th:text="${user.phone}"></td>
                                 <td class="text-end">
-                                    <a th:href="@{/admin/staff/detail/{id}(id=${user.id})}" class="btn btn-custom p-2">
+                                    <a th:href="@{/admin/staff/staff/detail/{id}(id=${user.id})}" class="btn btn-custom p-2">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/operations/career/user/update/{id}(id=${user.id})}" class="btn btn-warning p-2">
+                                    <a th:href="@{/admin/staff/editUser/{id}(id=${user.id})}" class="btn btn-warning p-2">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
-                                    <a th:href="@{/operations/career/user/delete/{id}(id=${user.id})}" class="btn btn-danger p-2">
+                                    <a th:href="@{/admin/staff/delete/{id}(id=${user.id})}" class="btn btn-danger p-2" onclick="return confirm('Sei sicuro di voler eliminare questo membro?')">
                                         <i class="fa-solid fa-trash"></i>
                                     </a>
                                 </td>

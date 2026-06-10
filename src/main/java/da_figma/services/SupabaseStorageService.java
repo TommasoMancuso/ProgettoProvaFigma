@@ -71,4 +71,62 @@ public class SupabaseStorageService {
             throw new RuntimeException("Errore upload file", e);
         }
     }
+
+    // CANCELLAZIONE FILE CON CANCELLAZIONE UTENTE
+    public void deleteFile(String publicUrl) {
+
+    if (publicUrl == null || publicUrl.isBlank()) {
+        return;
+    }
+
+    try {
+        // =========================
+        // 1. Estrai path del file
+        // =========================
+        // esempio URL:
+        // https://xyz.supabase.co/storage/v1/object/public/bucketName/folder/image.jpg
+
+        String basePath = "/storage/v1/object/public/" + bucket + "/";
+
+        int index = publicUrl.indexOf(basePath);
+
+        if (index == -1) {
+            throw new RuntimeException("URL Supabase non valido: " + publicUrl);
+        }
+
+        String filePath = publicUrl.substring(index + basePath.length());
+
+        // =========================
+        // 2. Costruisci URL DELETE
+        // =========================
+        String deleteUrl =
+                supabaseUrl +
+                "/storage/v1/object/" +
+                bucket +
+                "/" +
+                filePath;
+
+        // =========================
+        // 3. Headers (SERVICE ROLE KEY)
+        // =========================
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + supabaseKey);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        // =========================
+        // 4. DELETE request
+        // =========================
+        restTemplate.exchange(
+                deleteUrl,
+                HttpMethod.DELETE,
+                request,
+                Void.class
+        );
+
+    } catch (Exception e) {
+        throw new RuntimeException("Errore eliminazione file Supabase: " + e.getMessage(), e);
+    }
+}
+
 }
