@@ -93,4 +93,8 @@ public class TeamUser {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public String getFullName() {
+        return name + " " + surname;
+    }
 }

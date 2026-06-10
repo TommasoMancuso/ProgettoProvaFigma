@@ -18,143 +18,37 @@
 
     <!-- Staff members -->
 
-    <!-- Staff 1 -->
-    <section id="chi-siamo" class="section dark-section">
-        <div class="container grid-two">
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1767480351161-c9eca1214368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Workshop"
-                class="section-image"
-                />
+    <div th:each="user, stat : ${users}">
+        <!-- FOTO SINISTRA -->
+        <section th:if="${stat.index % 2 == 0}" class="section dark-section">
+            <div class="container grid-two">
+                <div>
+                    <img th:src="${user.profileImage}" class="section-image"/>
+                </div>
+                <div>
+                    <span class="badge" th:text="${user.fullName}"></span>
+                    <h2 th:text="${user.teamRole.name}"></h2>
+                    <p th:text="${user.bio}"></p>
+                </div>
             </div>
-            <div> 
-                <span class="badge">
-                    Tommaso Rossi
-                </span>
-                <h2>
-                    Fondatore e team manager
-                </h2>
-                <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Recusandae quo omnis, dolore, incidunt fugit ut accusamus quibusdam eaque praesentium dolorum, quis facilis expedita ipsum placeat obcaecati perferendis dolores possimus officia?
-                </p>
+        </section>
+
+        <!-- FOTO DESTRA -->
+        <section th:if="${stat.index % 2 != 0}" class="section dark-section">
+            <div class="container grid-two">
+                <div>
+                    <span class="badge" th:text="${user.fullName}"></span>
+                    <h2 th:text="${user.teamRole.name}"></h2>
+                    <p th:text="${user.bio}"></p>
+                </div>
+                <div>
+                    <img th:src="${user.profileImage}" class="section-image"/>
+                </div>
             </div>
-        </div>     
-    </section>
+        </section>
+    </div>
     
-    <!-- Staff 2 -->
-    <section id="servizi" class="section">
-        <div class="container grid-two">
-            <div>               
-                <span class="badge">
-                    Marco Ferri
-                </span>               
-                <h2>
-                    Ingegnere Capo tecnico
-                </h2>               
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic quisquam debitis aliquam fugiat esse omnis quae delectus expedita aliquid ducimus alias, officia distinctio itaque, provident sequi dolor! Quod, natus est.</p>
-            </div>           
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Servizi"
-                class="section-image"/>
-            </div>          
-        </div>        
-    </section>
-
-    <!-- Staff 3 -->
-    <section id="chi-siamo" class="section dark-section">
-        <div class="container grid-two">
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1767480351161-c9eca1214368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Workshop"
-                class="section-image"
-                />
-            </div>
-            <div> 
-                <span class="badge">
-                    Stefano Virgilio
-                </span>
-                <h2>
-                    Tecnico Sospensionista
-                </h2>
-                <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Recusandae quo omnis, dolore, incidunt fugit ut accusamus quibusdam eaque praesentium dolorum, quis facilis expedita ipsum placeat obcaecati perferendis dolores possimus officia?
-                </p>
-            </div>
-        </div>     
-    </section>
     
-    <!-- Staff 4 -->
-    <section id="servizi" class="section">
-        <div class="container grid-two">
-            <div>               
-                <span class="badge">
-                    Enrico Marino
-                </span>               
-                <h2>
-                    Ingegnere Telemetrista
-                </h2>               
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic quisquam debitis aliquam fugiat esse omnis quae delectus expedita aliquid ducimus alias, officia distinctio itaque, provident sequi dolor! Quod, natus est.</p>
-            </div>           
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Servizi"
-                class="section-image"/>
-            </div>          
-        </div>        
-    </section>
-
-    <!-- Staff 5 -->
-    <section id="chi-siamo" class="section dark-section">
-        <div class="container grid-two">
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1767480351161-c9eca1214368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Workshop"
-                class="section-image"
-                />
-            </div>
-            <div> 
-                <span class="badge">
-                    Dario Presti
-                </span>
-                <h2>
-                    Ingegnere Elettronico
-                </h2>
-                <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Recusandae quo omnis, dolore, incidunt fugit ut accusamus quibusdam eaque praesentium dolorum, quis facilis expedita ipsum placeat obcaecati perferendis dolores possimus officia?
-                </p>
-            </div>
-        </div>     
-    </section>
-    
-    <!-- Staff 6 -->
-    <section id="servizi" class="section">
-        <div class="container grid-two">
-            <div>               
-                <span class="badge">
-                    Salvatore Rossi
-                </span>               
-                <h2>
-                    Ingegnere motorista
-                </h2>               
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic quisquam debitis aliquam fugiat esse omnis quae delectus expedita aliquid ducimus alias, officia distinctio itaque, provident sequi dolor! Quod, natus est.</p>
-            </div>           
-            <div>
-                <img
-                src="https://images.unsplash.com/photo-1758887698531-15c11a7f3dbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Servizi"
-                class="section-image"/>
-            </div>          
-        </div>        
-    </section>
-
-
-
     <footer th:replace="~{fragments/footer :: footer}"></footer>
 
     <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>

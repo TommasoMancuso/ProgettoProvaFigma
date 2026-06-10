@@ -17,33 +17,33 @@
      <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-12 col-md-9">
-                <form class="row g-3 p-4" method="post" th:action="@{/createStaff}" enctype="multipart/form-data">
+                <form th:object="${teamUser}" class="row g-3 p-4" method="post" th:action="@{/createStaff}" enctype="multipart/form-data">
                     <div class="col-md-4">
                         <label for="validationDefault01" class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="validationDefault01" name="name" required>
+                        <input type="text" class="form-control" id="validationDefault01" th:field="*{name}" required>
                     </div>
                     <div class="col-md-4">
                         <label for="validationDefault02" class="form-label">Cognome</label>
-                        <input type="text" class="form-control" id="validationDefault02" name="surname">
+                        <input type="text" class="form-control" id="validationDefault02" th:field="*{surname}">
                     </div>
                     <div class="col-md-4">
                         <label for="validationDefaultUsername" class="form-label">Email</label>
                         <div class="input-group">
                             <span class="input-group-text" id="inputGroupPrepend2">@</span>
-                            <input type="email" class="form-control" id="email" aria-describedby="inputGroupPrepend2" name="email" required>
+                            <input type="email" class="form-control" id="email" aria-describedby="inputGroupPrepend2" th:field="*{email}" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label for="validationDefault03" class="form-label">Cellulare</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" required>
                     </div>
                     <div class="col-md-6">
                         <label for="birthDate" class="form-label">Data di nascita</label>
-                        <input type="date" class="form-control" id="birthDate" name="birthDate">
+                        <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}">
                     </div>
                     <div class="col-md-6">
                         <label for="validationDefault03" class="form-label">Profilo Instagram</label>
-                        <input type="url" class="form-control" id="url" name="instagram">
+                        <input type="url" class="form-control" id="url" th:field="*{instagram}">
                     </div>
                     <div class="col-md-6">
                         <label for="teamRole" class="form-label">Ruolo nel Team</label>
@@ -55,11 +55,17 @@
                     </div>
                     <div>
                         <label class="form-label" for="floatingTextarea2">Descrizione</label>
-                        <textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="bio"></textarea>
+                        <textarea class="form-control" id="floatingTextarea2" style="height: 100px" th:field="*{bio}"></textarea>
                     </div>
                     <div>
                         <label for="formFile" class="form-label">Inserisci immagine</label>
-                        <input class="form-control" type="file" id="formFile" name="imageFile">
+                        <input class="form-control" type="file" id="formFile" name="imageFile" accept="image/*">
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit"
+                                class="btn-primary px-5">
+                            Crea membro staff
+                        </button>
                     </div>
                 </form>
             </div>

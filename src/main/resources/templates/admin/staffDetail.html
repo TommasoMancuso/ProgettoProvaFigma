@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- HERO -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1 th:text="${user.fullName}"></h1>
+            <h2 class="fs-4"
+               th:text="${user.teamRole.name}">
+            </h2>
+        </div>
+    </section>
+
+    <!-- DETTAGLI STAFF -->
+    <section class="container py-5">
+        <div class="row align-items-center g-5">
+
+            <!-- FOTO -->
+            <div class="col-12 col-md-6 text-center">
+                <img th:src="${user.profileImage}"
+                     alt="Foto profilo"
+                     class="img-fluid section-image rounded shadow">
+            </div>
+
+            <!-- DATI -->
+            <div class="col-12 col-md-6">
+                <div class="card bg-dark text-white staffDetailCard border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Informazioni personali</h3>
+                        <p>
+                            <strong>Email:</strong>
+                            <span th:text="${user.email}"></span>
+                        </p>
+                        <p>
+                            <strong>Cellulare:</strong>
+                            <span th:text="${user.phone}"></span>
+                        </p>
+                        <p>
+                            <strong>Data di nascita:</strong>
+                            <span th:text="${user.birthDate}"></span>
+                        </p>
+                        <p>
+                            <strong>Ruolo:</strong>
+                            <span th:text="${user.teamRole.name}"></span>
+                        </p>
+                        <p th:if="${user.instagram != null and !user.instagram.isEmpty()}" class="d-flex align-items-center gap-2">
+                            <strong>Instagram:</strong>
+                            <a th:href="${user.instagram}"
+                               target="_blank"
+                               class="text-danger text-decoration-none ms-2">
+                                <i class="fa-brands fa-instagram fs-4"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BIO -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card bg-dark text-white border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-3">Biografia</h3>
+                        <p th:text="${user.bio}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AZIONI -->
+        <div class="text-center mt-5">           
+            <a th:href="@{/operations/career/user/update/{id}(id=${user.id})}"
+            class="btn btn-warning me-3">
+                <i class="fa-solid fa-pen"></i>
+                Modifica
+            </a>
+            <a th:href="@{/operations/career/user/delete/{id}(id=${user.id})}"
+            class="btn btn-danger me-3">
+                <i class="fa-solid fa-trash"></i>
+                Elimina
+            </a>
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="history.back()">
+
+                <i class="fa-solid fa-arrow-left"></i>
+                Torna indietro
+            </button>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+</html>

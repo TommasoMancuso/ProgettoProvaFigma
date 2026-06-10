@@ -264,9 +264,13 @@ body {
 .section-image {
   max-height: 340px;
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 12px;
   display: block;
+}
+
+.staffDetailCard{
+  height: 340px;
 }
 
 .stats {
@@ -431,6 +435,11 @@ body {
 
 .btnCustom:hover{
   border: 1px solid whitesmoke;
+}
+
+.btn-custom{
+  background-color: lightblue;
+  color: white;
 }
 
 /* =========================
