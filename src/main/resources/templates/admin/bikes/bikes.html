@@ -5,11 +5,16 @@
 
     <nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>        
+        <div class="rtp-container">
+            <h1>GESTISCI LE TUE <span>MOTO</span></h1>
+            <p>Da qui potrai visualizzare, creare, modificare ed eliminare le tue moto.</p>
+        </div>
+    </section>
+
         <!-- MOTO DEL TEAM -->
     <section class="rtp-section" id="membri staff">
-        <div class="rtp-container">
-            <h2 class="text-center p-5">Le tue moto</h2>
-        </div>
         <!-- TABELLA -->
         <div class="container">
             <div class="row justify-content-center">
@@ -38,7 +43,7 @@
                             </tr>
                         </tbody>
                         <div class="p-2">
-                            <a th:href="@{/categories/create}" class="btn-primary text-decoration-none">Aggiungi moto</a>
+                            <a th:href="@{/admin/bikes/newBike}" class="btn-primary text-decoration-none">Aggiungi moto</a>
                         </div>
                     </table>
                 </div>

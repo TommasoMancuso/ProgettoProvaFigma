@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import da_figma.enums.BikeStatus;
 import da_figma.models.Bike;
 import jakarta.persistence.LockModeType;
 
@@ -41,6 +42,12 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             @Param("endDate") LocalDate endDate
     );
 
+    // RICERCA MOTO ARCHIVIATE O NO
+
+    List<Bike> findByStatusNot(BikeStatus status);
+
+    List<Bike> findByStatus(BikeStatus status);
+
     // =========================
     // CHECK SINGOLA BIKE (USATA DAL SERVICE)
     // =========================
@@ -58,4 +65,7 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // RICERCA PER TELAIO
+    boolean existsByChassisNumber(String chassisNumber);
 }

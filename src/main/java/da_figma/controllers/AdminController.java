@@ -96,10 +96,6 @@ public class AdminController {
         return "redirect:/admin/staff";
     }
 
-    // MOTO
-    @GetMapping("/admin/bikes")
-    public String adminMoto(){
-        return "admin/bikes/bikes";
-    }
+    
 
 }

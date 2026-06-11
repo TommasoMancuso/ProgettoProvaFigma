@@ -26,6 +26,7 @@ CREATE TABLE bikes (
     model VARCHAR(50) NOT NULL,
     year INT NOT NULL,
     category VARCHAR(50) NOT NULL,
+    bike_image VARCHAR(255),
 
     chassis_number VARCHAR(255) NOT NULL UNIQUE,
 

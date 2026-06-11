@@ -13,10 +13,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,14 +55,24 @@ public class Bike {
     @Column(nullable = false, length = 50)
     private BikeCategory category;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "bike_image", length = 255)
+    private String bikeImage;
+
     // =========================
     // TECHNICAL INFO
     // =========================
 
     @Column(name = "chassis_number", nullable = false, unique = true)
+    @NotBlank
     private String chassisNumber;
 
     @Column(name = "current_km", nullable = false)
+    @NotNull
+    @PositiveOrZero
     private Long currentKm = 0L;
 
     // =========================

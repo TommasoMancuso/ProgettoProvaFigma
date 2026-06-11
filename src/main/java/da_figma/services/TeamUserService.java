@@ -81,7 +81,7 @@ public class TeamUserService {
     }
 
     // =========================
-    // UPDATE (QUESTO È QUELLO GIUSTO)
+    // UPDATE 
     // =========================
     @Transactional
     public TeamUser updateTeamUser(Long id,
