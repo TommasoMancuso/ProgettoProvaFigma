@@ -10,9 +10,7 @@
         <div class="rtp-hero-overlay"></div>
         <div class="rtp-container">
             <h1 th:text="${user.fullName}"></h1>
-            <h2 class="fs-4"
-               th:text="${user.teamRole.name}">
-            </h2>
+            <h2 class="fs-4" th:text="${user.teamRole.name}"></h2>
         </div>
     </section>
 
@@ -22,9 +20,7 @@
 
             <!-- FOTO -->
             <div class="col-12 col-md-6 text-center">
-                <img th:src="${user.profileImage}"
-                     alt="Foto profilo"
-                     class="img-fluid section-image rounded shadow">
+                <img th:src="${user.profileImage}" alt="Foto profilo" class="img-fluid section-image rounded shadow">
             </div>
 
             <!-- DATI -->
@@ -50,9 +46,7 @@
                         </p>
                         <p th:if="${user.instagram != null and !user.instagram.isEmpty()}" class="d-flex align-items-center gap-2">
                             <strong>Instagram:</strong>
-                            <a th:href="${user.instagram}"
-                               target="_blank"
-                               class="text-danger text-decoration-none ms-2">
+                            <a th:href="${user.instagram}" target="_blank" class="text-danger text-decoration-none ms-2">
                                 <i class="fa-brands fa-instagram fs-4"></i>
                             </a>
                         </p>
@@ -84,10 +78,7 @@
                 <i class="fa-solid fa-trash"></i>
                 Elimina
             </a>
-            <button type="button"
-                    class="btn btn-secondary"
-                    onclick="history.back()">
-
+            <button type="button" class="btn btn-secondary" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i>
                 Torna indietro
             </button>

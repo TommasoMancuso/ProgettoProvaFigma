@@ -37,10 +37,10 @@
                                 <td th:text="${user.birthDate}"></td>
                                 <td th:text="${user.phone}"></td>
                                 <td class="text-end">
-                                    <a th:href="@{/admin/staff/staff/detail/{id}(id=${user.id})}" class="btn btn-custom p-2">
+                                    <a th:href="@{/admin/staff/detail/{id}(id=${user.id})}" class="btn btn-custom p-2">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/admin/staff/editUser/{id}(id=${user.id})}" class="btn btn-warning p-2">
+                                    <a th:href="@{/admin/staff/edit/{id}(id=${user.id})}" class="btn btn-warning p-2">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
                                     <a th:href="@{/admin/staff/delete/{id}(id=${user.id})}" class="btn btn-danger p-2" onclick="return confirm('Sei sicuro di voler eliminare questo membro?')">

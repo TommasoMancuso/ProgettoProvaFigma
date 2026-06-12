@@ -65,7 +65,7 @@ public class AdminController {
     }
 
     // Rotta per form di modifica
-    @GetMapping("/admin/staff/editUser/{id}")
+    @GetMapping("/admin/staff/edit/{id}")
     public String editUser(@PathVariable Long id, Model model) {
 
         TeamUser user = teamUserService.getUserById(id);

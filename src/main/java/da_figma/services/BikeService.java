@@ -24,6 +24,10 @@ public class BikeService {
     @Value("${supabase.public-url}")
     private String supabasePublicUrl;
 
+    public List<Bike> findAll() {
+        return bikeRepository.findAll();
+    }
+
     // =========================
     // LISTA MOTO ATTIVE
     // =========================
@@ -76,6 +80,7 @@ public class BikeService {
         bike.setChassisNumber(dto.getChassisNumber());
         bike.setCurrentKm(dto.getCurrentKm());
         bike.setDailyPrice(dto.getDailyPrice());
+        bike.setDescription(dto.getDescription());
 
         bike.setStatus(BikeStatus.AVAILABLE);
 

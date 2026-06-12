@@ -60,10 +60,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Immagine attuale</label><br>
-                            <img th:if="${user.profileImage != null}"
-                                th:src="${user.profileImage}"
-                                class="img-thumbnail"
-                                style="max-width: 200px;">
+                            <img th:if="${user.profileImage != null}" th:src="${user.profileImage}"
+                                class="img-thumbnail" style="max-width: 200px;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Cambia immagine (opzionale)</label>

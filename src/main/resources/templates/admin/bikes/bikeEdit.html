@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>        
+        <div class="rtp-container">
+            <h1>CREA LE TUE <span>MOTO</span></h1>
+            <p>La pagina dove dare vita al tuo parco moto!</p>
+        </div>
+    </section>
+
+    <!-- FORM DI MODIFICA MOTO -->
+     <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+                <form th:object="${bike}" class="row g-3 p-4" method="post" th:action="@{/admin/bikes/update/{id}(id=${bike.id})}" enctype="multipart/form-data">
+                    <div class="col-md-4">
+                        <label for="validationDefault01" class="form-label">Marchio</label>
+                        <input type="text" class="form-control" id="validationDefault01" th:field="*{brand}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefault02" class="form-label">Modello</label>
+                        <input type="text" class="form-control" id="validationDefault02" th:field="*{model}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Anno</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" aria-describedby="inputGroupPrepend2" th:field="*{year}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="birthDate" class="form-label">Numero di telaio</label>
+                        <input type="number" class="form-control" th:field="*{chassisNumber}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="validationDefault03" class="form-label">Chilometri</label>
+                        <input type="number" class="form-control" th:field="*{currentKm}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="teamRole" class="form-label">Categoria</label>
+                        <select class="form-select role-select" id="teamRole" th:field="*{category}" required>
+                            <option value="" selected>Seleziona una categoria</option>
+                            <option th:each="category : ${categories}" th:value="${category}"
+                                    th:text="${category}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="birthDate" class="form-label">Prezzo noleggio giornaliero</label>
+                        <input type="number" min="0" step="0.01" class="form-control" th:field="*{dailyPrice}">
+                    </div>           
+                    <div>
+                        <label class="form-label" for="floatingTextarea2">Descrizione</label>
+                        <textarea class="form-control" id="floatingTextarea2" style="height: 100px" th:field="*{description}"></textarea>
+                    </div>       
+                    <div>
+                        <label class="form-label">Immagine attuale</label><br>
+                        <img th:if="${bike.bikeImage != null}" th:src="${bike.bikeImage}"
+                                class="img-thumbnail" style="max-width: 200px;">
+                    </div>         
+                    <div class="mb-3">
+                            <label class="form-label">Cambia immagine (opzionale)</label>
+                            <input type="file" name="imageFile" class="form-control">
+                        </div>    
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn-primary px-5">Salva modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+</body>
+</html>

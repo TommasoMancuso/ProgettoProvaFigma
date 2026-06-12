@@ -31,13 +31,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="request : ${requests}">
-                                <td th:text="${request.id}"></td>
-                                <td th:text="${request.user.username}"></td>
-                                <td th:text="${request.role.name}"></td>
+                            <tr th:each="bike : ${bikes}" class="align-middle">
+                                <td th:text="${bike.brand}"></td>
+                                <td th:text="${bike.model}"></td>
+                                <td th:text="${bike.year}"></td>
+                                <td th:text="${bike.category}"></td>
+                                <td th:text="${bike.chassisNumber}"></td>
                                 <td class="text-end">
-                                    <a th:href="@{/operations/career/request/detail/{id}(id=${request.id})}" class="btn btn-primary p-2">
-                                        <i class="fa-solid fa-bars"></i>
+                                    <a th:href="@{/admin/bikes/detail/{id}(id=${bike.id})}" class="btn btn-custom p-2">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{/admin/bikes/edit/{id}(id=${bike.id})}" class="btn btn-warning p-2">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a th:href="@{/admin/bikes/delete/{id}(id=${bike.id})}" class="btn btn-danger p-2">
+                                        <i class="fa-solid fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
