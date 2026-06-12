@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="rtp-hero">
+    <div class="rtp-hero-overlay"></div>        
+    <div class="rtp-container">
+        <h1>AGGIUNGI I TUOI <span>EVENTI</span></h1>
+        <p>Crea un nuovo evento e gestisci le tue partecipazioni.</p>
+    </div>
+</section>
+
+<!-- FORM CREAZIONE EVENTO -->
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9">
+            <form th:object="${event}" class="row g-3 p-4" method="post" th:action="@{/admin/events/create}" enctype="multipart/form-data">
+
+                <!-- NOME EVENTO -->
+                <div class="col-md-6">
+                    <label class="form-label">Nome evento</label>
+                    <input type="text" class="form-control" th:field="*{name}" required>
+                </div>
+
+                <!-- ORGANIZZATORE -->
+                <div class="col-md-6">
+                    <label class="form-label">Organizzatore</label>
+                    <input type="text" class="form-control" th:field="*{organizer}">
+                </div>
+
+                <!-- CIRCUITO -->
+                <div class="col-md-6">
+                    <label class="form-label">Circuito</label>
+                    <select class="form-control" th:field="*{circuitId}" required>
+                        <option value="">Seleziona circuito</option>
+                        <option th:each="c : ${circuits}" th:value="${c.id}" th:text="${c.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- STATUS -->
+                <div class="col-md-6">
+                    <label class="form-label">Stato evento</label>
+                    <select class="form-control" th:field="*{status}">
+                        <option value="">Automatico (consigliato)</option>
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- DATA INIZIO -->
+                <div class="col-md-6">
+                    <label class="form-label">Data inizio</label>
+                    <input type="date" class="form-control" th:field="*{startDate}" required>
+                </div>
+
+                <!-- DATA FINE -->
+                <div class="col-md-6">
+                    <label class="form-label">Data fine</label>
+                    <input type="date" class="form-control" th:field="*{endDate}" required>
+                </div>
+
+                <!-- MAX PARTECIPANTI -->
+                <div class="col-md-6">
+                    <label class="form-label">Massimo partecipanti</label>
+                    <input type="number" class="form-control" th:field="*{maxParticipants}" min="1" required>
+                </div>
+
+                <!-- DESCRIZIONE -->
+                <div class="col-12">
+                    <label class="form-label">Descrizione</label>
+                    <textarea class="form-control" style="height: 120px" th:field="*{description}">
+                    </textarea>
+                </div>
+
+                <!-- SUBMIT -->
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn-primary px-5">Crea evento</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+<script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+</html>

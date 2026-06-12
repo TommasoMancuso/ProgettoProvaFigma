@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import da_figma.enums.EventStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,9 +50,11 @@ public class Event {
     private Circuit circuit;
 
     @Column(name = "start_date", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 
     @Column(name = "max_participants")

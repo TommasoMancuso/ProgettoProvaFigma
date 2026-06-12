@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="rtp-hero">
+    <div class="rtp-hero-overlay"></div>
+    <div class="rtp-container">
+        <h1>MODIFICA <span>EVENTO</span></h1>
+        <p>Aggiorna i dettagli dell'evento selezionato.</p>
+    </div>
+</section>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9">
+
+            <form th:object="${event}"
+                  method="post"
+                  th:action="@{/admin/events/update/{id}(id=${id})}"
+                  class="row g-3 p-4">
+
+                <!-- NOME -->
+                <div class="col-md-6">
+                    <label class="form-label">Nome evento</label>
+                    <input type="text" class="form-control" th:field="*{name}" required>
+                </div>
+
+                <!-- ORGANIZZATORE -->
+                <div class="col-md-6">
+                    <label class="form-label">Organizzatore</label>
+                    <input type="text" class="form-control" th:field="*{organizer}">
+                </div>
+
+                <!-- CIRCUITO -->
+                <div class="col-md-6">
+                    <label class="form-label">Circuito</label>
+                    <select class="form-control" th:field="*{circuitId}" required>
+                        <option th:each="c : ${circuits}"
+                                th:value="${c.id}"
+                                th:text="${c.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- STATUS -->
+                <div class="col-md-6">
+                    <label class="form-label">Stato evento</label>
+                    <select class="form-control" th:field="*{status}">
+                        <option th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- DATE -->
+                <div class="col-md-6">
+                    <label class="form-label">Data inizio</label>
+                    <input type="date" class="form-control" th:field="*{startDate}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Data fine</label>
+                    <input type="date" class="form-control" th:field="*{endDate}" required>
+                </div>
+
+                <!-- MAX -->
+                <div class="col-md-6">
+                    <label class="form-label">Max partecipanti</label>
+                    <input type="number" class="form-control" th:field="*{maxParticipants}">
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="col-12">
+                    <label class="form-label">Descrizione</label>
+                    <textarea class="form-control" th:field="*{description}" style="height:120px"></textarea>
+                </div>
+
+                <!-- SUBMIT -->
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn-primary px-5">
+                        Aggiorna evento
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+<script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+</html>

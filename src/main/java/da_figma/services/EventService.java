@@ -1,11 +1,16 @@
 package da_figma.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import da_figma.dtos.EventDto;
 import da_figma.enums.EventStatus;
+import da_figma.models.Circuit;
 import da_figma.models.Event;
+import da_figma.repositories.CircuitRepository;
 import da_figma.repositories.EventRepository;
 
 @Service
@@ -14,9 +19,99 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private CircuitRepository circuitRepository;
+
     // =========================
-    // BOOKING REGISTRATION
+    // READ (ADMIN)
     // =========================
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findByStatusNot(EventStatus.CANCELLED);
+    }
+
+    public Event getEventById(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+    }
+
+    // =========================
+    // CREATE EVENT (ADMIN)
+    // =========================
+    @Transactional
+    public Event createEvent(EventDto dto) {
+
+        Circuit circuit = circuitRepository.findById(dto.getCircuitId())
+                .orElseThrow(() -> new RuntimeException("Circuito non trovato"));
+
+        Event event = new Event();
+
+        event.setName(dto.getName());
+        event.setDescription(dto.getDescription());
+        event.setOrganizer(dto.getOrganizer());
+
+        event.setCircuit(circuit);
+
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
+
+        event.setMaxParticipants(dto.getMaxParticipants());
+        event.setCurrentParticipants(0);
+
+        event.setStatus(
+                dto.getStatus() != null
+                        ? dto.getStatus()
+                        : EventStatus.AVAILABLE
+        );
+
+        return eventRepository.save(event);
+    }
+
+    // =========================
+    // UPDATE EVENT (ADMIN)
+    // =========================
+    @Transactional
+    public Event updateEvent(Long id, EventDto dto) {
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event non trovato"));
+
+        Circuit circuit = circuitRepository.findById(dto.getCircuitId())
+                .orElseThrow(() -> new RuntimeException("Circuito non trovato"));
+
+        event.setName(dto.getName());
+        event.setDescription(dto.getDescription());
+        event.setOrganizer(dto.getOrganizer());
+        event.setCircuit(circuit);
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
+        event.setMaxParticipants(dto.getMaxParticipants());
+
+        if (dto.getStatus() != null) {
+            event.setStatus(dto.getStatus());
+        }
+
+        return eventRepository.save(event);
+    }
+
+    // =========================
+    // SOFT DELETE (ARCHIVE LOGIC)
+    // =========================
+    @Transactional
+    public void archiveEvent(Long id) {
+
+        Event event = getEventById(id);
+
+        event.setStatus(EventStatus.CANCELLED);
+
+        eventRepository.save(event);
+    }
+
+    // =====================================================
+    // ================= BUSINESS LOGIC ====================
+    // (il tuo codice invariato sotto)
+    // =====================================================
+
     @Transactional
     public void registerBooking(Event event) {
 
@@ -27,9 +122,6 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    // =========================
-    // BOOKING CANCELLATION
-    // =========================
     @Transactional
     public void unregisterBooking(Event event) {
 
@@ -44,22 +136,11 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    // =========================
-    // STATUS ENGINE (SINGLE SOURCE OF TRUTH)
-    // =========================
     private void evaluateStatus(Event event) {
 
-        // blocco totale manuale
-        if (event.getStatus() == EventStatus.CANCELLED) {
-            return;
-        }
+        if (event.getStatus() == EventStatus.CANCELLED) return;
+        if (event.getStatus() == EventStatus.COMPLETED) return;
 
-        // evento completato manualmente
-        if (event.getStatus() == EventStatus.COMPLETED) {
-            return;
-        }
-
-        // sold out logic
         if (event.getMaxParticipants() != null
                 && event.getCurrentParticipants() >= event.getMaxParticipants()) {
 
@@ -69,40 +150,26 @@ public class EventService {
         }
     }
 
-    // =========================
-    // BOOKING VALIDATION
-    // =========================
     public void validateBooking(Event event) {
 
-        if (event.getStatus() == EventStatus.CANCELLED) {
+        if (event.getStatus() == EventStatus.CANCELLED)
             throw new RuntimeException("Evento annullato");
-        }
 
-        if (event.getStatus() == EventStatus.COMPLETED) {
+        if (event.getStatus() == EventStatus.COMPLETED)
             throw new RuntimeException("Evento terminato");
-        }
 
-        if (event.getStatus() == EventStatus.SOLD_OUT) {
+        if (event.getStatus() == EventStatus.SOLD_OUT)
             throw new RuntimeException("Evento al completo");
-        }
     }
 
-    // =========================
-    // ADMIN: COMPLETE EVENT
-    // =========================
     @Transactional
     public void completeEvent(Event event) {
-
         event.setStatus(EventStatus.COMPLETED);
         eventRepository.save(event);
     }
 
-    // =========================
-    // ADMIN: CANCEL EVENT
-    // =========================
     @Transactional
     public void cancelEvent(Event event) {
-
         event.setStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
     }
