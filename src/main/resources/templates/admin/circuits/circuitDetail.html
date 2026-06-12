@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- HERO -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1 th:text="${circuit.name}"></h1>
+        </div>
+    </section>
+
+    <!-- DETTAGLI STAFF -->
+    <section class="container py-5">
+        <div class="row align-items-center g-5">
+
+            <!-- DATI -->
+            <div class="col-12 col-md-6">
+                <div class="card bg-dark text-white staffDetailCard border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Informazioni sul circuito</h3>
+                        <p>
+                            <strong>Lunghezza:</strong>
+                            <span th:text="${circuit.lengthMeters}"></span>
+                        </p>
+                        <p>
+                            <strong>Paese:</strong>
+                            <span th:text="${circuit.country}"></span>
+                        </p>                   
+                    </div>
+                </div>
+            </div>
+            <!-- DESCRIZIONE -->
+            <div class="col-md-6">
+                <div class="card bg-dark staffDetailCard text-white border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-3">Descrizione</h3>
+                        <p th:text="${circuit.description}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AZIONI -->
+        <div class="text-center mt-5">           
+            <a th:href="@{/admin/circuits/edit/{id}(id=${circuit.id})}"
+            class="btn btn-warning me-3">
+                <i class="fa-solid fa-pen"></i>
+                Modifica
+            </a>
+            <a th:href="@{/admin/circuits/delete/{id}(id=${circuit.id})}" class="btn btn-danger me-3" onclick="return confirm('Sei sicuro di voler eliminare questo circuito?')">
+                <i class="fa-solid fa-trash"></i>
+                Elimina
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i>
+                Torna indietro
+            </button>
+        </div>
+    </section>
+
+
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>

@@ -13,4 +13,10 @@ public interface CircuitRepository extends JpaRepository<Circuit, Long> {
     List<Circuit> findByNameContainingIgnoreCase(String name);
 
     List<Circuit> findByCountryContainingIgnoreCase(String country);
+
+    List<Circuit> findByActiveTrue();
+
+    List<Circuit> findByActiveFalse();
+
+    boolean existsByNameIgnoreCase(String name);
 }

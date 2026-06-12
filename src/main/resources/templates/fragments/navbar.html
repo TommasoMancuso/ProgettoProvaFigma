@@ -38,7 +38,11 @@
                             Le tue moto
                         </a>
                     </li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a class="dropdown-item" th:href="@{/admin/circuits}">
+                            I tuoi circuiti
+                        </a>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item" th:href="@{/logout}">

@@ -28,7 +28,7 @@ public class Circuit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     @NotBlank
     @Size(max = 100)
     private String name;
@@ -42,6 +42,9 @@ public class Circuit {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     // Relazioni
 
