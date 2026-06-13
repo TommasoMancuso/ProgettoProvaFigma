@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>        
+        <div class="rtp-container">
+            <h1>CREA UN <span>SERVIZIO</span></h1>
+            <p>Definisci i servizi offerti dal team e il prezzo base di partenza.</p>
+        </div>
+    </section>
+
+    <!-- FORM CREAZIONE SERVIZIO -->
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9">
+                <form th:object="${service}" class="row g-3 p-4" method="post" th:action="@{/admin/services/create}">
+
+                    <!-- NOME -->
+                    <div class="col-md-6">
+                        <label class="form-label">Nome Servizio</label>
+                        <input type="text" class="form-control" th:field="*{name}" required>
+                    </div>
+
+                    <!-- PRICING TYPE -->
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo Pricing</label>
+                        <select class="form-select" th:field="*{pricingType}" id="pricingType" required>
+                            <option value="" disabled selected>Seleziona tipo</option>
+                            <option th:each="type : ${T(da_figma.enums.PricingType).values()}"
+                                    th:value="${type}"
+                                    th:text="${type}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- BASE PRICE (SOLO FIXED) -->
+                    <div class="col-md-6" id="basePriceContainer">
+                        <label class="form-label">Prezzo Base (€)</label>
+                        <input type="number" step="0.01" class="form-control" th:field="*{basePrice}">
+                    </div>
+
+                    <!-- DESCRIZIONE -->
+                    <div class="col-12">
+                        <label class="form-label">Descrizione</label>
+                        <textarea class="form-control" style="height: 120px" th:field="*{description}">
+                        </textarea>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn-primary px-5">Crea Servizio</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+    <!-- JS DINAMICO PRICING -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const pricingType = document.getElementById("pricingType");
+            const basePriceContainer = document.getElementById("basePriceContainer");
+
+            function toggleBasePrice() {
+                if (pricingType.value === "FIXED") {
+                    basePriceContainer.style.display = "block";
+                } else {
+                    basePriceContainer.style.display = "none";
+                }
+            }
+            pricingType.addEventListener("change", toggleBasePrice);
+            toggleBasePrice();
+        });
+    </script>
+
+</body>
+</html>

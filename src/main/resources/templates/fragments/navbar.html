@@ -44,6 +44,11 @@
                         </a>
                     </li>
                     <li sec:authorize="hasRole('ADMIN')">
+                        <a class="dropdown-item" th:href="@{/admin/services}">
+                            I tuoi servizi
+                        </a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')">
                         <a class="dropdown-item" th:href="@{/admin/events}">
                             I tuoi eventi
                         </a>
