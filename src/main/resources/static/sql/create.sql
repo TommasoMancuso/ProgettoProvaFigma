@@ -10,12 +10,15 @@ CREATE TABLE circuits (
     id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
 
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
+
     country VARCHAR(100),
-    length_meters BIGINT NOT NULL,
+
+    length_meters BIGINT,
+
     description TEXT,
 
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE bikes (
@@ -24,15 +27,22 @@ CREATE TABLE bikes (
 
     brand VARCHAR(50) NOT NULL,
     model VARCHAR(50) NOT NULL,
+
     year INT NOT NULL,
+
     category VARCHAR(50) NOT NULL,
+
+    description TEXT,
+
     bike_image VARCHAR(255),
 
     chassis_number VARCHAR(255) NOT NULL UNIQUE,
 
     current_km BIGINT NOT NULL DEFAULT 0,
+
     daily_price DECIMAL(10,2),
-    status VARCHAR(30) NOT NULL DEFAULT 'AVAILABLE'
+
+    status VARCHAR(255) NOT NULL DEFAULT 'AVAILABLE'
 );
 
 CREATE TABLE services (
@@ -68,7 +78,7 @@ CREATE TABLE team_users (
 
     bio TEXT,
     profile_image VARCHAR(255),
-    instagram VARCHAR(100),
+    instagram VARCHAR(255),
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -186,8 +196,9 @@ CREATE TABLE booking_services (
     booking_id BIGINT NOT NULL,
     service_id BIGINT NOT NULL,
 
-    quantity INT NOT NULL DEFAULT 1,
-    price_at_booking DECIMAL(10,2),
+    days INT NOT NULL,
+
+    price_at_booking DECIMAL(10,2) NOT NULL,
 
     CONSTRAINT fk_bs_booking
         FOREIGN KEY (booking_id)

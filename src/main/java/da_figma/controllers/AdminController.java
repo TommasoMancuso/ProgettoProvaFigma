@@ -50,7 +50,7 @@ public class AdminController {
 
         teamUserService.createTeamUser(user, roleId, imageFile);
 
-        return "redirect:/admin/staff/staff";
+        return "redirect:/admin/staff";
     }
 
     // Rotta pagina di dettaglio
@@ -80,7 +80,7 @@ public class AdminController {
     @PostMapping("/admin/staff/update/{id}")
     public String updateUser(@PathVariable Long id,
                             @ModelAttribute TeamUser updatedUser,
-                            @RequestParam(value = "image", required = false) MultipartFile image) {
+                            @RequestParam(value = "imageFile", required = false) MultipartFile image) {
 
         teamUserService.updateTeamUser(id, updatedUser, image);
 
