@@ -44,6 +44,9 @@ public class EventServicePrice {
     @Column(name = "price_two_days", precision = 10, scale = 2)
     private BigDecimal priceTwoDays;
 
+    @Column(name = "price_three_days", precision = 10, scale = 2)
+    private BigDecimal priceThreeDays;
+
     @Column(name = "price_full_event", precision = 10, scale = 2)
     private BigDecimal priceFullEvent;
 

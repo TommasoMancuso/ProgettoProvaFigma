@@ -79,6 +79,12 @@ public class Booking {
     @jakarta.persistence.JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    @Column(name = "booking_start_date", nullable = false)
+    private LocalDate bookingStartDate;
+
+    @Column(name = "booking_end_date", nullable = false)
+    private LocalDate bookingEndDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @jakarta.persistence.JoinColumn(name = "bike_id")
     private Bike bike;

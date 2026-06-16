@@ -1,6 +1,7 @@
 package da_figma.models;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +30,14 @@ public class BookingService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDate serviceStartDate;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDate serviceEndDate;
 
     @Column(nullable = false)
     @NotNull

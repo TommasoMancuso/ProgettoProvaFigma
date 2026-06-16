@@ -123,6 +123,7 @@ CREATE TABLE event_service_prices (
 
     price_one_day DECIMAL(10,2) NOT NULL,
     price_two_days DECIMAL(10,2),
+    price_three_days DECIMAL(10,2),
     price_full_event DECIMAL(10,2),
 
     CONSTRAINT fk_esp_event
@@ -155,6 +156,9 @@ CREATE TABLE bookings (
 
     total_price DECIMAL(10,2),
     payment_status VARCHAR(30) NOT NULL DEFAULT 'UNPAID',
+
+    booking_start_date DATE NOT NULL,
+    booking_end_date DATE NOT NULL,
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cancellation_deadline DATE,
@@ -197,6 +201,9 @@ CREATE TABLE booking_services (
     service_id BIGINT NOT NULL,
 
     days INT NOT NULL,
+
+    service_start_date DATE NOT NULL,
+    service_end_date DATE NOT NULL,
 
     price_at_booking DECIMAL(10,2) NOT NULL,
 

@@ -1,6 +1,5 @@
 package da_figma.dtos;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -16,11 +15,8 @@ public class BookingRequestDto {
 
     private Long eventId;
 
-    private LocalDate bikeStartDate;
-
-    private LocalDate bikeEndDate;
-
-    private List<Long> serviceIds;
-    
     private Long bikeId;
+
+    private List<BookingServiceRequestDto> services;
+      
 }
