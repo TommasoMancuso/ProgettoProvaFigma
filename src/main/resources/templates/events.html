@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- HERO -->
+        <section class="rtp-hero">
+            <div class="rtp-hero-overlay"></div>       
+            <div class="rtp-container">
+                <div class="rtp-badge">RACE TECH PRO</div>
+                <h1>I NOSTRI  <span>EVENTI</span></h1>
+                <p>Scegli l'evento a cui vuoi partecipare <br>e prenota i nostri servizi!</p>
+            </div>
+        </section>
+
+    <!-- CARDS EVENTI -->
+        <section class="rtp-section rtp-dark">
+           <div class="rtp-container">
+                <div class="rtp-grid-4">
+                    <div th:each="event : ${events}" class="rtp-mini-card d-flex flex-column justify-content-center align-items-center">
+                        <div class="icon">🏁</div>
+                        <h3 th:text="${event.circuit.name}"></h3>
+                        <p th:text="${event.startDate + ' - ' + {event.endDate}}"></p>
+                        <div class="pt-1">
+                            <a th:href="@{/events/detail/{id}}">
+                                <button class="btn-primary">Dettagli evento</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+           </div> 
+        </section>
+
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>

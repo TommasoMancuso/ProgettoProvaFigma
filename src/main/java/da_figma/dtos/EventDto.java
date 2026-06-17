@@ -1,6 +1,7 @@
 package da_figma.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -63,4 +64,6 @@ public class EventDto {
     // =========================
 
     private EventStatus status;
+
+    private List<Long> serviceIds;
 }

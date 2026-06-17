@@ -140,38 +140,16 @@
     
     <!-- CIRCUITS -->
     <section class="rtp-section">
-        <div class="rtp-container">
-            
-            <h2 class="text-center p-5">Circuiti</h2>
-            
-            <div class="rtp-grid-3">
-                
-                <div class="rtp-card">
-                    <img src="https://images.unsplash.com/photo-1516728513226-23c4045123a0">
+        <div class="rtp-container">           
+            <h2 class="text-center p-5">Circuiti</h2>            
+            <div class="rtp-grid-3">                
+                <div th:each="circuit : ${circuits}" class="rtp-card">
+                    <img th:src="${circuit.image}">
                     <div class="rtp-card-body">
-                        <h3>Mugello</h3>
-                        <p>5.245 km</p>
+                        <h3 th:text="${circuit.name}"></h3>
                     </div>
                 </div>
-                
-                <div class="rtp-card">
-                    <img src="https://images.unsplash.com/photo-1523978577004-06ba57f175aa">
-                    <div class="rtp-card-body">
-                        <h3>Misano</h3>
-                        <p>4.226 km</p>
-                    </div>
-                </div>
-                
-                <div class="rtp-card">
-                    <img src="https://images.unsplash.com/photo-1609630875171-b1321377ee65">
-                    <div class="rtp-card-body">
-                        <h3>Vallelunga</h3>
-                        <p>4.085 km</p>
-                    </div>
-                </div>
-                
             </div>
-            
         </div>
     </section>
     

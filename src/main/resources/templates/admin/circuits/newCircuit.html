@@ -18,20 +18,24 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-9">
                 <form th:object="${circuit}" class="row g-3 p-4" method="post" th:action="@{/admin/circuits/createCircuit}" enctype="multipart/form-data">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="validationDefault01" class="form-label">Nome circuito</label>
                         <input type="text" class="form-control" id="validationDefault01" th:field="*{name}" required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="validationDefault02" class="form-label">Paese</label>
                         <input type="text" class="form-control" id="validationDefault02" th:field="*{country}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="validationDefaultUsername" class="form-label">Lunghezza</label>
                         <div class="input-group">
                             <input type="number" class="form-control" aria-describedby="inputGroupPrepend2" th:field="*{lengthMeters}" required>
                         </div>
-                    </div>      
+                    </div>   
+                    <div class="col-md-6">
+                        <label for="formFile" class="form-label">Inserisci immagine</label>
+                        <input class="form-control" type="file" id="formFile" name="imageFile" accept="image/*">
+                    </div>   
                     <div>
                         <label class="form-label" for="floatingTextarea2">Descrizione</label>
                         <textarea class="form-control" id="floatingTextarea2" style="height: 100px" th:field="*{description}"></textarea>

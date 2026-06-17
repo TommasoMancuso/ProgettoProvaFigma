@@ -17,6 +17,11 @@
 <section class="container py-5">
     <div class="row align-items-center g-5">
 
+        <!-- FOTO CIRCUITO -->
+         <div class="col-12 col-md-6 text-center">
+                <img th:src="${event.circuit.image}" alt="Foto circuito" class="img-fluid section-image rounded shadow">
+            </div>
+
         <!-- DATI EVENTO -->
         <div class="col-12 col-md-6">
             <div class="card bg-dark text-white staffDetailCard border-danger">
@@ -69,7 +74,24 @@
             </div>
         </div>
 
+        <!-- SERVIZI DISPONIBILI -->
+        <div class="col-12 col-md-6">
+            <div class="card bg-dark text-white staffDetailCard border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Servizi disponibili</h3>
+                    <div th:if="${#lists.isEmpty(event.servicePrices)}">
+                        Nessun servizio configurato
+                    </div>
+                    <ul th:unless="${#lists.isEmpty(event.servicePrices)}">
+                        <li class="py-2" th:each="price : ${event.servicePrices}">
+                            <span th:text="${price.service.name}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <!-- DESCRIZIONE -->
     <div class="row mt-5">

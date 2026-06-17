@@ -85,10 +85,6 @@ public class Booking {
     @Column(name = "booking_end_date", nullable = false)
     private LocalDate bookingEndDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @jakarta.persistence.JoinColumn(name = "bike_id")
-    private Bike bike;
-
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingService> bookingServices = new ArrayList<>();
 

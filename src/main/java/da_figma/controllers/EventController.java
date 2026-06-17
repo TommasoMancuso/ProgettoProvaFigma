@@ -14,6 +14,7 @@ import da_figma.enums.EventStatus;
 import da_figma.models.Event;
 import da_figma.services.CircuitService;
 import da_figma.services.EventService;
+import da_figma.services.TeamServiceService;
 import jakarta.validation.Valid;
 
 
@@ -25,6 +26,9 @@ public class EventController {
 
     @Autowired
     private CircuitService circuitService;
+
+    @Autowired
+    private TeamServiceService teamServiceService;
 
     // LISTA
     @GetMapping("/admin/events")
@@ -39,14 +43,17 @@ public class EventController {
         model.addAttribute("event", new EventDto());
         model.addAttribute("circuits", circuitService.getActiveCircuits());
         model.addAttribute("statuses", EventStatus.values());
+        model.addAttribute("services", teamServiceService.getActiveServices());
         return "admin/events/newEvent";
     }
 
     // CREATE
     @PostMapping("/admin/events/create")
     public String createEvent(@ModelAttribute("event") EventDto dto) {
-        eventService.createEvent(dto);
-        return "redirect:/admin/events";
+
+        Event event = eventService.createEvent(dto);
+
+        return "redirect:/admin/events/" + event.getId() + "/prices";
     }
 
     // DETAIL (ENTITY OK)
@@ -76,6 +83,7 @@ public class EventController {
         model.addAttribute("id", id);
         model.addAttribute("circuits", circuitService.getActiveCircuits());
         model.addAttribute("statuses", EventStatus.values());
+        model.addAttribute("services", teamServiceService.getActiveServices());
 
         return "admin/events/eventEdit";
     }
@@ -92,6 +100,7 @@ public class EventController {
             model.addAttribute("circuits", circuitService.getActiveCircuits());
             model.addAttribute("statuses", EventStatus.values());
             model.addAttribute("id", id);
+            model.addAttribute("services", teamServiceService.getActiveServices());
             return "admin/events/eventEdit";
         }
 

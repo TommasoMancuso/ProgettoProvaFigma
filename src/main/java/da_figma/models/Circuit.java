@@ -43,6 +43,8 @@ public class Circuit {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String image;
+
     @Column(nullable = false)
     private boolean active = true;
 

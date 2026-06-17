@@ -38,7 +38,7 @@ public class EventServicePrice {
     // PRICING (DECISO DAL MANAGER)
     // =========================
 
-    @Column(name = "price_one_day", precision = 10, scale = 2, nullable = false)
+    @Column(name = "price_one_day", precision = 10, scale = 2)
     private BigDecimal priceOneDay;
 
     @Column(name = "price_two_days", precision = 10, scale = 2)

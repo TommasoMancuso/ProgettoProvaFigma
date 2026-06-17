@@ -10,8 +10,12 @@ import da_figma.dtos.EventDto;
 import da_figma.enums.EventStatus;
 import da_figma.models.Circuit;
 import da_figma.models.Event;
+import da_figma.models.EventServicePrice;
+import da_figma.models.TeamService;
 import da_figma.repositories.CircuitRepository;
 import da_figma.repositories.EventRepository;
+import da_figma.repositories.EventServicePriceRepository;
+import da_figma.repositories.TeamServiceRepository;
 
 @Service
 public class EventService {
@@ -21,6 +25,12 @@ public class EventService {
 
     @Autowired
     private CircuitRepository circuitRepository;
+
+    @Autowired
+    private TeamServiceRepository teamServiceRepository;
+
+    @Autowired
+    private EventServicePriceRepository eventServicePriceRepository;
 
     // =========================
     // READ (ADMIN)
@@ -64,7 +74,29 @@ public class EventService {
                         : EventStatus.AVAILABLE
         );
 
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+
+        if (dto.getServiceIds() != null) {
+
+            for (Long serviceId : dto.getServiceIds()) {
+
+                TeamService service =
+                        teamServiceRepository.findById(serviceId)
+                                .orElseThrow(() ->
+                                        new RuntimeException(
+                                                "Servizio non trovato"));
+
+                EventServicePrice esp =
+                        new EventServicePrice();
+
+                esp.setEvent(savedEvent);
+                esp.setService(service);
+
+                eventServicePriceRepository.save(esp);
+            }
+        }
+
+        return savedEvent;
     }
 
     // =========================

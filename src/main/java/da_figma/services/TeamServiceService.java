@@ -78,6 +78,11 @@ public class TeamServiceService {
         return repository.findAll();
     }
 
+    public List<TeamService> getActiveServices() {
+
+        return repository.findByActiveTrue();
+    }
+
     // =========================
     // VALIDATION
     // =========================

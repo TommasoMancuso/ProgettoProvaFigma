@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import da_figma.dtos.BookingRequestDto;
 import da_figma.dtos.BookingServiceRequestDto;
 import da_figma.enums.BookingStatus;
+import da_figma.enums.PricingType;
 import da_figma.models.Bike;
 import da_figma.models.Booking;
 import da_figma.models.BookingBikeAllocation;
-import da_figma.models.BookingService;
 import da_figma.models.Event;
 import da_figma.models.TeamService;
 import da_figma.repositories.BikeRepository;
@@ -56,9 +56,11 @@ public class BookingManagerService {
     @Transactional
     public Booking createBooking(BookingRequestDto request) {
 
-        String keycloakId = userContextService.getCurrentKeycloakId();
+        String keycloakId =
+                userContextService.getCurrentKeycloakId();
 
-        Event event = eventRepository.findByIdForUpdate(request.getEventId())
+        Event event = eventRepository
+                .findByIdForUpdate(request.getEventId())
                 .orElseThrow(() ->
                         new IllegalArgumentException("Evento non trovato"));
 
@@ -68,113 +70,118 @@ public class BookingManagerService {
                 pricingService.calculatePrice(request);
 
         Booking booking = new Booking();
+
         booking.setUserKeycloakId(keycloakId);
         booking.setEvent(event);
-        booking.setStatus(BookingStatus.PENDING);
         booking.setTotalPrice(totalPrice);
+        booking.setStatus(BookingStatus.PENDING);
 
-        booking.setBookingServices(new ArrayList<>());
-        booking.setBikeAllocations(new ArrayList<>());
+        LocalDate globalStartDate = null;
+        LocalDate globalEndDate = null;
 
-        LocalDate bookingStart = null;
-        LocalDate bookingEnd = null;
-
-        // =========================
-        // SERVICES PROCESSING
-        // =========================
         for (BookingServiceRequestDto serviceRequest : request.getServices()) {
 
-            TeamService service = serviceRepository
-                    .findById(serviceRequest.getServiceId())
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Servizio non trovato"));
+            TeamService service =
+                    serviceRepository.findById(serviceRequest.getServiceId())
+                            .orElseThrow(() ->
+                                    new IllegalArgumentException(
+                                            "Servizio non trovato"));
 
-            List<LocalDate> dates = new ArrayList<>(serviceRequest.getSelectedDates());
-            dates.sort(Comparator.naturalOrder());
+            List<LocalDate> dates =
+                    new ArrayList<>(serviceRequest.getSelectedDates());
 
             if (dates.isEmpty()) {
-                throw new IllegalArgumentException("Seleziona almeno una data per il servizio");
+                throw new IllegalArgumentException(
+                        "Date mancanti per il servizio "
+                                + service.getName());
             }
 
-            LocalDate start = dates.get(0);
-            LocalDate end = dates.get(dates.size() - 1);
+            dates.sort(Comparator.naturalOrder());
 
-            // update booking range globale
-            if (bookingStart == null || start.isBefore(bookingStart)) {
-                bookingStart = start;
+            LocalDate startDate = dates.get(0);
+            LocalDate endDate = dates.get(dates.size() - 1);
+
+            if (globalStartDate == null
+                    || startDate.isBefore(globalStartDate)) {
+
+                globalStartDate = startDate;
             }
 
-            if (bookingEnd == null || end.isAfter(bookingEnd)) {
-                bookingEnd = end;
+            if (globalEndDate == null
+                    || endDate.isAfter(globalEndDate)) {
+
+                globalEndDate = endDate;
             }
 
-            BookingService bs = new BookingService();
-            bs.setBooking(booking);
-            bs.setService(service);
-            bs.setServiceStartDate(start);
-            bs.setServiceEndDate(end);
-            bs.setDays(dates.size());
+            da_figma.models.BookingService bookingService =
+                    new da_figma.models.BookingService();
 
-            // pricing già calcolato dal pricingService → qui solo reference logica
-            bs.setPriceAtBooking(
-                    pricingService.calculatePrice(
-                            new BookingRequestDto(
-                                    request.getEventId(),
-                                    request.getBikeId(),
-                                    List.of(serviceRequest)
-                            )
-                    )
-            );
+            bookingService.setBooking(booking);
+            bookingService.setService(service);
 
-            booking.getBookingServices().add(bs);
+            bookingService.setServiceStartDate(startDate);
+            bookingService.setServiceEndDate(endDate);
 
-            // =========================
-            // BIKE HANDLING (ONLY BIKE SERVICE)
-            // =========================
-            if (service.getName().equalsIgnoreCase("Noleggio moto")) {
+            bookingService.setDays(dates.size());
+
+            bookingService.setPriceAtBooking(BigDecimal.ZERO);
+
+            booking.getBookingServices().add(bookingService);
+
+            /*
+             * NOLEGGIO MOTO
+             */
+            if (service.getPricingType() == PricingType.BIKE_BASED) {
 
                 if (request.getBikeId() == null) {
-                    throw new IllegalArgumentException("Moto obbligatoria per il noleggio");
+                    throw new IllegalArgumentException(
+                            "Moto obbligatoria per il noleggio");
                 }
 
-                Bike bike = bikeRepository.findById(request.getBikeId())
+                Bike bike = bikeRepository
+                        .findById(request.getBikeId())
                         .orElseThrow(() ->
-                                new IllegalArgumentException("Moto non trovata"));
+                                new IllegalArgumentException(
+                                        "Moto non trovata"));
 
-                boolean available = bikeRepository.isAvailable(
-                        bike.getId(),
-                        start,
-                        end
-                );
+                boolean available =
+                        bikeRepository.isAvailable(
+                                bike.getId(),
+                                startDate,
+                                endDate);
 
                 if (!available) {
-                    throw new IllegalArgumentException("Moto non disponibile nel periodo selezionato");
+                    throw new IllegalArgumentException(
+                            "Moto non disponibile nel periodo selezionato");
                 }
 
-                BookingBikeAllocation allocation = new BookingBikeAllocation();
+                BookingBikeAllocation allocation =
+                        new BookingBikeAllocation();
+
                 allocation.setBooking(booking);
                 allocation.setBike(bike);
-                allocation.setRentalStartDate(start);
-                allocation.setRentalEndDate(end);
 
-                booking.getBikeAllocations().add(allocation);
+                allocation.setRentalStartDate(startDate);
+                allocation.setRentalEndDate(endDate);
+
+                booking.getBikeAllocations()
+                        .add(allocation);
             }
         }
 
-        booking.setBookingStartDate(bookingStart);
-        booking.setBookingEndDate(bookingEnd);
+        booking.setBookingStartDate(globalStartDate);
+        booking.setBookingEndDate(globalEndDate);
 
-        // =========================
-        // CAPACITY MANAGEMENT
-        // =========================
-        if (event.getMaxParticipants() != null &&
-                event.getCurrentParticipants() >= event.getMaxParticipants()) {
+        if (event.getMaxParticipants() != null
+                && event.getCurrentParticipants()
+                >= event.getMaxParticipants()) {
 
             booking.setStatus(BookingStatus.WAITING_LIST);
 
         } else {
 
             booking.setStatus(BookingStatus.CONFIRMED);
+
             eventService.registerBooking(event);
         }
 

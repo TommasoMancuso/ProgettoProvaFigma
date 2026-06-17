@@ -104,6 +104,50 @@
             </div>
         </div>     
     </section>
+
+    <!-- CHAMPIONSHIPS -->
+    <section class="rtp-section rtp-dark">
+        <div class="rtp-container">            
+            <h2 class="text-center p-5">Campionati Supportati</h2>            
+            <div class="rtp-grid-4">                
+                <div class="rtp-mini-card d-flex flex-column justify-content-center align-items-center">
+                    <div class="icon">🏆</div>
+                    <h3>CIV</h3>
+                    <p>Superbike e Supersport</p>
+                </div>                
+                <div class="rtp-mini-card d-flex flex-column justify-content-center align-items-center">
+                    <div class="icon">🎯</div>
+                    <h3>National Trophy</h3>
+                    <p>Superbke e supersport</p>
+                </div>               
+                <div class="rtp-mini-card d-flex flex-column justify-content-center align-items-center">
+                    <div class="icon">⚡</div>
+                    <h3>MES</h3>
+                    <p>Superbike e supersport</p>
+                </div>                
+                <div class="rtp-mini-card d-flex flex-column justify-content-center align-items-center">
+                    <div class="icon">🏁</div>
+                    <h3>Trofeo Italiano Amatori</h3>
+                    <p>Superbike e supersport</p>
+                </div>                
+            </div>            
+        </div>
+    </section>
+
+    <!-- CIRCUITS -->
+    <section class="rtp-section">
+        <div class="rtp-container">           
+            <h2 class="text-center p-5">Circuiti</h2>            
+            <div class="rtp-grid-3">                
+                <div th:each="circuit : ${circuits}" class="rtp-card">
+                    <img th:src="${circuit.image}">
+                    <div class="rtp-card-body">
+                        <h3 th:text="${circuit.name}"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <!-- FOOTER -->
     

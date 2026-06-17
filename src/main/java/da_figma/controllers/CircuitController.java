@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.Valid;
 
 import da_figma.models.Circuit;
@@ -42,13 +44,13 @@ public class CircuitController {
     @PostMapping("/admin/circuits/createCircuit")
     public String createCircuit(
             @Valid @ModelAttribute Circuit circuit,
-            BindingResult bindingResult) {
+            BindingResult bindingResult, MultipartFile imageFile) {
 
         if (bindingResult.hasErrors()) {
             return "admin/circuits/newCircuit";
         }
 
-        circuitService.createCircuit(circuit);
+        circuitService.createCircuit(circuit, imageFile);
 
         return "redirect:/admin/circuits";
     }
@@ -81,13 +83,14 @@ public class CircuitController {
     public String updateCircuit(
             @PathVariable Long id,
             @Valid @ModelAttribute Circuit circuit,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            MultipartFile imageFile) {
 
         if (bindingResult.hasErrors()) {
             return "admin/circuits/circuitEdit";
         }
 
-        circuitService.updateCircuit(id, circuit);
+        circuitService.updateCircuit(id, circuit, imageFile);
 
         return "redirect:/admin/circuits";
     }

@@ -16,6 +16,8 @@ CREATE TABLE circuits (
 
     length_meters BIGINT,
 
+    image VARCHAR(255),
+
     description TEXT,
 
     active BOOLEAN NOT NULL DEFAULT TRUE
@@ -149,27 +151,24 @@ CREATE TABLE bookings (
 
     user_keycloak_id VARCHAR(255) NOT NULL,
 
-    event_id BIGINT NOT NULL,
-    bike_id BIGINT,
-
-    status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    status VARCHAR(30) NOT NULL,
+    payment_status VARCHAR(30) NOT NULL,
 
     total_price DECIMAL(10,2),
-    payment_status VARCHAR(30) NOT NULL DEFAULT 'UNPAID',
+
+    created_at DATETIME NOT NULL,
+
+    cancellation_deadline DATE,
+
+    event_id BIGINT NOT NULL,
 
     booking_start_date DATE NOT NULL,
     booking_end_date DATE NOT NULL,
 
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    cancellation_deadline DATE,
-
-    CONSTRAINT fk_bookings_events
+    CONSTRAINT fk_booking_event
         FOREIGN KEY (event_id)
-        REFERENCES events(id),
-
-    CONSTRAINT fk_bookings_bikes
-        FOREIGN KEY (bike_id)
-        REFERENCES bikes(id)
+        REFERENCES events(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE booking_bike_allocations (

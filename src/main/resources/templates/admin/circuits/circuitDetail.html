@@ -17,6 +17,11 @@
     <section class="container py-5">
         <div class="row align-items-center g-5">
 
+            <!-- FOTO -->
+            <div class="col-12 col-md-6 text-center">
+                <img th:src="${circuit.image}" alt="Foto circuito" class="img-fluid section-image rounded shadow">
+            </div>
+
             <!-- DATI -->
             <div class="col-12 col-md-6">
                 <div class="card bg-dark text-white staffDetailCard border-danger">
@@ -24,7 +29,7 @@
                         <h3 class="mb-4">Informazioni sul circuito</h3>
                         <p>
                             <strong>Lunghezza:</strong>
-                            <span th:text="${circuit.lengthMeters}"></span>
+                            <span th:text="${circuit.lengthMeters + ' metri'}"></span>
                         </p>
                         <p>
                             <strong>Paese:</strong>
@@ -34,8 +39,8 @@
                 </div>
             </div>
             <!-- DESCRIZIONE -->
-            <div class="col-md-6">
-                <div class="card bg-dark staffDetailCard text-white border-danger">
+            <div class="col-12">
+                <div class="card bg-dark text-white border-danger">
                     <div class="card-body">
                         <h3 class="mb-3">Descrizione</h3>
                         <p th:text="${circuit.description}"></p>
