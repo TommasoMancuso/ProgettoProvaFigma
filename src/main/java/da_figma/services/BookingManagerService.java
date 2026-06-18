@@ -131,15 +131,15 @@ public class BookingManagerService {
             /*
              * NOLEGGIO MOTO
              */
-            if (service.getPricingType() == PricingType.BIKE_BASED) {
+      if (service.getPricingType() == PricingType.BIKE_BASED) {
 
-                if (request.getBikeId() == null) {
-                    throw new IllegalArgumentException(
-                            "Moto obbligatoria per il noleggio");
+                if (serviceRequest.getBikeId() == null) {
+                        throw new IllegalArgumentException(
+                                "Moto obbligatoria per il servizio noleggio");
                 }
 
                 Bike bike = bikeRepository
-                        .findById(request.getBikeId())
+                        .findByIdForUpdate(serviceRequest.getBikeId())
                         .orElseThrow(() ->
                                 new IllegalArgumentException(
                                         "Moto non trovata"));
@@ -151,8 +151,8 @@ public class BookingManagerService {
                                 endDate);
 
                 if (!available) {
-                    throw new IllegalArgumentException(
-                            "Moto non disponibile nel periodo selezionato");
+                        throw new IllegalArgumentException(
+                                "Moto non disponibile nel periodo selezionato");
                 }
 
                 BookingBikeAllocation allocation =
@@ -164,9 +164,8 @@ public class BookingManagerService {
                 allocation.setRentalStartDate(startDate);
                 allocation.setRentalEndDate(endDate);
 
-                booking.getBikeAllocations()
-                        .add(allocation);
-            }
+                booking.getBikeAllocations().add(allocation);
+                }
         }
 
         booking.setBookingStartDate(globalStartDate);

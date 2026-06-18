@@ -67,6 +67,8 @@ public class SecurityConfig {
                     "/",
                     "/aboutus",
                     "/services",
+                    "/events",
+                    "/user/**",
                     "/css/**",
                     "/js/**",
                     "/images/**"

@@ -93,25 +93,29 @@ public class BookingPricingService {
 
                 case BIKE_BASED -> {
 
-                    // 🔥 FIX: bikeId ora è nel request principale
-                    if (request.getBikeId() == null) {
-                        throw new IllegalArgumentException(
-                                "È necessario selezionare una moto per il servizio noleggio");
-                    }
+            if (serviceRequest.getBikeId() == null) {
+                throw new IllegalArgumentException(
+                        "È necessario selezionare una moto");
+            }
 
-                    Bike bike = bikeRepository.findById(request.getBikeId())
-                            .orElseThrow(() ->
-                                    new IllegalArgumentException("Moto non trovata"));
+            Bike bike = bikeRepository
+                    .findById(serviceRequest.getBikeId())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(
+                                    "Moto non trovata"));
 
-                    if (bike.getDailyPrice() == null) {
-                        throw new IllegalArgumentException(
-                                "Prezzo giornaliero moto non configurato");
-                    }
+            if (bike.getDailyPrice() == null) {
+                throw new IllegalArgumentException(
+                        "Prezzo giornaliero moto non configurato");
+            }
 
-                    servicePrice = bike.getDailyPrice()
-                            .multiply(BigDecimal.valueOf(
-                                    serviceRequest.getSelectedDates().size()));
-                }
+            servicePrice = bike.getDailyPrice()
+                    .multiply(
+                            BigDecimal.valueOf(
+                                    serviceRequest.getSelectedDates().size()
+                            )
+                    );
+        }
 
                 case MANUAL -> throw new IllegalArgumentException(
                         "Servizio disponibile solo tramite contatto diretto");

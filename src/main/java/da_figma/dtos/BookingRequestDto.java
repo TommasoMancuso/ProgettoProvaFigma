@@ -1,5 +1,6 @@
 package da_figma.dtos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,8 +16,6 @@ public class BookingRequestDto {
 
     private Long eventId;
 
-    private Long bikeId;
+    private List<BookingServiceRequestDto> services = new ArrayList<>();
 
-    private List<BookingServiceRequestDto> services;
-      
 }

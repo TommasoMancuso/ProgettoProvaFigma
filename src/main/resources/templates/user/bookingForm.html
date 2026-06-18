@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+
+<section class="rtp-hero">
+    <div class="rtp-hero-overlay"></div>
+    <div class="rtp-container">
+        <h1>PRENOTA IL TUO <span>EVENTO</span></h1>
+        <p>Seleziona servizi, moto e date.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <form id="bookingForm" th:object="${bookingRequest}" class="py-4">
+        <input type="hidden" th:value="${bookingForm.eventId}" name="eventId">
+        <div class="row g-5">
+
+            <!-- SINISTRA -->
+            <div class="col-lg-8">
+
+                <!-- DATI EVENTO -->
+                <div class="card bg-dark text-white border-danger mb-4">
+                    <div class="card-body">
+                        <h3 class="mb-4">Informazioni evento</h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Evento</label>
+                                <input type="text" class="form-control"
+                                       th:value="${bookingForm.eventName}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Organizzatore</label>
+                                <input type="text" class="form-control"
+                                       th:value="${bookingForm.organizer}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Circuito</label>
+                                <input type="text" class="form-control"
+                                       th:value="${bookingForm.circuitName}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SERVIZI -->
+                <div class="card bg-dark text-white border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Servizi disponibili</h3>
+                        <div th:each="service : ${bookingForm.services}" class="mb-4">
+
+                            <!-- CHECK SERVIZIO -->
+                            <div class="form-check">
+                                <input class="form-check-input service-checkbox" type="checkbox"
+                                       th:value="${service.serviceId}">
+                                <label class="form-check-label fw-bold">
+                                    <span th:text="${service.serviceName}"></span>
+                                </label>
+                            </div>
+
+                            <!-- DETTAGLI SERVIZIO -->
+                            <div class="service-details ms-4 mt-3 d-none">
+
+                                <!-- SELECT MOTO -->
+                                <div th:if="${service.pricingType.name() == 'BIKE_BASED'}">
+                                    <div th:if="${#lists.isEmpty(service.availableBikes)}">
+                                        <p class="text-danger">
+                                            Non ci sono moto disponibili per questo evento.
+                                        </p>
+                                    </div>
+                                    <div th:unless="${#lists.isEmpty(service.availableBikes)}">
+                                        <label class="form-label">Seleziona moto</label>
+                                        <select class="form-control">
+                                            <option value="">Seleziona moto</option>
+                                            <option th:each="bike : ${service.availableBikes}"
+                                                    th:value="${bike.id}"
+                                                    th:text="${bike.name + ' - €' + bike.dailyPrice}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- DATE -->
+                                <div class="mt-3">
+                                    <label class="form-label">Date</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-2" 
+                                                th:each="date : ${bookingForm.eventDates}">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox">
+                                                <label class="form-check-label" th:text="${date}">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESTRA -->
+            <div class="col-lg-4">
+                <div class="card bg-dark text-white border-danger position-sticky" style="top: 30px;">
+                    <div class="card-body">
+                        <h3>Riepilogo</h3>
+                        <hr>
+                        <div id="bookingSummary">
+                            Nessun servizio selezionato
+                        </div>
+                        <hr>
+                        <h4>Totale: <span id="totalPrice">€ 0.00</span>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <button type="submit" class="btn-primary px-5">Vai al riepilogo</button>
+        </div>
+    </form>
+</div>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+<script>
+
+document.querySelectorAll('.service-checkbox')
+.forEach(cb => {
+
+    cb.addEventListener('change', function() {
+
+        const details =
+            this.closest('.mb-4')
+                .querySelector('.service-details');
+
+        details.classList.toggle(
+            'd-none',
+            !this.checked
+        );
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

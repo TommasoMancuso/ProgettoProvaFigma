@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import da_figma.dtos.BookingRequestDto;
+import da_figma.services.BookingFacadeService;
+import da_figma.services.CircuitService;
 import da_figma.services.EventService;
 import da_figma.services.TeamUserService;
-import da_figma.services.CircuitService;
 
 @Controller
 public class UserController {
@@ -20,6 +23,9 @@ public class UserController {
 
     @Autowired
     private CircuitService circuitService;
+
+    @Autowired
+    private BookingFacadeService bookingFacadeService;
 
     // =========================
     // PUBLIC PAGES
@@ -47,12 +53,33 @@ public class UserController {
         return "aboutus";
     }
 
+    // ROTTA PER ENTRARE NELLA PAGINA DEGLI EVENTI
     @GetMapping("/events")
     public String events(Model model){
 
         model.addAttribute("events", eventService.getAllEvents());
 
         return "events";
+    }
+
+    // ROTTA PER PAGINA DI DETTAGLIO EVENTI
+    @GetMapping("/user/eventDetail/{id}")
+    public String eventDetail(@PathVariable Long id, Model model) {
+
+        model.addAttribute("event", eventService.getEventById(id));
+        
+        return "user/eventDetail";
+    }
+
+    // ROTTA PER FORM PRENOTAZIONE
+    @GetMapping("/user/booking/{eventId}")
+    public String bookingForm(@PathVariable Long eventId, Model model) {
+
+        model.addAttribute("bookingForm", bookingFacadeService.buildBookingForm(eventId));
+
+        model.addAttribute("bookingRequest", new BookingRequestDto());
+
+        return "user/bookingForm";
     }
 
 }
