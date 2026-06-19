@@ -5,16 +5,16 @@
 
 <body>
 
-<section class="rtp-hero">
+<section class="rtp-hero-booking">
     <div class="rtp-hero-overlay"></div>
     <div class="rtp-container">
-        <h1>PRENOTA IL TUO <span>EVENTO</span></h1>
+        <h1>PRENOTA IL TUO <span class="spanBooking">EVENTO</span></h1>
         <p>Seleziona servizi, moto e date.</p>
     </div>
 </section>
 
 <div class="container py-5">
-    <form id="bookingForm" th:object="${bookingRequest}" class="py-4">
+    <form id="bookingForm" th:object="${bookingRequest}" th:action="@{/booking/review}" method="post" class="py-4">
         <input type="hidden" th:value="${bookingForm.eventId}" name="eventId">
         <div class="row g-5">
 
@@ -53,20 +53,22 @@
 
                             <!-- CHECK SERVIZIO -->
                             <div class="form-check">
-                                <input class="form-check-input service-checkbox" type="checkbox"
+                                <input class="form-check-input service-checkbox"
+                                        type="checkbox"
                                         th:value="${service.serviceId}"
-                                                th:attr="
-                                                    data-name=${service.serviceName},
-                                                    data-pricing=${service.pricingType},
-                                                    data-price1=${service.priceOneDay},
-                                                    data-price2=${service.priceTwoDays},
-                                                    data-price3=${service.priceThreeDays},
-                                                    data-pricefull=${service.priceFullEvent}">
+                                        th:attr="
+                                            data-service-id=${service.serviceId},
+                                            data-name=${service.serviceName},
+                                            data-pricing=${service.pricingType},
+                                            data-price1=${service.priceOneDay},
+                                            data-price2=${service.priceTwoDays},
+                                            data-price3=${service.priceThreeDays},
+                                            data-pricefull=${service.priceFullEvent}">
                                 <label class="form-check-label fw-bold">
                                     <span th:text="${service.serviceName}"></span>
                                 </label>
                             </div>
-
+                        
                             <!-- DETTAGLI SERVIZIO -->
                             <div class="service-details ms-4 mt-3 d-none">
 
@@ -124,15 +126,17 @@
                         </h4>
                     </div>
                 </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn-primary text-decoration-none px-5">Vai al riepilogo</button>
+                </div>
             </div>
-        </div>
-        <div class="text-center mt-5">
-            <button type="submit" class="btn-primary px-5">Vai al riepilogo</button>
-        </div>
+        </div>     
     </form>
 </div>
 
 <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+
 
 <script>
 
@@ -256,47 +260,90 @@ function updateSummary() {
 
     summary.innerHTML = html;
 
-    totalElement.innerText =
-        '€ ' + total.toFixed(2);
+    totalElement.innerText = '€ ' + total.toFixed(2);
 }
 
-document
-    .querySelectorAll('.service-checkbox')
+document.querySelectorAll('.service-checkbox')
     .forEach(cb => {
 
         cb.addEventListener('change', function() {
 
-            const details =
-                this.closest('.mb-4')
-                    .querySelector('.service-details');
+            const details = this.closest('.mb-4').querySelector('.service-details');
 
-            details.classList.toggle(
-                'd-none',
-                !this.checked
-            );
+            details.classList.toggle('d-none', !this.checked);
 
             updateSummary();
         });
     });
 
-document
-    .querySelectorAll('.date-checkbox')
+document.querySelectorAll('.date-checkbox')
     .forEach(cb => {
 
-        cb.addEventListener(
-            'change',
-            updateSummary
-        );
+        cb.addEventListener('change', updateSummary);
     });
 
-document
-    .querySelectorAll('.bike-select')
+document.querySelectorAll('.bike-select')
     .forEach(select => {
+        select.addEventListener('change', updateSummary);
+    });
 
-        select.addEventListener(
-            'change',
-            updateSummary
-        );
+    // INVIO JSON ALLA PAGINA DI RIEPILOGO
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+
+    e.preventDefault();
+
+    const request = {
+
+        eventId: Number(
+            document.querySelector('input[name="eventId"]').value),
+
+        services: []
+    };
+
+    document.querySelectorAll('.service-checkbox:checked')
+            .forEach(serviceCheckbox => {
+
+                const container = serviceCheckbox.closest('.mb-4');
+
+                const serviceRequest = {
+
+                    serviceId: Number(serviceCheckbox.value),
+
+                    bikeId: null,
+
+                    selectedDates: []
+                };
+
+                const bikeSelect = container.querySelector('.bike-select');
+
+                if (bikeSelect && bikeSelect.value) {
+
+                    serviceRequest.bikeId = Number(bikeSelect.value);
+                }
+
+                container.querySelectorAll('.date-checkbox:checked')
+                    .forEach(dateCheckbox => {
+
+                        serviceRequest.selectedDates.push(dateCheckbox.value);
+                    });
+
+                request.services.push(serviceRequest);
+            });
+
+        const response = await fetch('/booking/review',
+                {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify(request)
+                }
+            );
+
+        const html = await response.text();
+
+        document.open();
+        document.write(html);
+        document.close();
     });
 
 </script>

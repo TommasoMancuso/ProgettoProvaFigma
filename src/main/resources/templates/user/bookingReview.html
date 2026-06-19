@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+
+<section class="rtp-hero-booking">
+    <div class="rtp-hero-overlay"></div>
+    <div class="rtp-container">
+        <h1>CONFERMA LA TUA <span class="spanBooking">PRENOTAZIONE</span></h1>
+        <p>Controlla attentamente il riepilogo prima della conferma.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card bg-dark text-white border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Riepilogo prenotazione</h3>
+                    <div class="mb-4">
+                        <h5>Evento</h5>
+                        <p class="mb-1"><strong th:text="${review.eventName}"></strong></p>
+                        <p class="mb-1">Circuito: <span th:text="${review.circuitName}"></span></p>
+                    </div>
+                    <div class="mb-4" th:if="${review.bikeName != null}">
+                        <h5>Moto selezionata</h5>
+                        <p th:text="${review.bikeName}"></p>
+                    </div>
+                    <hr>
+                        <h5 class="mb-3">Servizi selezionati</h5>
+                        <div th:each="service : ${review.services}" class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <!-- SINISTRA -->
+                                <div>
+                                    <h6 th:text="${service.serviceName}"></h6>
+                                    <div>
+                                        <strong>Date:</strong>
+                                        <ul class="mb-0">
+                                            <li th:each="date : ${service.dates}"th:text="${date}"></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- DESTRA -->
+                                <div class="text-end">
+                                    <strong class="text-white" th:text="'€ ' + ${service.price}"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    <hr>
+                    <div class="text-end">
+                        <h3>Totale: <span class="text-white" th:text="'€ ' + ${review.totalPrice}"></span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <form th:action="@{/booking/confirm}" method="post" class="stripe">
+                <input type="hidden" name="eventId" th:value="${bookingRequest.eventId}">
+                <div th:each="service, stat : ${bookingRequest.services}">
+                    <input type="hidden" th:name="'services[' + ${stat.index} + '].serviceId'"
+                           th:value="${service.serviceId}">
+                    <input type="hidden" th:name="'services[' + ${stat.index} + '].bikeId'"
+                           th:value="${service.bikeId}">
+                    <div th:each="date, dStat : ${service.selectedDates}">
+                        <input type="hidden"
+                               th:name="'services[' + ${stat.index} + '].selectedDates[' + ${dStat.index} + ']'" th:value="${date}">
+                    </div>
+                </div>
+                <div class="card bg-dark text-white border-danger">
+                    <div class="card-body">
+                        <h4 class="mb-3">Metodo di pagamento</h4>
+                        <div class="form-check">
+                            <input class="form-check-input"type="radio" checked>
+                            <label class="form-check-label">Pagamento online (Stripe)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center py-3">
+                    <button type="submit" class="btn-primary px-5">Conferma prenotazione</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+</body>
+
+</html>

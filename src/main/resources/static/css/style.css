@@ -341,6 +341,23 @@ body {
   margin-bottom: 10px;
 }
 
+/* HERO BOOKING E REVIEW */
+
+.rtp-hero-booking{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 60px;
+  padding-bottom: 0;
+  background: #111;
+}
+
+.spanBooking{
+  color: #e63946;
+}
+
 /* =========================
    SERVICES GRID
    ========================= */
@@ -502,6 +519,10 @@ hr{
 form{
   border-top: 1px solid #e63946;
   border-bottom: 1px solid #e63946;
+}
+
+.stripe{
+  border: none;
 }
 
 /* FORMS */

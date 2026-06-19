@@ -130,6 +130,76 @@ public class BookingPricingService {
         return total;
     }
 
+    public BigDecimal calculateSingleServicePrice(Event event, BookingServiceRequestDto serviceRequest) {
+
+        TeamService service = serviceRepository
+                .findById(serviceRequest.getServiceId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Servizio non trovato"));
+
+        BookingDuration duration =
+                durationResolver.resolve(
+                        event,
+                        serviceRequest.getSelectedDates());
+
+        switch (service.getPricingType()) {
+
+            case FIXED -> {
+
+                if (service.getBasePrice() == null) {
+                    throw new IllegalArgumentException(
+                            "Prezzo fisso non configurato per il servizio "
+                                    + service.getName());
+                }
+
+                return service.getBasePrice();
+            }
+
+            case EVENT_BASED -> {
+
+                EventServicePrice priceConfig =
+                        eventServicePriceRepository
+                                .findByEventIdAndServiceId(
+                                        event.getId(),
+                                        service.getId())
+                                .orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Prezzo evento non configurato"));
+
+                return getPriceByDuration(priceConfig, duration);
+            }
+
+            case BIKE_BASED -> {
+
+                if (serviceRequest.getBikeId() == null) {
+                    throw new IllegalArgumentException(
+                            "È necessario selezionare una moto");
+                }
+
+                Bike bike = bikeRepository
+                        .findById(serviceRequest.getBikeId())
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Moto non trovata"));
+
+                if (bike.getDailyPrice() == null) {
+                    throw new IllegalArgumentException(
+                            "Prezzo giornaliero moto non configurato");
+                }
+
+                return bike.getDailyPrice().multiply(
+                        BigDecimal.valueOf(
+                                serviceRequest.getSelectedDates().size()));
+            }
+
+            case MANUAL -> throw new IllegalArgumentException(
+                    "Servizio disponibile solo tramite contatto diretto");
+
+            default -> throw new IllegalArgumentException(
+                    "Tipo di pricing non supportato");
+        }
+    }
+
     private BigDecimal getPriceByDuration(
             EventServicePrice priceConfig,
             BookingDuration duration) {
