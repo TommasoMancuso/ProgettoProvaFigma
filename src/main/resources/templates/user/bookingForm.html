@@ -54,7 +54,14 @@
                             <!-- CHECK SERVIZIO -->
                             <div class="form-check">
                                 <input class="form-check-input service-checkbox" type="checkbox"
-                                       th:value="${service.serviceId}">
+                                        th:value="${service.serviceId}"
+                                                th:attr="
+                                                    data-name=${service.serviceName},
+                                                    data-pricing=${service.pricingType},
+                                                    data-price1=${service.priceOneDay},
+                                                    data-price2=${service.priceTwoDays},
+                                                    data-price3=${service.priceThreeDays},
+                                                    data-pricefull=${service.priceFullEvent}">
                                 <label class="form-check-label fw-bold">
                                     <span th:text="${service.serviceName}"></span>
                                 </label>
@@ -72,10 +79,11 @@
                                     </div>
                                     <div th:unless="${#lists.isEmpty(service.availableBikes)}">
                                         <label class="form-label">Seleziona moto</label>
-                                        <select class="form-control">
+                                        <select class="form-control bike-select">
                                             <option value="">Seleziona moto</option>
                                             <option th:each="bike : ${service.availableBikes}"
                                                     th:value="${bike.id}"
+                                                    th:attr="data-price=${bike.dailyPrice}"
                                                     th:text="${bike.name + ' - €' + bike.dailyPrice}">
                                             </option>
                                         </select>
@@ -89,7 +97,7 @@
                                         <div class="col-md-4 mb-2" 
                                                 th:each="date : ${bookingForm.eventDates}">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox">
+                                                <input type="checkbox" class="form-check-input date-checkbox" th:value="${date}">
                                                 <label class="form-check-label" th:text="${date}">
                                                 </label>
                                             </div>
@@ -128,23 +136,168 @@
 
 <script>
 
-document.querySelectorAll('.service-checkbox')
-.forEach(cb => {
+function updateSummary() {
 
-    cb.addEventListener('change', function() {
+    const summary =
+        document.getElementById('bookingSummary');
 
-        const details =
-            this.closest('.mb-4')
-                .querySelector('.service-details');
+    const totalElement =
+        document.getElementById('totalPrice');
 
-        details.classList.toggle(
-            'd-none',
-            !this.checked
-        );
+    let total = 0;
 
+    let html = '';
+
+    document
+        .querySelectorAll('.service-checkbox:checked')
+        .forEach(serviceCheckbox => {
+
+            const container =
+                serviceCheckbox.closest('.mb-4');
+
+            const serviceName =
+                serviceCheckbox.dataset.name;
+
+            const pricingType =
+                serviceCheckbox.dataset.pricing;
+
+            const selectedDates =
+                container.querySelectorAll(
+                    '.date-checkbox:checked'
+                ).length;
+
+            const totalEventDates =
+                container.querySelectorAll('.date-checkbox').length;
+
+            let price = 0;
+
+            if (pricingType === 'FIXED') {
+
+                price =
+                    parseFloat(
+                        serviceCheckbox.dataset.pricefull || 0
+                    );
+
+            } else if (pricingType === 'EVENT_BASED') {
+
+                const totalEventDates =
+                    container.querySelectorAll('.date-checkbox').length;
+
+                if (selectedDates === 0) {
+
+                    price = 0;
+
+                } else if (selectedDates === totalEventDates) {
+
+                    price =
+                        parseFloat(
+                            serviceCheckbox.dataset.pricefull || 0
+                        );
+
+                } else if (selectedDates === 1) {
+
+                    price =
+                        parseFloat(
+                            serviceCheckbox.dataset.price1 || 0
+                        );
+
+                } else if (selectedDates === 2) {
+
+                    price =
+                        parseFloat(
+                            serviceCheckbox.dataset.price2 || 0
+                        );
+
+                } else if (selectedDates === 3) {
+
+                    price =
+                        parseFloat(
+                            serviceCheckbox.dataset.price3 || 0
+                        );
+
+                } else {
+
+                    price = 0;
+                }
+
+            } else if (pricingType === 'BIKE_BASED') {
+
+                const bikeSelect =
+                    container.querySelector('.bike-select');
+
+                if (bikeSelect &&
+                    bikeSelect.selectedOptions.length > 0) {
+
+                    const bikePrice =
+                        parseFloat(
+                            bikeSelect.selectedOptions[0]
+                                .dataset.price || 0
+                        );
+
+                    price =
+                        bikePrice * selectedDates;
+                }
+            }
+
+            total += price;
+
+            html += `
+                <div class="mb-2">
+                    <strong>${serviceName}</strong><br>
+                    € ${price.toFixed(2)}
+                </div>
+            `;
+        });
+
+    if (html === '') {
+
+        html = 'Nessun servizio selezionato';
+    }
+
+    summary.innerHTML = html;
+
+    totalElement.innerText =
+        '€ ' + total.toFixed(2);
+}
+
+document
+    .querySelectorAll('.service-checkbox')
+    .forEach(cb => {
+
+        cb.addEventListener('change', function() {
+
+            const details =
+                this.closest('.mb-4')
+                    .querySelector('.service-details');
+
+            details.classList.toggle(
+                'd-none',
+                !this.checked
+            );
+
+            updateSummary();
+        });
     });
 
-});
+document
+    .querySelectorAll('.date-checkbox')
+    .forEach(cb => {
+
+        cb.addEventListener(
+            'change',
+            updateSummary
+        );
+    });
+
+document
+    .querySelectorAll('.bike-select')
+    .forEach(select => {
+
+        select.addEventListener(
+            'change',
+            updateSummary
+        );
+    });
 
 </script>
 
