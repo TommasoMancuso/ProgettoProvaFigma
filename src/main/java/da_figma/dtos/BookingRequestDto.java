@@ -16,6 +16,8 @@ public class BookingRequestDto {
 
     private Long eventId;
 
+    private String paymentMethod;
+
     private List<BookingServiceRequestDto> services = new ArrayList<>();
 
 }
