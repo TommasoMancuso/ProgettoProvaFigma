@@ -100,16 +100,20 @@ public class EventService {
     }
 
     // =========================
-    // UPDATE EVENT (ADMIN)
-    // =========================
-    @Transactional
-    public Event updateEvent(Long id, EventDto dto) {
+// UPDATE EVENT (ADMIN)
+// =========================
+@Transactional
+public Event updateEvent(Long id, EventDto dto) {
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event non trovato"));
 
         Circuit circuit = circuitRepository.findById(dto.getCircuitId())
                 .orElseThrow(() -> new RuntimeException("Circuito non trovato"));
+
+        // =========================
+        // AGGIORNA DATI EVENTO
+        // =========================
 
         event.setName(dto.getName());
         event.setDescription(dto.getDescription());
@@ -123,7 +127,53 @@ public class EventService {
             event.setStatus(dto.getStatus());
         }
 
-        return eventRepository.save(event);
+        Event savedEvent = eventRepository.save(event);
+
+        // =========================
+        // AGGIORNA SERVIZI
+        // =========================
+
+        List<EventServicePrice> existingPrices =
+                eventServicePriceRepository.findByEventId(id);
+
+        // Elimina i servizi rimossi
+        existingPrices.removeIf(price -> {
+
+            boolean keep = dto.getServiceIds() != null
+                    && dto.getServiceIds().contains(price.getService().getId());
+
+            if (!keep) {
+                eventServicePriceRepository.delete(price);
+            }
+
+            return !keep;
+        });
+
+        // Aggiunge solo i nuovi servizi
+        if (dto.getServiceIds() != null) {
+
+            for (Long serviceId : dto.getServiceIds()) {
+
+                boolean alreadyExists = existingPrices.stream()
+                        .anyMatch(p -> p.getService().getId().equals(serviceId));
+
+                if (!alreadyExists) {
+
+                    TeamService service = teamServiceRepository.findById(serviceId)
+                            .orElseThrow(() ->
+                                    new RuntimeException("Servizio non trovato"));
+
+                    EventServicePrice esp = new EventServicePrice();
+
+                    esp.setEvent(savedEvent);
+                    esp.setService(service);
+
+                    eventServicePriceRepository.save(esp);
+                }
+            }
+        }
+
+        return savedEvent;
     }
 
     // =========================

@@ -25,37 +25,23 @@ public class EventPricingController {
     private EventService eventService;
 
     @GetMapping("/admin/events/{eventId}/prices")
-    public String configurePrices(
-            @PathVariable Long eventId,
-            Model model) {
+    public String configurePrices(@PathVariable Long eventId, Model model) {
 
         Event event = eventService.getEventById(eventId);
 
-        long eventDays =
-                ChronoUnit.DAYS.between(
-                        event.getStartDate(),
-                        event.getEndDate()
-                ) + 1;
+        long eventDays = ChronoUnit.DAYS.between(event.getStartDate(), event.getEndDate()) + 1;
 
-        model.addAttribute(
-                "pricing",
-                eventPricingService.getPricingForm(eventId));
+        model.addAttribute("pricing", eventPricingService.getPricingForm(eventId));
 
-        model.addAttribute(
-                "event",
-                event);
+        model.addAttribute("event", event);
 
-        model.addAttribute(
-                "eventDays",
-                eventDays);
+        model.addAttribute("eventDays", eventDays);
 
         return "admin/events/eventPricing";
     }
 
     @PostMapping("/admin/events/prices/save")
-    public String savePrices(
-            @ModelAttribute("pricing")
-            EventPricingDto pricingDto) {
+    public String savePrices(@ModelAttribute("pricing") EventPricingDto pricingDto) {
 
         eventPricingService.savePrices(pricingDto);
 

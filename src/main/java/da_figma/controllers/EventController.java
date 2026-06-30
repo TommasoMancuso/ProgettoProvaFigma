@@ -78,6 +78,8 @@ public class EventController {
         dto.setEndDate(event.getEndDate());
         dto.setMaxParticipants(event.getMaxParticipants());
         dto.setStatus(event.getStatus());
+        dto.setServiceIds(event.getServicePrices().stream()
+                                .map(esp -> esp.getService().getId()).toList());
 
         model.addAttribute("event", dto);
         model.addAttribute("id", id);
@@ -106,7 +108,7 @@ public class EventController {
 
         eventService.updateEvent(id, eventDto);
 
-        return "redirect:/admin/events";
+        return "redirect:/admin/events/" + id + "/prices";
     }
 
     // DELETE

@@ -84,9 +84,7 @@ public class TeamUserService {
     // UPDATE 
     // =========================
     @Transactional
-    public TeamUser updateTeamUser(Long id,
-                                   TeamUser updated,
-                                   MultipartFile imageFile) {
+    public TeamUser updateTeamUser(Long id, TeamUser updated, MultipartFile imageFile) {
 
         TeamUser existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TeamUser non trovato"));

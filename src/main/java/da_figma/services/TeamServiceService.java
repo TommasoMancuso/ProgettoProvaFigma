@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import da_figma.enums.PricingType;
 import da_figma.models.TeamService;
 import da_figma.repositories.TeamServiceRepository;
 
@@ -44,7 +45,13 @@ public class TeamServiceService {
         existing.setName(updated.getName());
         existing.setDescription(updated.getDescription());
         existing.setPricingType(updated.getPricingType());
-        existing.setBasePrice(updated.getBasePrice());
+        
+        if (updated.getPricingType() == PricingType.FIXED) {
+            existing.setBasePrice(updated.getBasePrice());
+        } else {
+            existing.setBasePrice(null);
+        }
+        
         existing.setActive(updated.isActive());
 
         return repository.save(existing);
