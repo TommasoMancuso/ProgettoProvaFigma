@@ -142,6 +142,24 @@ CREATE TABLE event_service_prices (
         UNIQUE (event_id, service_id)
 );
 
+-- PRENOTAZIONE TEMPORANEA
+CREATE TABLE pending_bookings (
+
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    user_keycloak_id VARCHAR(255) NOT NULL,
+
+    booking_json LONGTEXT NOT NULL,
+
+    total_price DECIMAL(10,2),
+
+    stripe_session_id VARCHAR(255),
+
+    payment_status VARCHAR(30),
+
+    created_at TIMESTAMP NOT NULL
+);
+
 -- =========================
 -- BOOKINGS (KEYCLOAK CLIENTS)
 -- =========================
