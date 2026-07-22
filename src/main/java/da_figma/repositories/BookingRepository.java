@@ -11,6 +11,7 @@ import da_figma.models.Booking;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByUserKeycloakId(String keycloakId);
+    
     List<Booking> findByEventId(Long eventId);
 
     List<Booking> findByStatus(String status);

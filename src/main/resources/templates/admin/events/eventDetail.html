@@ -105,6 +105,61 @@
         </div>
     </div>
 
+    <!-- PRENOTAZIONI EVENTO -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-dark text-white border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Prenotazioni evento</h3>
+                    <div th:if="${#lists.isEmpty(bookings)}">
+                        <p class="mb-0">Nessuna prenotazione presente per questo evento.</p>
+                    </div>
+                    <div th:unless="${#lists.isEmpty(bookings)}">
+                        <table class="table table-striped table-responsive-lg align-middle">
+                            <thead>
+                            <tr>
+                                <th class="bg-dark text-white">Partecipante</th>
+                                <th class="bg-dark text-white">Telefono</th>
+                                <th class="bg-dark text-white">Email</th>
+                                <th class="bg-dark text-white">Totale</th>
+                                <th class="bg-dark text-white">Stato</th>
+                                <th class="bg-dark text-white text-end">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="booking : ${bookings}">
+                                <td><span th:text="${booking.user.fullName}"></span></td>
+                                <td th:text="${booking.user.phone}"></td>
+                                <td th:text="${booking.user.email}"></td>
+                                <td> € <span th:text="${booking.totalPrice}"></span></td>
+                                <td><span th:text="${booking.status}"></span></td>
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-end">
+                                    <a th:href="@{/admin/bookings/detail/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-custom p-2">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{/admin/bookings/edit/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-warning p-2">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a th:href="@{/admin/bookings/delete/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-danger p-2"
+                                            onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- AZIONI -->
     <div class="text-center mt-5">
         <a th:href="@{/admin/events/edit/{id}(id=${event.id})}"

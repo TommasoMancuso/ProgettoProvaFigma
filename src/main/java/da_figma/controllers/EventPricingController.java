@@ -47,4 +47,21 @@ public class EventPricingController {
 
         return "redirect:/admin/events";
     }
+
+    // ROTTA PER MODIFICA PREZZI
+    @GetMapping("/admin/events/{eventId}/prices/edit")
+    public String editPrices(@PathVariable Long eventId, Model model) {
+
+        Event event = eventService.getEventById(eventId);
+
+        long eventDays = ChronoUnit.DAYS.between(event.getStartDate(), event.getEndDate()) + 1;
+
+        model.addAttribute("pricing", eventPricingService.getPricingForm(eventId));
+
+        model.addAttribute("event", event);
+
+        model.addAttribute("eventDays", eventDays);
+
+        return "admin/events/editPricing";
+    }
 }

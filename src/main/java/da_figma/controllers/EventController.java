@@ -14,6 +14,7 @@ import da_figma.enums.EventStatus;
 import da_figma.models.Event;
 import da_figma.services.CircuitService;
 import da_figma.services.EventService;
+import da_figma.services.KeycloakUserService;
 import da_figma.services.TeamServiceService;
 import jakarta.validation.Valid;
 
@@ -29,6 +30,9 @@ public class EventController {
 
     @Autowired
     private TeamServiceService teamServiceService;
+
+    @Autowired
+    private KeycloakUserService keycloakUserService;
 
     // LISTA
     @GetMapping("/admin/events")
@@ -56,14 +60,20 @@ public class EventController {
         return "redirect:/admin/events/" + event.getId() + "/prices";
     }
 
-    // DETAIL (ENTITY OK)
-    @GetMapping("/admin/events/detail/{id}")
+    // DETAIL 
+   @GetMapping("/admin/events/detail/{id}")
     public String eventDetail(@PathVariable Long id, Model model) {
-        model.addAttribute("event", eventService.getEventById(id));
+
+        Event event = eventService.getEventById(id);
+
+        model.addAttribute("event", event);
+
+        model.addAttribute("bookings", eventService.getBookingsForEvent(id));
+
         return "admin/events/eventDetail";
     }
 
-    // EDIT FORM (DTO!)
+    // EDIT FORM 
     @GetMapping("/admin/events/edit/{id}")
     public String editEvent(@PathVariable Long id, Model model) {
 
@@ -108,7 +118,7 @@ public class EventController {
 
         eventService.updateEvent(id, eventDto);
 
-        return "redirect:/admin/events/" + id + "/prices";
+        return "redirect:/admin/events/" + id + "/prices/edit";
     }
 
     // DELETE
@@ -117,4 +127,6 @@ public class EventController {
         eventService.archiveEvent(id);
         return "redirect:/admin/events";
     }
+
+    
 }

@@ -80,8 +80,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/", true)
+            .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/", true)
             )
 
             .logout(logout -> logout

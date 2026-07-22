@@ -1,17 +1,23 @@
 package da_figma.services;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import da_figma.dtos.BookingTableDto;
 import da_figma.dtos.EventDto;
+import da_figma.dtos.UserBookingDto;
 import da_figma.enums.EventStatus;
+import da_figma.models.Booking;
 import da_figma.models.Circuit;
 import da_figma.models.Event;
 import da_figma.models.EventServicePrice;
 import da_figma.models.TeamService;
+import da_figma.repositories.BookingRepository;
 import da_figma.repositories.CircuitRepository;
 import da_figma.repositories.EventRepository;
 import da_figma.repositories.EventServicePriceRepository;
@@ -32,6 +38,12 @@ public class EventService {
     @Autowired
     private EventServicePriceRepository eventServicePriceRepository;
 
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private KeycloakUserService keycloakUserService;
+
     // =========================
     // READ (ADMIN)
     // =========================
@@ -45,11 +57,36 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
     }
 
+    public List<BookingTableDto> getBookingsForEvent(Long eventId) {
+
+        List<Booking> bookings = bookingRepository.findByEventId(eventId);
+
+        List<BookingTableDto> result = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+
+            UserBookingDto user = keycloakUserService.getUserById(booking.getUserKeycloakId());
+
+            BookingTableDto dto = new BookingTableDto();
+
+            dto.setBookingId(booking.getId());
+            dto.setUser(user);
+            dto.setTotalPrice(booking.getTotalPrice());
+            dto.setStatus(booking.getStatus());
+
+            result.add(dto);
+        }
+
+        return result;
+    }
+
     // =========================
     // CREATE EVENT (ADMIN)
     // =========================
     @Transactional
     public Event createEvent(EventDto dto) {
+
+        validateEventDates(dto);
 
         Circuit circuit = circuitRepository.findById(dto.getCircuitId())
                 .orElseThrow(() -> new RuntimeException("Circuito non trovato"));
@@ -68,11 +105,7 @@ public class EventService {
         event.setMaxParticipants(dto.getMaxParticipants());
         event.setCurrentParticipants(0);
 
-        event.setStatus(
-                dto.getStatus() != null
-                        ? dto.getStatus()
-                        : EventStatus.AVAILABLE
-        );
+        event.setStatus(dto.getStatus() != null ? dto.getStatus() : EventStatus.AVAILABLE);
 
         Event savedEvent = eventRepository.save(event);
 
@@ -80,14 +113,11 @@ public class EventService {
 
             for (Long serviceId : dto.getServiceIds()) {
 
-                TeamService service =
-                        teamServiceRepository.findById(serviceId)
-                                .orElseThrow(() ->
-                                        new RuntimeException(
+                TeamService service = teamServiceRepository.findById(serviceId)
+                                .orElseThrow(() -> new RuntimeException(
                                                 "Servizio non trovato"));
 
-                EventServicePrice esp =
-                        new EventServicePrice();
+                EventServicePrice esp = new EventServicePrice();
 
                 esp.setEvent(savedEvent);
                 esp.setService(service);
@@ -102,8 +132,10 @@ public class EventService {
     // =========================
 // UPDATE EVENT (ADMIN)
 // =========================
-@Transactional
-public Event updateEvent(Long id, EventDto dto) {
+    @Transactional
+    public Event updateEvent(Long id, EventDto dto) {
+
+        validateEventDates(dto);
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event non trovato"));
@@ -176,6 +208,30 @@ public Event updateEvent(Long id, EventDto dto) {
         return savedEvent;
     }
 
+    // GESTIONE DATE
+    private void validateEventDates(EventDto dto) {
+
+        LocalDate today = LocalDate.now();
+
+        if (dto.getStartDate() == null) {
+            throw new RuntimeException("La data di inizio è obbligatoria.");
+        }
+
+        if (dto.getEndDate() == null) {
+            throw new RuntimeException("La data di fine è obbligatoria.");
+        }
+
+        if (dto.getStartDate().isBefore(today)) {
+            throw new RuntimeException(
+                    "La data di inizio non può essere nel passato.");
+        }
+
+        if (dto.getEndDate().isBefore(dto.getStartDate())) {
+            throw new RuntimeException(
+                    "La data di fine deve essere successiva o uguale alla data di inizio.");
+        }
+    }
+
     // =========================
     // SOFT DELETE (ARCHIVE LOGIC)
     // =========================
@@ -191,15 +247,11 @@ public Event updateEvent(Long id, EventDto dto) {
 
     // =====================================================
     // ================= BUSINESS LOGIC ====================
-    // (il tuo codice invariato sotto)
-    // =====================================================
 
     @Transactional
     public void registerBooking(Event event) {
 
-        event.setCurrentParticipants(
-            event.getCurrentParticipants() + 1
-        );
+        event.setCurrentParticipants(event.getCurrentParticipants() + 1);
 
         eventRepository.save(event);
     }
@@ -208,8 +260,7 @@ public Event updateEvent(Long id, EventDto dto) {
     public void unregisterBooking(Event event) {
 
         int current = (event.getCurrentParticipants() == null)
-                ? 0
-                : event.getCurrentParticipants();
+                ? 0 : event.getCurrentParticipants();
 
         event.setCurrentParticipants(Math.max(0, current - 1));
 

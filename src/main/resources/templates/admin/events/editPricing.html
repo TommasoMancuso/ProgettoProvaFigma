@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="rtp-hero">
+    <div class="rtp-hero-overlay"></div>
+
+    <div class="rtp-container">
+        <h1>MODIFICA I <span>PREZZI</span></h1>
+        <p>Aggiorna i prezzi dei servizi disponibili per <strong th:text="${event.name}"></strong>
+        </p>
+    </div>
+</section>
+
+<section class="rtp-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <form th:action="@{/admin/events/prices/save}" th:object="${pricing}" method="post">
+                    <input type="hidden" th:field="*{eventId}">
+                    <table class="table table-striped table-responsive-lg">
+                        <thead>
+                        <tr>
+                            <th class="bg-dark text-white">Servizio</th>
+                            <th class="bg-dark text-white">1 Giorno</th>
+                            <th th:if="${eventDays >= 3}" class="bg-dark text-white">2 Giorni</th>
+                            <th th:if="${eventDays >= 4}" class="bg-dark text-white">3 Giorni</th>
+                            <th class="bg-dark text-white">Full Even</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="row, stat : *{rows}" class="align-middle">
+                            <td><strong th:text="${row.serviceName}"></strong>
+                                <input type="hidden" th:field="*{rows[__${stat.index}__].serviceId}">
+                                <input type="hidden" th:field="*{rows[__${stat.index}__].serviceName}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                        th:field="*{rows[__${stat.index}__].priceOneDay}">
+                            </td>
+                            <td th:if="${eventDays >= 3}">
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                        th:field="*{rows[__${stat.index}__].priceTwoDays}">
+                            </td>
+                            <td th:if="${eventDays >= 4}">
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                        th:field="*{rows[__${stat.index}__].priceThreeDays}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                        th:field="*{rows[__${stat.index}__].priceFullEvent}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn-primary px-5 mb-4">Aggiorna prezzi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+<script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+</html>
