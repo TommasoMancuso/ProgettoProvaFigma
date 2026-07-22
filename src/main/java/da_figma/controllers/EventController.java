@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import da_figma.dtos.EventDto;
 import da_figma.enums.EventStatus;
 import da_figma.models.Event;
+import da_figma.services.BookingManagerService;
 import da_figma.services.CircuitService;
 import da_figma.services.EventService;
-import da_figma.services.KeycloakUserService;
 import da_figma.services.TeamServiceService;
 import jakarta.validation.Valid;
 
@@ -32,7 +32,7 @@ public class EventController {
     private TeamServiceService teamServiceService;
 
     @Autowired
-    private KeycloakUserService keycloakUserService;
+    private BookingManagerService bookingManagerService;
 
     // LISTA
     @GetMapping("/admin/events")
@@ -126,6 +126,15 @@ public class EventController {
     public String deleteEvent(@PathVariable Long id) {
         eventService.archiveEvent(id);
         return "redirect:/admin/events";
+    }
+
+    // PAGINA DETTAGLIO PRENOTAZIONE
+    @GetMapping("/admin/bookings/detail/{id}")
+    public String bookingDetail(@PathVariable Long id, Model model) {
+
+        model.addAttribute("booking", bookingManagerService.getBookingDetail(id));
+
+        return "admin/events/bookingDetail";
     }
 
     

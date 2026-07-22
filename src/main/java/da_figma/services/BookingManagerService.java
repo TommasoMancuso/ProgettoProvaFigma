@@ -6,11 +6,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import da_figma.dtos.BookingDetailDto;
 import da_figma.dtos.BookingRequestDto;
 import da_figma.dtos.BookingServiceRequestDto;
+import da_figma.dtos.UserBookingDto;
 import da_figma.enums.BookingStatus;
 import da_figma.enums.PricingType;
 import da_figma.models.Bike;
@@ -25,33 +28,31 @@ import da_figma.repositories.TeamServiceRepository;
 
 @Service
 public class BookingManagerService {
-        
-    private final BookingRepository bookingRepository;
-    private final EventRepository eventRepository;
-    private final TeamServiceRepository serviceRepository;
-    private final BikeRepository bikeRepository;
 
-    private final BookingPricingService pricingService;
-    private final EventService eventService;
-    private final UserContextService userContextService;
+        @Autowired
+        private KeycloakUserService keycloakUserService;
+     
+        @Autowired
+        private BookingRepository bookingRepository;
 
-    public BookingManagerService(
-            BookingRepository bookingRepository,
-            EventRepository eventRepository,
-            TeamServiceRepository serviceRepository,
-            BikeRepository bikeRepository,
-            BookingPricingService pricingService,
-            EventService eventService,
-            UserContextService userContextService) {
+        @Autowired
+        private EventRepository eventRepository;
 
-        this.bookingRepository = bookingRepository;
-        this.eventRepository = eventRepository;
-        this.serviceRepository = serviceRepository;
-        this.bikeRepository = bikeRepository;
-        this.pricingService = pricingService;
-        this.eventService = eventService;
-        this.userContextService = userContextService;
-    }
+        @Autowired
+        private TeamServiceRepository serviceRepository;
+
+        @Autowired
+        private BikeRepository bikeRepository;
+
+        @Autowired
+        private BookingPricingService pricingService;
+
+        @Autowired
+        private EventService eventService;
+
+        @Autowired
+        private UserContextService userContextService;
+
 
     @Transactional
     public Booking createBooking(BookingRequestDto request) {
@@ -71,9 +72,7 @@ public class BookingManagerService {
 
 
    @Transactional
-   public Booking createPaidBooking(
-                BookingRequestDto request,
-                String keycloakId) {
+   public Booking createPaidBooking(BookingRequestDto request, String keycloakId) {
 
         return createBookingInternal(request, keycloakId, true);
    }
@@ -110,8 +109,7 @@ public class BookingManagerService {
                 List<LocalDate> dates = new ArrayList<>(serviceRequest.getSelectedDates());
 
                 if (dates.isEmpty()) {
-                throw new IllegalArgumentException("Date mancanti per il servizio "
-                                + service.getName());
+                        throw new IllegalArgumentException("Date mancanti per il servizio " + service.getName());
                 }
 
                 dates.sort(Comparator.naturalOrder());
@@ -139,7 +137,13 @@ public class BookingManagerService {
 
                 bookingService.setDays(dates.size());
 
-                bookingService.setPriceAtBooking(BigDecimal.ZERO);
+                // ===========================================
+                // CALCOLO PREZZO DEL SINGOLO SERVIZIO
+                // ===========================================
+
+                BigDecimal singleServicePrice = pricingService.calculateSingleServicePrice(event, serviceRequest);
+
+                bookingService.setPriceAtBooking(singleServicePrice);
 
                 booking.getBookingServices().add(bookingService);
 
@@ -194,6 +198,105 @@ public class BookingManagerService {
         return bookingRepository.save(booking);
     }
 
+    @Transactional(readOnly = true)
+        public BookingDetailDto getBookingDetail(Long bookingId) {
 
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Prenotazione non trovata"));
+
+        UserBookingDto user = keycloakUserService.getUserById(booking.getUserKeycloakId());
+
+        BookingDetailDto dto = new BookingDetailDto();
+
+        // =====================================================
+        // BOOKING
+        // =====================================================
+
+        BookingDetailDto.BookingInfo bookingInfo = dto.getBooking();
+
+        bookingInfo.setBookingId(booking.getId());
+
+        bookingInfo.setBookingStatus(booking.getStatus());
+
+        bookingInfo.setPaymentStatus(booking.getPaymentStatus());
+
+        bookingInfo.setTotalPrice(booking.getTotalPrice());
+
+        bookingInfo.setBookingStartDate(booking.getBookingStartDate());
+
+        bookingInfo.setBookingEndDate(booking.getBookingEndDate());
+
+        // =====================================================
+        // EVENTO
+        // =====================================================
+
+        Event event = booking.getEvent();
+
+        bookingInfo.setEventId(event.getId());
+
+        bookingInfo.setEventName(event.getName());
+
+        bookingInfo.setOrganizer(event.getOrganizer());
+
+        bookingInfo.setCircuitName(event.getCircuit().getName());
+
+        bookingInfo.setEventStartDate(event.getStartDate());
+
+        bookingInfo.setEventEndDate(event.getEndDate());
+
+        // =====================================================
+        // UTENTE
+        // =====================================================
+
+        BookingDetailDto.UserInfo userInfo = dto.getUser();
+
+        userInfo.setUsername(user.getUsername());
+
+        userInfo.setFirstName(user.getName());
+
+        userInfo.setLastName(user.getSurname());
+
+        userInfo.setEmail(user.getEmail());
+
+        userInfo.setPhone(user.getPhone());
+
+        userInfo.setBirthDate(user.getBirthDate());
+
+        // =====================================================
+        // SERVIZI
+        // =====================================================
+
+        for (da_figma.models.BookingService bookingService : booking.getBookingServices()) {
+
+                BookingDetailDto.ServiceInfo serviceInfo = new BookingDetailDto.ServiceInfo();
+
+                serviceInfo.setServiceName(bookingService.getService().getName());
+
+                serviceInfo.setPrice(bookingService.getPriceAtBooking());
+
+                dto.getServices().add(serviceInfo);
+        }
+
+        // =====================================================
+        // MOTO
+        // =====================================================
+
+        if (!booking.getBikeAllocations().isEmpty()) {
+
+                Bike bike = booking.getBikeAllocations().getFirst().getBike();
+
+                BookingDetailDto.BikeInfo bikeInfo = new BookingDetailDto.BikeInfo();
+
+                bikeInfo.setBrand(bike.getBrand());
+
+                bikeInfo.setModel(bike.getModel());
+
+                bikeInfo.setChassisNumber(bike.getChassisNumber());
+
+                dto.setBike(bikeInfo);
+        }
+
+        return dto;
+        }
 
 }

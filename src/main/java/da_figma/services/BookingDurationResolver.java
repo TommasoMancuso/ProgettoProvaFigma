@@ -13,13 +13,10 @@ import da_figma.models.Event;
 @Service
 public class BookingDurationResolver {
 
-    public BookingDuration resolve(
-            Event event,
-            List<LocalDate> selectedDates) {
+    public BookingDuration resolve(Event event, List<LocalDate> selectedDates) {
 
         if (selectedDates == null || selectedDates.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Devi selezionare almeno una data");
+            throw new IllegalArgumentException("Devi selezionare almeno una data");
         }
 
         // Ordino sempre le date
@@ -31,22 +28,18 @@ public class BookingDurationResolver {
             if (date.isBefore(event.getStartDate())
                     || date.isAfter(event.getEndDate())) {
 
-                throw new IllegalArgumentException(
-                        "Data non compresa nell'evento");
+                throw new IllegalArgumentException("Data non compresa nell'evento");
             }
         }
 
         // Verifica consecutività
         for (int i = 0; i < selectedDates.size() - 1; i++) {
 
-            long daysBetween = ChronoUnit.DAYS.between(
-                    selectedDates.get(i),
-                    selectedDates.get(i + 1));
+            long daysBetween = ChronoUnit.DAYS.between(selectedDates.get(i), selectedDates.get(i + 1));
 
             if (daysBetween != 1) {
 
-                throw new IllegalArgumentException(
-                        "Le date devono essere consecutive");
+                throw new IllegalArgumentException("Le date devono essere consecutive");
             }
         }
 
@@ -65,8 +58,7 @@ public class BookingDurationResolver {
 
             case 3 -> BookingDuration.THREE_DAYS;
 
-            default -> throw new IllegalArgumentException(
-                    "Durata non supportata");
+            default -> throw new IllegalArgumentException("Durata non supportata");
         };
     }
 }
