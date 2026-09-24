@@ -67,9 +67,11 @@
                             <label class="form-label">Cambia immagine (opzionale)</label>
                             <input type="file" name="imageFile" class="form-control">
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex justify-content-center gap-2">
                             <button type="submit" class="btn btn-primary">Salva modifiche</button>
-                            <a th:href="@{/admin/staff/staff}" class="btn btn-secondary">Annulla</a>
+                            <button type="button" class="btn btn-secondary" onclick="history.back()">
+                                <i class="fa-solid fa-arrow-left"></i>Torna indietro
+                            </button>
                         </div>
                     </form>
                 </div>

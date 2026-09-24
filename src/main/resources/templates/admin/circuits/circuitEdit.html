@@ -40,8 +40,11 @@
                         <label class="form-label" for="floatingTextarea2">Descrizione</label>
                         <textarea class="form-control" id="floatingTextarea2" style="height: 100px" th:field="*{description}"></textarea>
                     </div>                
-                    <div class="col-12 text-center mt-4">
-                        <button type="submit" class="btn-primary px-5">Salva modifiche</button>
+                    <div class="col-12 d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-primary me-3">Salva modifiche</button>
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            <i class="fa-solid fa-arrow-left"></i>Torna indietro
+                        </button>
                     </div>
                 </form>
             </div>
