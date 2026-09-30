@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- HERO -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1>GESTISCI LE TUE <span>PRENOTAZIONI</span></h1>
+            <p>Da qui potrai visualizzare, modificare ed eliminare le tue prenotazioni.</p>
+        </div>
+    </section>
+
+
+    <!-- PRENOTAZIONI -->
+    <div class="container-fluid mt-5 mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-dark text-white border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Le tue prenotazioni</h3>
+
+                        <!-- NESSUNA PRENOTAZIONE -->
+                        <div th:if="${#lists.isEmpty(bookings)}">
+                            <p class="mb-0">Non hai ancora effettuato nessuna prenotazione.</p>
+                        </div>
+
+                        <!-- PRENOTAZIONI PRESENTI -->
+                        <div th:unless="${#lists.isEmpty(bookings)}">
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-dark text-white">Evento</th>
+                                            <th class="bg-dark text-white">Organizzatore</th>
+                                            <th class="bg-dark text-white">Circuito</th>
+                                            <th class="bg-dark text-white">Data inizio - data fine</th>
+                                            <th class="bg-dark text-white">Totale</th>
+                                            <th class="bg-dark text-white text-end">Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="booking : ${bookings}">
+                                            <td th:text="${booking.eventName}">Evento</td>
+                                            <td th:text="${booking.organizer}">Organizzatore</td>
+                                            <td th:text="${booking.circuitName}">Circuito</td>
+                                            <td>
+                                                <span th:text="${booking.bookingStartDate}">Data inizio
+                                                </span>
+                                                <span> - </span>
+                                                <span th:text="${booking.bookingEndDate}">Data fine</span>
+                                            </td>
+                                            <td><span th:text="${booking.totalPrice} + ' €'">0 €</span>
+                                            </td>
+                                            <td class="text-end">
+                                                <!-- DETTAGLI -->
+                                                <a th:href="@{/user/myBookingDetail/{id}(id=${booking.bookingId})}" class="btn btn-custom p-2" title="Visualizza dettagli">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+
+                                                <!-- MODIFICA -->
+                                                <a th:href="@{/user/myBookingEdit/{id}(id=${booking.bookingId})}" class="btn btn-warning p-2" title="Modifica prenotazione">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
+
+                                                <!-- ELIMINA -->
+                                                <a th:href="@{/user/MyBookingDelete/{id}(id=${booking.bookingId})}" class="btn btn-danger p-2" title="Elimina prenotazione" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?')">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+
+</html>
+

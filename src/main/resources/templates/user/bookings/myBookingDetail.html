@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- HERO -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1>Dettagli prenotazione</h1>
+        </div>
+    </section>
+
+    <!-- DETTAGLI PRENOTAZIONE -->
+
+    <section class="container py-5">
+        <div class="row align-items-start g-5">
+            <!-- PRENOTAZIONE -->
+            <div class="col-12 col-lg-6">
+                <div class="card bg-dark text-white staffDetailCard border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Prenotazione</h3>
+                        <p>
+                            <strong>Evento:</strong>
+                            <span th:text="${booking.booking.eventName}"></span>
+                        </p>
+                        <p>
+                            <strong>Circuito:</strong>
+                            <span th:text="${booking.booking.circuitName}"></span>
+                        </p>
+                        <p>
+                            <strong>Organizzatore:</strong>
+                            <span th:text="${booking.booking.organizer}"></span>
+                        </p>
+                        <hr>
+                        <p>
+                            <strong>Periodo evento:</strong><br>
+                            <span th:text="${booking.booking.eventStartDate}"></span>
+                            -
+                            <span th:text="${booking.booking.eventEndDate}"></span>
+                        </p>
+                        <p>
+                            <strong>Periodo prenotato:</strong><br>
+                            <span th:text="${booking.booking.bookingStartDate}"></span>
+                            -
+                            <span th:text="${booking.booking.bookingEndDate}"></span>
+                        </p>
+                        <hr>
+                        <p>
+                            <strong>Stato prenotazione:</strong>
+                            <span th:text="${booking.booking.bookingStatus}"></span>
+                        </p>
+                        <p>
+                            <strong>Pagamento:</strong>
+                            <span th:text="${booking.booking.paymentStatus}"></span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Totale:</strong>
+                            €
+                            <span th:text="${booking.booking.totalPrice}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENTE -->
+            <div class="col-12 col-lg-6">
+                <div class="card bg-dark text-white staffDetailCard border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Utente</h3>
+                        <p>
+                            <strong>Nome:</strong>
+                            <span th:text="${booking.user.firstName}"></span>
+                        </p>
+                        <p>
+                            <strong>Cognome:</strong>
+                            <span th:text="${booking.user.lastName}"></span>
+                        </p>
+                        <p>
+                            <strong>Email:</strong>
+                            <span th:text="${booking.user.email}"></span>
+                        </p>
+                        <p>
+                            <strong>Telefono:</strong>
+                            <span th:text="${booking.user.phone}"></span>
+                        </p>
+                        <p>
+                            <strong>Username:</strong>
+                            <span th:text="${booking.user.username}"></span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Data di nascita:</strong>
+                            <span th:text="${booking.user.birthDate}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVIZI -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card bg-dark text-white border-danger">
+                    <div class="card-body">
+                        <h3 class="mb-4">Servizi prenotati</h3>
+                        <table class="table table-dark table-striped align-middle">
+                            <thead>
+                            <tr>
+                                <th>Servizio</th>
+                                <th class="text-end">Prezzo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="service : ${booking.services}">
+                                <td th:text="${service.serviceName}"></td>
+                                <td class="text-end">
+                                    €
+                                    <span th:text="${service.price}"></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4" th:if="${booking.bike != null}">
+                            <h4 class="mb-3">Moto assegnata</h4>
+                            <p>
+                                <strong>Marca:</strong>
+                                <span th:text="${booking.bike.brand}"></span>
+                            </p>
+                            <p>
+                                <strong>Modello:</strong>
+                                <span th:text="${booking.bike.model}"></span>
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="text-end">
+                            <h4>Totale:
+                                €
+                                <span th:text="${booking.booking.totalPrice}"></span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AZIONI -->
+        <div class="text-center mt-5">
+            <a th:href="@{/admin/bookings/edit/{id}(id=${booking.booking.bookingId})}"
+            class="btn btn-warning me-3"><i class="fa-solid fa-pen"></i> Modifica</a>
+            <a th:href="@{/admin/bookings/delete/{id}(id=${booking.booking.bookingId})}"
+            class="btn btn-danger me-3"
+            onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?')">
+                <i class="fa-solid fa-trash"></i>Elimina</a>
+            <button class="btn btn-secondary" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i>Torna indietro</button>
+        </div>
+    </section>
+
+
+
+
+    <!-- FOOTER -->
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+    <script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+    
+</body>
+</html>

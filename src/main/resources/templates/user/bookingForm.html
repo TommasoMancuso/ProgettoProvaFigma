@@ -142,50 +142,35 @@
 
 function updateSummary() {
 
-    const summary =
-        document.getElementById('bookingSummary');
+    const summary = document.getElementById('bookingSummary');
 
-    const totalElement =
-        document.getElementById('totalPrice');
+    const totalElement = document.getElementById('totalPrice');
 
     let total = 0;
 
     let html = '';
 
-    document
-        .querySelectorAll('.service-checkbox:checked')
-        .forEach(serviceCheckbox => {
+    document.querySelectorAll('.service-checkbox:checked').forEach(serviceCheckbox => {
 
-            const container =
-                serviceCheckbox.closest('.mb-4');
+            const container = serviceCheckbox.closest('.mb-4');
 
-            const serviceName =
-                serviceCheckbox.dataset.name;
+            const serviceName = serviceCheckbox.dataset.name;
 
-            const pricingType =
-                serviceCheckbox.dataset.pricing;
+            const pricingType = serviceCheckbox.dataset.pricing;
 
-            const selectedDates =
-                container.querySelectorAll(
-                    '.date-checkbox:checked'
-                ).length;
+            const selectedDates = container.querySelectorAll('.date-checkbox:checked').length;
 
-            const totalEventDates =
-                container.querySelectorAll('.date-checkbox').length;
+            const totalEventDates = container.querySelectorAll('.date-checkbox').length;
 
             let price = 0;
 
             if (pricingType === 'FIXED') {
 
-                price =
-                    parseFloat(
-                        serviceCheckbox.dataset.pricefull || 0
-                    );
+                price = parseFloat(serviceCheckbox.dataset.pricefull || 0);
 
             } else if (pricingType === 'EVENT_BASED') {
 
-                const totalEventDates =
-                    container.querySelectorAll('.date-checkbox').length;
+                const totalEventDates = container.querySelectorAll('.date-checkbox').length;
 
                 if (selectedDates === 0) {
 
@@ -193,29 +178,25 @@ function updateSummary() {
 
                 } else if (selectedDates === totalEventDates) {
 
-                    price =
-                        parseFloat(
+                    price = parseFloat(
                             serviceCheckbox.dataset.pricefull || 0
                         );
 
                 } else if (selectedDates === 1) {
 
-                    price =
-                        parseFloat(
+                    price = parseFloat(
                             serviceCheckbox.dataset.price1 || 0
                         );
 
                 } else if (selectedDates === 2) {
 
-                    price =
-                        parseFloat(
+                    price = parseFloat(
                             serviceCheckbox.dataset.price2 || 0
                         );
 
                 } else if (selectedDates === 3) {
 
-                    price =
-                        parseFloat(
+                    price = parseFloat(
                             serviceCheckbox.dataset.price3 || 0
                         );
 
@@ -226,20 +207,15 @@ function updateSummary() {
 
             } else if (pricingType === 'BIKE_BASED') {
 
-                const bikeSelect =
-                    container.querySelector('.bike-select');
+                const bikeSelect = container.querySelector('.bike-select');
 
-                if (bikeSelect &&
-                    bikeSelect.selectedOptions.length > 0) {
+                if (bikeSelect && bikeSelect.selectedOptions.length > 0) {
 
-                    const bikePrice =
-                        parseFloat(
-                            bikeSelect.selectedOptions[0]
-                                .dataset.price || 0
+                    const bikePrice = parseFloat(
+                            bikeSelect.selectedOptions[0].dataset.price || 0
                         );
 
-                    price =
-                        bikePrice * selectedDates;
+                    price = bikePrice * selectedDates;
                 }
             }
 
@@ -263,8 +239,7 @@ function updateSummary() {
     totalElement.innerText = '€ ' + total.toFixed(2);
 }
 
-document.querySelectorAll('.service-checkbox')
-    .forEach(cb => {
+document.querySelectorAll('.service-checkbox').forEach(cb => {
 
         cb.addEventListener('change', function() {
 
@@ -276,14 +251,12 @@ document.querySelectorAll('.service-checkbox')
         });
     });
 
-document.querySelectorAll('.date-checkbox')
-    .forEach(cb => {
+document.querySelectorAll('.date-checkbox').forEach(cb => {
 
         cb.addEventListener('change', updateSummary);
     });
 
-document.querySelectorAll('.bike-select')
-    .forEach(select => {
+document.querySelectorAll('.bike-select').forEach(select => {
         select.addEventListener('change', updateSummary);
     });
 
@@ -294,14 +267,12 @@ document.querySelectorAll('.bike-select')
 
     const request = {
 
-        eventId: Number(
-            document.querySelector('input[name="eventId"]').value),
+        eventId: Number(document.querySelector('input[name="eventId"]').value),
 
         services: []
     };
 
-    document.querySelectorAll('.service-checkbox:checked')
-            .forEach(serviceCheckbox => {
+    document.querySelectorAll('.service-checkbox:checked').forEach(serviceCheckbox => {
 
                 const container = serviceCheckbox.closest('.mb-4');
 
@@ -321,8 +292,7 @@ document.querySelectorAll('.bike-select')
                     serviceRequest.bikeId = Number(bikeSelect.value);
                 }
 
-                container.querySelectorAll('.date-checkbox:checked')
-                    .forEach(dateCheckbox => {
+                container.querySelectorAll('.date-checkbox:checked').forEach(dateCheckbox => {
 
                         serviceRequest.selectedDates.push(dateCheckbox.value);
                     });
@@ -345,6 +315,8 @@ document.querySelectorAll('.bike-select')
         document.write(html);
         document.close();
     });
+
+    
 
 </script>
 

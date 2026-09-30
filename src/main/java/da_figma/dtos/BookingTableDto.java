@@ -1,6 +1,7 @@
 package da_figma.dtos;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import da_figma.enums.BookingStatus;
 import lombok.AllArgsConstructor;
@@ -18,8 +19,17 @@ public class BookingTableDto {
 
     private UserBookingDto user;
 
+    private String eventName;
+
+    private String organizer;
+
+    private String circuitName;
+
+    private LocalDate bookingStartDate;
+
+    private LocalDate bookingEndDate;
+
     private BigDecimal totalPrice;
 
     private BookingStatus status;
-
 }
