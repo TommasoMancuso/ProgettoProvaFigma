@@ -109,24 +109,25 @@ public class UserController {
 
     // RAGGIUNGI FORM DI MODIFICA PROPRIA PRENOTAZIONE
     @GetMapping("/user/myBookingEdit/{id}")
-    public String myBookingEdit(@PathVariable Long id, Model model){
+    public String myBookingEdit(@PathVariable Long id, Model model) {
 
-       BookingDetailDto booking = bookingManagerService.getBookingDetail(id);
+        BookingDetailDto booking = bookingManagerService.getBookingDetail(id);
 
         Long eventId = booking.getBooking().getEventId();
 
-        // Tutte le opzioni disponibili
+        // Tutte le opzioni disponibili,
+        // mantenendo disponibile la moto della prenotazione corrente
         model.addAttribute("bookingForm",
-                bookingFacadeService.buildBookingForm(eventId)
+                bookingFacadeService.buildBookingFormForEdit(eventId,id)
         );
 
         // Selezioni già effettuate dall'utente
         model.addAttribute("bookingRequest",
-                bookingManagerService.buildBookingRequestForEdit(id)
-        );
-        
-        return "user/bookingForm";
+                bookingManagerService.buildBookingRequestForEdit(id));
+
+        return "user/bookings/myBookingEdit";
     }
+
 
     // Conferma modifiche
     @PostMapping("/user/myBookingUpdate/{id}")

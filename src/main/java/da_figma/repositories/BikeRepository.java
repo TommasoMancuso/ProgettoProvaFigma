@@ -42,6 +42,29 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             @Param("endDate") LocalDate endDate
     );
 
+    // =========================
+// DISPONIBILITÀ DURANTE MODIFICA
+// =========================
+@Query("""
+    SELECT b
+    FROM Bike b
+    WHERE b.id NOT IN (
+        SELECT ba.bike.id
+        FROM BookingBikeAllocation ba
+        WHERE ba.booking.id <> :bookingId
+        AND NOT (
+            ba.rentalEndDate < :startDate
+            OR ba.rentalStartDate > :endDate
+        )
+    )
+""")
+List<Bike> findAvailableBikesForEdit(
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("bookingId") Long bookingId
+);
+
+
     // RICERCA MOTO ARCHIVIATE O NO
 
     List<Bike> findByStatusNot(BikeStatus status);

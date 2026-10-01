@@ -16,6 +16,11 @@ public class BikeAvailabilityService {
     private BikeRepository bikeRepository;
 
     public List<Bike> getAvailableBikes(LocalDate start, LocalDate end) {
-    return bikeRepository.findAvailableBikes(start, end);
-}
+        return bikeRepository.findAvailableBikes(start, end);
+    }
+
+    public List<Bike> getAvailableBikesForEdit(LocalDate start, LocalDate end, Long bookingId) {
+
+        return bikeRepository.findAvailableBikesForEdit(start, end, bookingId);
+    }
 }

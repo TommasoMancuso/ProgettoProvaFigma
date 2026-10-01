@@ -32,25 +32,61 @@ public class BookingFacadeService {
     @Autowired
     private EventServicePriceRepository eventServicePriceRepository;
 
+
+    // =========================================================
+    // NUOVA PRENOTAZIONE
+    // =========================================================
+
     public BookingFormDto buildBookingForm(Long eventId) {
 
+        return buildBookingFormInternal(eventId, null);
+    }
+
+
+    // =========================================================
+    // MODIFICA PRENOTAZIONE ESISTENTE
+    // =========================================================
+
+    public BookingFormDto buildBookingFormForEdit(Long eventId, Long bookingId) {
+
+        return buildBookingFormInternal(eventId, bookingId);
+    }
+
+
+    // =========================================================
+    // METODO INTERNO COMUNE
+    // =========================================================
+
+    private BookingFormDto buildBookingFormInternal(Long eventId, Long bookingId) {
+
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() ->
-                        new RuntimeException("Evento non trovato"));
+                        .orElseThrow(() ->
+                                new RuntimeException("Evento non trovato"));
+
 
         BookingFormDto dto = new BookingFormDto();
 
+
+        // =====================================================
+        // DATI EVENTO
+        // =====================================================
+
         dto.setEventId(event.getId());
+
         dto.setEventName(event.getName());
+
         dto.setOrganizer(event.getOrganizer());
+
         dto.setCircuitName(event.getCircuit().getName());
 
         dto.setStartDate(event.getStartDate());
+
         dto.setEndDate(event.getEndDate());
 
-        // =========================
+
+        // =====================================================
         // DATE EVENTO
-        // =========================
+        // =====================================================
 
         List<LocalDate> eventDates = new ArrayList<>();
 
@@ -65,59 +101,104 @@ public class BookingFacadeService {
 
         dto.setEventDates(eventDates);
 
-        // =========================
+
+        // =====================================================
         // MOTO DISPONIBILI
-        // =========================
+        // =====================================================
 
-        List<Bike> availableBikes =
-                bikeRepository.findAvailableBikes(
-                        event.getStartDate(),
-                        event.getEndDate());
+        List<Bike> availableBikes;
 
-        // =========================
+        if (bookingId == null) {
+
+            availableBikes = bikeRepository.findAvailableBikes(
+                            event.getStartDate(),
+                            event.getEndDate()
+                    );
+
+        } else {
+
+            availableBikes = bikeRepository.findAvailableBikesForEdit(
+                            event.getStartDate(),
+                            event.getEndDate(),
+                            bookingId
+                    );
+        }
+
+
+        // =====================================================
         // SERVIZI
-        // =========================
+        // =====================================================
 
         List<ServiceBookingDto> services = new ArrayList<>();
 
-        List<EventServicePrice> prices =
-                eventServicePriceRepository.findByEventId(eventId);
+
+        List<EventServicePrice> prices = eventServicePriceRepository.findByEventId(eventId);
+
 
         for (EventServicePrice esp : prices) {
 
-            ServiceBookingDto serviceDto =
-                    new ServiceBookingDto();
+            ServiceBookingDto serviceDto = new ServiceBookingDto();
+
 
             TeamService service = esp.getService();
 
+
+            // =================================================
+            // DATI SERVIZIO
+            // =================================================
+
             serviceDto.setServiceId(service.getId());
+
             serviceDto.setServiceName(service.getName());
+
             serviceDto.setPricingType(service.getPricingType());
 
+
+            // =================================================
+            // PREZZI
+            // =================================================
+
             serviceDto.setPriceOneDay(esp.getPriceOneDay());
+
             serviceDto.setPriceTwoDays(esp.getPriceTwoDays());
+
             serviceDto.setPriceThreeDays(esp.getPriceThreeDays());
+
             serviceDto.setPriceFullEvent(esp.getPriceFullEvent());
 
-            // =========================
-            // SOLO BIKE_BASED
-            // =========================
+
+            // =================================================
+            // SERVIZIO BIKE_BASED
+            // =================================================
 
             if (service.getPricingType() == PricingType.BIKE_BASED) {
 
-                List<BikeOptionDto> bikeDtos =
-                        new ArrayList<>();
+
+                List<BikeOptionDto> bikeDtos = new ArrayList<>();
+
 
                 for (Bike bike : availableBikes) {
 
+
+                    // -----------------------------------------
+                    // IGNORA MOTO NON DISPONIBILI
+                    // -----------------------------------------
+
                     if (bike.getStatus() != BikeStatus.AVAILABLE) {
+
                         continue;
                     }
 
-                    BikeOptionDto bikeDto =
-                            new BikeOptionDto();
+
+                    // -----------------------------------------
+                    // CREA DTO MOTO
+                    // -----------------------------------------
+
+                    BikeOptionDto bikeDto = new BikeOptionDto();
+
 
                     bikeDto.setId(bike.getId());
+
 
                     bikeDto.setName(
                             bike.getBrand()
@@ -128,22 +209,29 @@ public class BookingFacadeService {
                                     + ")"
                     );
 
-                    bikeDto.setDailyPrice(
-                            bike.getDailyPrice()
-                    );
+
+                    bikeDto.setDailyPrice(bike.getDailyPrice());
+
 
                     bikeDtos.add(bikeDto);
                 }
 
+
                 serviceDto.setAvailableBikes(bikeDtos);
             }
+
 
             services.add(serviceDto);
         }
 
+
+        // =====================================================
+        // SERVIZI NEL DTO FINALE
+        // =====================================================
+
         dto.setServices(services);
+
 
         return dto;
     }
-
 }

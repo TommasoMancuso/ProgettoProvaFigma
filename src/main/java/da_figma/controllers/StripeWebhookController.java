@@ -111,9 +111,7 @@ public class StripeWebhookController {
 
                 System.out.println("BookingRequest ricostruita");
 
-                bookingManagerService.createPaidBooking(
-                                        request,
-                                        pending.getUserKeycloakId());
+                bookingManagerService.createPaidBooking(request, pending.getUserKeycloakId());
 
                 System.out.println("Booking salvata");
 
