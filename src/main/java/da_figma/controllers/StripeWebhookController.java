@@ -1,8 +1,6 @@
 package da_figma.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -32,6 +30,11 @@ public class StripeWebhookController {
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
 
+
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
+
     public StripeWebhookController(
             PendingBookingRepository pendingRepository,
             PendingBookingService pendingService,
@@ -42,96 +45,208 @@ public class StripeWebhookController {
         this.bookingManagerService = bookingManagerService;
     }
 
+
+    // =========================================================
+    // STRIPE WEBHOOK
+    // =========================================================
+
     @PostMapping("/webhook")
-        public String handleWebhook(
-                @RequestBody String payload,
-                @RequestHeader("Stripe-Signature") String sigHeader) {
+    public String handleWebhook(
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader) {
 
-            try {
+        try {
 
-                System.out.println("\n================ WEBHOOK =================");
+            // =====================================================
+            // VERIFICA WEBHOOK STRIPE
+            // =====================================================
 
-                Event event = Webhook.constructEvent(
-                        payload,
-                        sigHeader,
-                        endpointSecret);
+            Event event = Webhook.constructEvent(
+                    payload,
+                    sigHeader,
+                    endpointSecret
+            );
 
-                System.out.println("EVENT TYPE = " + event.getType());
 
-                // Ci interessa soltanto checkout.session.completed
-                if (!"checkout.session.completed".equals(event.getType())) {
+            // =====================================================
+            // CI INTERESSA SOLO CHECKOUT COMPLETED
+            // =====================================================
 
-                    System.out.println("EVENTO IGNORATO");
-                    return "OK";
-                }
+            if (!"checkout.session.completed".equals(
+                    event.getType())) {
 
-                System.out.println("CHECKOUT SESSION COMPLETED RICEVUTO");
+                return "OK";
+            }
 
-                // Stampo il JSON esatto della Session ricevuta
-                String json =
-                        event.getDataObjectDeserializer()
-                                .getRawJson();
 
-                System.out.println(json);
+            // =====================================================
+            // SESSION STRIPE
+            // =====================================================
 
-                Session session =
-                        (Session) event
-                                .getDataObjectDeserializer()
-                                .deserializeUnsafe();
+            Session session =
+                    (Session) event
+                            .getDataObjectDeserializer()
+                            .deserializeUnsafe();
 
-                System.out.println("SESSION ID = " + session.getId());
 
-                System.out.println("PAYMENT STATUS = " + session.getPaymentStatus());
+            // =====================================================
+            // CONTROLLO PAGAMENTO
+            // =====================================================
 
-                System.out.println("METADATA = " + session.getMetadata());
+            if (!"paid".equalsIgnoreCase(
+                    session.getPaymentStatus())) {
 
-                if (session.getMetadata() == null) {
-                    throw new RuntimeException("Metadata nullo");
-                }
+                return "OK";
+            }
 
-                String pendingIdString =
-                        session.getMetadata().get("pendingBookingId");
 
-                System.out.println("pendingBookingId = " + pendingIdString);
+            // =====================================================
+            // METADATA
+            // =====================================================
 
-                if (pendingIdString == null) {
-                    throw new RuntimeException("pendingBookingId non trovato");
-                }
+            if (session.getMetadata() == null) {
 
-                Long pendingId = Long.valueOf(pendingIdString);
+                throw new RuntimeException(
+                        "Metadata Stripe nullo");
+            }
 
-                PendingBooking pending =
-                        pendingRepository.findById(pendingId)
-                                .orElseThrow();
 
-                System.out.println("Pending trovato");
+            String pendingIdString =
+                    session.getMetadata()
+                            .get("pendingBookingId");
 
-                BookingRequestDto request =
-                        pendingService.getRequest(pending);
 
-                System.out.println("BookingRequest ricostruita");
+            if (pendingIdString == null) {
 
-                bookingManagerService.createPaidBooking(request, pending.getUserKeycloakId());
+                throw new RuntimeException(
+                        "pendingBookingId non trovato "
+                        + "nei metadata Stripe");
+            }
 
-                System.out.println("Booking salvata");
+
+            Long pendingId =
+                    Long.valueOf(pendingIdString);
+
+
+            // =====================================================
+            // PENDING BOOKING
+            // =====================================================
+
+            PendingBooking pending =
+                    pendingRepository.findById(pendingId)
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "PendingBooking non trovata: "
+                                            + pendingId));
+
+
+            // =====================================================
+            // SICUREZZA
+            // =====================================================
+
+            if (pending.getStripeSessionId() == null) {
+
+                throw new RuntimeException(
+                        "Stripe Session ID mancante "
+                        + "nella PendingBooking");
+            }
+
+
+            if (!pending.getStripeSessionId()
+                    .equals(session.getId())) {
+
+                throw new RuntimeException(
+                        "Stripe Session ID non corrisponde "
+                        + "alla PendingBooking");
+            }
+
+
+            // =====================================================
+            // IDEMPOTENZA
+            // =====================================================
+
+            if ("PAID".equalsIgnoreCase(
+                    pending.getPaymentStatus())) {
+
+                return "OK";
+            }
+
+
+            // =====================================================
+            // RECUPERO REQUEST DAL JSON
+            // =====================================================
+
+            BookingRequestDto request =
+                    pendingService.getRequest(pending);
+
+
+            // =====================================================
+            // CREATE
+            // =====================================================
+
+            if ("CREATE".equalsIgnoreCase(
+                    pending.getOperationType())) {
+
+                bookingManagerService.createPaidBooking(
+                        request,
+                        pending.getUserKeycloakId()
+                );
+
 
                 pending.setPaymentStatus("PAID");
 
                 pendingRepository.save(pending);
 
-                System.out.println("Pending aggiornata");
-
-                System.out.println("================ FINE WEBHOOK ================\n");
 
                 return "OK";
-
-            } catch (Exception e) {
-
-                System.out.println("ERRORE WEBHOOK");
-
-                e.printStackTrace();
-
-                return "ERROR";
             }
-        }           
+
+
+            // =====================================================
+            // UPDATE
+            // =====================================================
+
+            if ("UPDATE".equalsIgnoreCase(
+                    pending.getOperationType())) {
+
+                if (pending.getBookingId() == null) {
+
+                    throw new RuntimeException(
+                            "PendingBooking UPDATE senza bookingId");
+                }
+
+
+                bookingManagerService.applyPendingModification(
+                        pending.getBookingId(),
+                        request,
+                        pending.getUserKeycloakId(),
+                        pending.getDifferenceAmount()
+                );
+
+
+                pending.setPaymentStatus("PAID");
+
+                pendingRepository.save(pending);
+
+
+                return "OK";
+            }
+
+
+            // =====================================================
+            // OPERAZIONE NON RICONOSCIUTA
+            // =====================================================
+
+            throw new RuntimeException(
+                    "OperationType non riconosciuto: "
+                    + pending.getOperationType());
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return "ERROR";
+        }
+    }
 }

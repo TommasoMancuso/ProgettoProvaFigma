@@ -86,6 +86,8 @@ public class BookingDetailDto {
         private String serviceName;
 
         private BigDecimal price;
+
+        
     }
 
     // =====================================================

@@ -24,7 +24,14 @@ public class PendingBookingService {
         this.objectMapper = objectMapper;
     }
 
-    public PendingBooking create(String keycloakId, BookingRequestDto request, BigDecimal totalPrice) {
+    // =====================================================
+    // NUOVA PRENOTAZIONE
+    // =====================================================
+
+    public PendingBooking create(
+            String keycloakId,
+            BookingRequestDto request,
+            BigDecimal totalPrice) {
 
         try {
 
@@ -32,9 +39,24 @@ public class PendingBookingService {
 
             pending.setUserKeycloakId(keycloakId);
 
-            pending.setBookingJson(objectMapper.writeValueAsString(request));
+            // Nuova prenotazione
+            pending.setBookingId(null);
 
+            pending.setOperationType("CREATE");
+
+            pending.setBookingJson(
+                    objectMapper.writeValueAsString(request)
+            );
+
+            // Prezzo della nuova prenotazione
             pending.setTotalPrice(totalPrice);
+
+            // Nessun vecchio prezzo
+            pending.setOriginalTotalPrice(null);
+
+            // Per una nuova prenotazione
+            // la differenza coincide con il prezzo totale
+            pending.setDifferenceAmount(totalPrice);
 
             pending.setPaymentStatus("PENDING");
 
@@ -42,23 +64,95 @@ public class PendingBookingService {
 
         } catch (Exception e) {
 
-            throw new RuntimeException("Errore creazione PendingBooking", e);
+            throw new RuntimeException(
+                    "Errore creazione PendingBooking",
+                    e
+            );
         }
     }
 
-    public BookingRequestDto getRequest(PendingBooking pending) {
+    // =====================================================
+    // MODIFICA PRENOTAZIONE
+    // =====================================================
+
+    public PendingBooking createModification(
+            String keycloakId,
+            Long bookingId,
+            BookingRequestDto request,
+            BigDecimal originalTotalPrice,
+            BigDecimal newTotalPrice,
+            BigDecimal differenceAmount) {
 
         try {
 
-            return objectMapper.readValue(pending.getBookingJson(), BookingRequestDto.class);
+            PendingBooking pending = new PendingBooking();
+
+            pending.setUserKeycloakId(keycloakId);
+
+            // Prenotazione esistente
+            pending.setBookingId(bookingId);
+
+            pending.setOperationType("UPDATE");
+
+            pending.setBookingJson(
+                    objectMapper.writeValueAsString(request)
+            );
+
+            // Prezzo della nuova configurazione
+            pending.setTotalPrice(newTotalPrice);
+
+            // Prezzo precedente
+            pending.setOriginalTotalPrice(originalTotalPrice);
+
+            // Differenza:
+            // positiva = pagamento richiesto
+            // zero = nessun pagamento
+            // negativa = credito
+            pending.setDifferenceAmount(differenceAmount);
+
+            pending.setPaymentStatus("PENDING");
+
+            return repository.save(pending);
 
         } catch (Exception e) {
 
-            throw new RuntimeException("Errore lettura bookingJson", e);
+            throw new RuntimeException(
+                    "Errore creazione PendingBooking modifica",
+                    e
+            );
         }
     }
 
-    public PendingBooking save(PendingBooking pendingBooking) {
+    // =====================================================
+    // JSON → REQUEST
+    // =====================================================
+
+    public BookingRequestDto getRequest(
+            PendingBooking pending) {
+
+        try {
+
+            return objectMapper.readValue(
+                    pending.getBookingJson(),
+                    BookingRequestDto.class
+            );
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Errore lettura bookingJson",
+                    e
+            );
+        }
+    }
+
+    // =====================================================
+    // SAVE
+    // =====================================================
+
+    public PendingBooking save(
+            PendingBooking pendingBooking) {
+
         return repository.save(pendingBooking);
     }
 }

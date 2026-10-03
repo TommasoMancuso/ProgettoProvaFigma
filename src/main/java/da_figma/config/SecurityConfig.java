@@ -28,11 +28,10 @@ public class SecurityConfig {
 
         OidcUserService delegate = new OidcUserService();
 
-        return userRequest -> {
-            OidcUser oidcUser = delegate.loadUser(userRequest);
+        return userRequest -> {OidcUser oidcUser = delegate.loadUser(userRequest);
 
             Map<String, Object> realmAccess =
-                    (Map<String, Object>) oidcUser.getAttributes().get("realm_access");
+                 (Map<String, Object>) oidcUser.getAttributes().get("realm_access");
 
             List<String> roles = realmAccess == null
                     ? List.of()
@@ -43,6 +42,7 @@ public class SecurityConfig {
             for (String role : roles) {
                 mappedAuthorities.add(new SimpleGrantedAuthority(role));
             }
+
 
             return new DefaultOidcUser(mappedAuthorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
         };

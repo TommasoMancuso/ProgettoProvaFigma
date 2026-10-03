@@ -16,6 +16,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -36,19 +37,22 @@ public class Booking {
     // =========================
     // ID
     // =========================
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // =========================
-    // KEYCLOAK USER (CLIENTE)
+    // KEYCLOAK USER
     // =========================
+
     @Column(name = "user_keycloak_id", nullable = false)
     private String userKeycloakId;
 
     // =========================
     // STATUS
     // =========================
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private BookingStatus status = BookingStatus.PENDING;
@@ -56,15 +60,20 @@ public class Booking {
     // =========================
     // PAYMENT
     // =========================
+
     @Column(name = "payment_status", nullable = false, length = 30)
     private String paymentStatus = "UNPAID";
 
     @Column(name = "total_price", precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    @Column(name = "credit_amount", precision = 10, scale = 2, nullable = false)
+    private BigDecimal creditAmount = BigDecimal.ZERO;
+
     // =========================
     // TIMESTAMP
     // =========================
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -72,12 +81,16 @@ public class Booking {
     private LocalDate cancellationDeadline;
 
     // =========================
-    // RELATIONS BUSINESS
+    // EVENT
     // =========================
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @jakarta.persistence.JoinColumn(name = "event_id", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
+
+    // =========================
+    // BOOKING DATES
+    // =========================
 
     @Column(name = "booking_start_date", nullable = false)
     private LocalDate bookingStartDate;
@@ -85,17 +98,39 @@ public class Booking {
     @Column(name = "booking_end_date", nullable = false)
     private LocalDate bookingEndDate;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    // =========================
+    // SERVICES
+    // =========================
+
+    @OneToMany(
+        mappedBy = "booking",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<BookingService> bookingServices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    // =========================
+    // BIKE ALLOCATIONS
+    // =========================
+
+    @OneToMany(
+        mappedBy = "booking",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<BookingBikeAllocation> bikeAllocations = new ArrayList<>();
 
     // =========================
     // CREATION
     // =========================
+
     @PrePersist
     protected void onCreate() {
+
         createdAt = LocalDateTime.now();
+
+        if (creditAmount == null) {
+            creditAmount = BigDecimal.ZERO;
+        }
     }
 }

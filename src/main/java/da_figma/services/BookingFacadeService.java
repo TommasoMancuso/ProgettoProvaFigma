@@ -19,6 +19,7 @@ import da_figma.models.TeamService;
 import da_figma.repositories.BikeRepository;
 import da_figma.repositories.EventRepository;
 import da_figma.repositories.EventServicePriceRepository;
+import da_figma.repositories.TeamServiceRepository;
 
 @Service
 public class BookingFacadeService {
@@ -31,6 +32,9 @@ public class BookingFacadeService {
 
     @Autowired
     private EventServicePriceRepository eventServicePriceRepository;
+
+    @Autowired
+    private TeamServiceRepository teamServiceRepository;
 
 
     // =========================================================
@@ -47,7 +51,9 @@ public class BookingFacadeService {
     // MODIFICA PRENOTAZIONE ESISTENTE
     // =========================================================
 
-    public BookingFormDto buildBookingFormForEdit(Long eventId, Long bookingId) {
+    public BookingFormDto buildBookingFormForEdit(
+            Long eventId,
+            Long bookingId) {
 
         return buildBookingFormInternal(eventId, bookingId);
     }
@@ -57,12 +63,17 @@ public class BookingFacadeService {
     // METODO INTERNO COMUNE
     // =========================================================
 
-    private BookingFormDto buildBookingFormInternal(Long eventId, Long bookingId) {
+    private BookingFormDto buildBookingFormInternal(
+                                        Long eventId,
+                                        Long bookingId) {
+
+        // =====================================================
+        // EVENTO
+        // =====================================================
 
         Event event = eventRepository.findById(eventId)
-                        .orElseThrow(() ->
-                                new RuntimeException("Evento non trovato"));
-
+                .orElseThrow(() ->
+                        new RuntimeException("Evento non trovato"));
 
         BookingFormDto dto = new BookingFormDto();
 
@@ -94,9 +105,9 @@ public class BookingFacadeService {
 
         while (!current.isAfter(event.getEndDate())) {
 
-            eventDates.add(current);
+                eventDates.add(current);
 
-            current = current.plusDays(1);
+                current = current.plusDays(1);
         }
 
         dto.setEventDates(eventDates);
@@ -110,18 +121,22 @@ public class BookingFacadeService {
 
         if (bookingId == null) {
 
-            availableBikes = bikeRepository.findAvailableBikes(
-                            event.getStartDate(),
-                            event.getEndDate()
-                    );
+                // NUOVA PRENOTAZIONE
+
+                availableBikes = bikeRepository.findAvailableBikes(
+                                event.getStartDate(),
+                                event.getEndDate()
+                        );
 
         } else {
 
-            availableBikes = bikeRepository.findAvailableBikesForEdit(
-                            event.getStartDate(),
-                            event.getEndDate(),
-                            bookingId
-                    );
+                // MODIFICA PRENOTAZIONE
+
+                availableBikes = bikeRepository.findAvailableBikesForEdit(
+                                event.getStartDate(),
+                                event.getEndDate(),
+                                bookingId
+                        );
         }
 
 
@@ -131,97 +146,103 @@ public class BookingFacadeService {
 
         List<ServiceBookingDto> services = new ArrayList<>();
 
-
-        List<EventServicePrice> prices = eventServicePriceRepository.findByEventId(eventId);
-
-
-        for (EventServicePrice esp : prices) {
-
-            ServiceBookingDto serviceDto = new ServiceBookingDto();
+        List<EventServicePrice> eventServices = eventServicePriceRepository.findByEventId(eventId);
 
 
-            TeamService service = esp.getService();
+        for (EventServicePrice eventServicePrice : eventServices) {
+
+                TeamService service = eventServicePrice.getService();
 
 
-            // =================================================
-            // DATI SERVIZIO
-            // =================================================
+                // =================================================
+                // SERVIZIO
+                // =================================================
 
-            serviceDto.setServiceId(service.getId());
-
-            serviceDto.setServiceName(service.getName());
-
-            serviceDto.setPricingType(service.getPricingType());
+                ServiceBookingDto serviceDto = new ServiceBookingDto();
 
 
-            // =================================================
-            // PREZZI
-            // =================================================
+                serviceDto.setServiceId( service.getId());
 
-            serviceDto.setPriceOneDay(esp.getPriceOneDay());
+                serviceDto.setServiceName( service.getName());
 
-            serviceDto.setPriceTwoDays(esp.getPriceTwoDays());
-
-            serviceDto.setPriceThreeDays(esp.getPriceThreeDays());
-
-            serviceDto.setPriceFullEvent(esp.getPriceFullEvent());
+                serviceDto.setPricingType( service.getPricingType());
 
 
-            // =================================================
-            // SERVIZIO BIKE_BASED
-            // =================================================
+                // =================================================
+                // PREZZI
+                // =================================================
 
-            if (service.getPricingType() == PricingType.BIKE_BASED) {
+                if (service.getPricingType() == PricingType.FIXED) {
 
-
-                List<BikeOptionDto> bikeDtos = new ArrayList<>();
-
-
-                for (Bike bike : availableBikes) {
-
-
-                    // -----------------------------------------
-                    // IGNORA MOTO NON DISPONIBILI
-                    // -----------------------------------------
-
-                    if (bike.getStatus() != BikeStatus.AVAILABLE) {
-
-                        continue;
-                    }
-
-
-                    // -----------------------------------------
-                    // CREA DTO MOTO
-                    // -----------------------------------------
-
-                    BikeOptionDto bikeDto = new BikeOptionDto();
-
-
-                    bikeDto.setId(bike.getId());
-
-
-                    bikeDto.setName(
-                            bike.getBrand()
-                                    + " "
-                                    + bike.getModel()
-                                    + " ("
-                                    + bike.getYear()
-                                    + ")"
-                    );
-
-
-                    bikeDto.setDailyPrice(bike.getDailyPrice());
-
-
-                    bikeDtos.add(bikeDto);
+                        serviceDto.setPriceFullEvent(service.getBasePrice());
                 }
 
 
-                serviceDto.setAvailableBikes(bikeDtos);
-            }
+                else if (service.getPricingType() == PricingType.EVENT_BASED) {
+
+                        serviceDto.setPriceOneDay(eventServicePrice.getPriceOneDay());
+
+                        serviceDto.setPriceTwoDays(eventServicePrice.getPriceTwoDays());
+
+                        serviceDto.setPriceThreeDays(eventServicePrice.getPriceThreeDays());
+
+                        serviceDto.setPriceFullEvent(eventServicePrice.getPriceFullEvent());
+                }
 
 
-            services.add(serviceDto);
+                // =================================================
+                // BIKE BASED
+                // =================================================
+
+                if (service.getPricingType() == PricingType.BIKE_BASED) {
+
+                        List<BikeOptionDto> bikeDtos = new ArrayList<>();
+
+
+                        for (Bike bike : availableBikes) {
+
+                                // -----------------------------------------
+                                // IGNORA MOTO NON DISPONIBILI
+                                // -----------------------------------------
+
+                                if (bike.getStatus() != BikeStatus.AVAILABLE) {
+
+                                        continue;
+                                }
+
+
+                                // -----------------------------------------
+                                // DTO MOTO
+                                // -----------------------------------------
+
+                                BikeOptionDto bikeDto = new BikeOptionDto();
+
+                                bikeDto.setId(bike.getId());
+
+                                bikeDto.setName(bike.getBrand()
+                                                + " "
+                                                + bike.getModel()
+                                                + " ("
+                                                + bike.getYear()
+                                                + ")"
+                                );
+
+
+                                bikeDto.setDailyPrice(bike.getDailyPrice());
+
+                                bikeDtos.add(bikeDto);
+                        }
+
+
+                        serviceDto.setAvailableBikes(bikeDtos);
+                }
+
+
+                // =================================================
+                // AGGIUNTA SERVIZIO
+                // =================================================
+
+                services.add(serviceDto);
         }
 
 
@@ -233,5 +254,7 @@ public class BookingFacadeService {
 
 
         return dto;
-    }
+        }
+
 }
+

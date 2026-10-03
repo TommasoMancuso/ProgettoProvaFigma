@@ -4,16 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import da_figma.dtos.BookingRequestDto;
+import com.stripe.exception.StripeException;
+
 import da_figma.dtos.BookingDetailDto;
+import da_figma.dtos.BookingRequestDto;
+import da_figma.dtos.BookingReviewDto;
+import da_figma.enums.BookingPriceDifferenceType;
+import da_figma.models.Booking;
+import da_figma.repositories.BookingRepository;
 import da_figma.services.BookingFacadeService;
+import da_figma.services.BookingManagerService;
+import da_figma.services.BookingReviewService;
 import da_figma.services.CircuitService;
 import da_figma.services.EventService;
+import da_figma.services.StripeService;
 import da_figma.services.TeamUserService;
-import da_figma.services.BookingManagerService;
+
 
 @Controller
 public class UserController {
@@ -32,6 +43,17 @@ public class UserController {
 
     @Autowired 
     private BookingManagerService bookingManagerService;
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private BookingReviewService bookingReviewService;
+
+    @Autowired
+    private StripeService stripeService;
+
+
 
     // =========================
     // PUBLIC PAGES
@@ -111,34 +133,130 @@ public class UserController {
     @GetMapping("/user/myBookingEdit/{id}")
     public String myBookingEdit(@PathVariable Long id, Model model) {
 
-        BookingDetailDto booking = bookingManagerService.getBookingDetail(id);
+        BookingDetailDto booking =
+                bookingManagerService.getBookingDetail(id);
 
-        Long eventId = booking.getBooking().getEventId();
+        Long eventId =
+                booking.getBooking().getEventId();
 
-        // Tutte le opzioni disponibili,
-        // mantenendo disponibile la moto della prenotazione corrente
-        model.addAttribute("bookingForm",
-                bookingFacadeService.buildBookingFormForEdit(eventId,id)
+        model.addAttribute(
+                "bookingForm",
+                bookingFacadeService.buildBookingFormForEdit(
+                        eventId,
+                        id
+                )
         );
 
-        // Selezioni già effettuate dall'utente
-        model.addAttribute("bookingRequest",
-                bookingManagerService.buildBookingRequestForEdit(id));
+        model.addAttribute(
+                "bookingRequest",
+                bookingManagerService.buildBookingRequestForEdit(id)
+        );
+
+        // ID della prenotazione che stiamo modificando
+        model.addAttribute(
+                "bookingId",
+                id
+        );
 
         return "user/bookings/myBookingEdit";
     }
 
 
-    // Conferma modifiche
-    @PostMapping("/user/myBookingUpdate/{id}")
-    public String myBookingUpdate(){
 
+    // VAI A PAGINA RIEPILOGO MODIFICA
+   @PostMapping("/user/myBookingUpdate/{id}")
+    public String myBookingUpdate(
+            @PathVariable Long id,
+            @RequestBody BookingRequestDto request,
+            Model model) {
+
+        Booking booking =
+                bookingRepository.findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Prenotazione non trovata"));
+
+        BookingReviewDto review =
+                bookingReviewService.buildModificationReview(
+                        id,
+                        request);
+
+        model.addAttribute("bookingId", id);
+        model.addAttribute("bookingRequest", request);
+        model.addAttribute("review", review);
+        model.addAttribute("currentTotalPrice", booking.getTotalPrice());
+
+        return "user/bookings/myBookingReview";
+    }
+
+    // CONFERMA DOPO IL RIEPILGO E RINVIO A STRIPE
+    @PostMapping("/user/myBookingUpdate/{id}/confirm")
+    public String confirmMyBookingUpdate(
+            @PathVariable Long id,
+            @ModelAttribute BookingRequestDto request)
+            throws StripeException {
+
+        // =====================================================
+        // TIPO DIFFERENZA PREZZO
+        // =====================================================
+
+        BookingPriceDifferenceType differenceType =
+                bookingManagerService.determineBookingPriceDifference(
+                        id,
+                        request
+                );
+
+        // =====================================================
+        // PREZZO AUMENTATO
+        // =====================================================
+
+        if (differenceType == BookingPriceDifferenceType.INCREASE) {
+
+            String checkoutUrl =
+                    stripeService.createModificationCheckoutSession(
+                            id,
+                            request
+                    );
+
+            return "redirect:" + checkoutUrl;
+        }
+
+        // =====================================================
+        // PREZZO UGUALE
+        // =====================================================
+
+        if (differenceType == BookingPriceDifferenceType.NO_CHANGE) {
+
+            bookingManagerService.updateBooking(id, request);
+
+            return "redirect:/user/myBookingDetail/" + id;
+        }
+
+        // =====================================================
+        // PREZZO DIMINUITO
+        // =====================================================
+
+        if (differenceType == BookingPriceDifferenceType.DECREASE) {
+
+            bookingManagerService.updateBooking(id, request);
+
+            return "redirect:/user/myBookingDetail/" + id;
+        }
+
+        // =====================================================
+        // CASO IMPOSSIBILE
+        // =====================================================
+
+        throw new IllegalStateException(
+                "Tipo di differenza prezzo non gestito"
+        );
     }
 
     // Soft delete propria prenotazione
     @GetMapping("/user/myBookingDelete/{id}")
     public String myBookingDelete(){
         
+        return "redirect:/user/myBookings";
     }
     
 

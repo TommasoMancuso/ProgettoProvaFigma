@@ -22,9 +22,12 @@ public class BookingReviewDto {
     private String circuitName;
 
     private String bikeName;
+    
+    private BigDecimal originalTotalPrice;
 
     private BigDecimal totalPrice;
 
-    private List<BookingReviewServiceDto> services = new ArrayList<>();
+    private BigDecimal differenceAmount;
 
+    private List<BookingReviewServiceDto> services = new ArrayList<>();
 }

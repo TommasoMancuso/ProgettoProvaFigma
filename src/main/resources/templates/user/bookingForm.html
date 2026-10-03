@@ -14,309 +14,781 @@
 </section>
 
 <div class="container py-5">
-    <form id="bookingForm" th:object="${bookingRequest}" th:action="@{/booking/review}" method="post" class="py-4">
-        <input type="hidden" th:value="${bookingForm.eventId}" name="eventId">
+
+    <form id="bookingForm"
+          th:object="${bookingRequest}"
+          th:action="@{/booking/review}"
+          method="post"
+          class="py-4">
+
+        <input type="hidden"
+               th:value="${bookingForm.eventId}"
+               name="eventId">
+
         <div class="row g-5">
 
+            <!-- ================================================= -->
             <!-- SINISTRA -->
+            <!-- ================================================= -->
+
             <div class="col-lg-8">
 
+                <!-- ================================================= -->
                 <!-- DATI EVENTO -->
+                <!-- ================================================= -->
+
                 <div class="card bg-dark text-white border-danger mb-4">
+
                     <div class="card-body">
-                        <h3 class="mb-4">Informazioni evento</h3>
+
+                        <h3 class="mb-4">
+                            Informazioni evento
+                        </h3>
+
                         <div class="row">
+
                             <div class="col-md-4">
-                                <label class="form-label">Evento</label>
-                                <input type="text" class="form-control"
-                                       th:value="${bookingForm.eventName}" readonly>
+
+                                <label class="form-label">
+                                    Evento
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${bookingForm.eventName}"
+                                       readonly>
+
                             </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Organizzatore</label>
-                                <input type="text" class="form-control"
-                                       th:value="${bookingForm.organizer}" readonly>
+
+                                <label class="form-label">
+                                    Organizzatore
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${bookingForm.organizer}"
+                                       readonly>
+
                             </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Circuito</label>
-                                <input type="text" class="form-control"
-                                       th:value="${bookingForm.circuitName}" readonly>
+
+                                <label class="form-label">
+                                    Circuito
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${bookingForm.circuitName}"
+                                       readonly>
+
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
 
-                <!-- SERVIZI -->
-                <div class="card bg-dark text-white border-danger">
-                    <div class="card-body">
-                        <h3 class="mb-4">Servizi disponibili</h3>
-                        <div th:each="service : ${bookingForm.services}" class="mb-4">
 
+                <!-- ================================================= -->
+                <!-- SERVIZI -->
+                <!-- ================================================= -->
+
+                <div class="card bg-dark text-white border-danger">
+
+                    <div class="card-body">
+
+                        <h3 class="mb-4">
+                            Servizi disponibili
+                        </h3>
+
+
+                        <div th:each="service : ${bookingForm.services}"
+                             class="mb-4 service-container">
+
+                            <!-- ================================================= -->
                             <!-- CHECK SERVIZIO -->
+                            <!-- ================================================= -->
+
                             <div class="form-check">
+
                                 <input class="form-check-input service-checkbox"
-                                        type="checkbox"
-                                        th:value="${service.serviceId}"
-                                        th:attr="
-                                            data-service-id=${service.serviceId},
-                                            data-name=${service.serviceName},
-                                            data-pricing=${service.pricingType},
-                                            data-price1=${service.priceOneDay},
-                                            data-price2=${service.priceTwoDays},
-                                            data-price3=${service.priceThreeDays},
-                                            data-pricefull=${service.priceFullEvent}">
+                                       type="checkbox"
+
+                                       th:value="${service.serviceId}"
+
+                                       th:attr="
+                                           data-service-id=${service.serviceId},
+                                           data-name=${service.serviceName},
+                                           data-pricing=${service.pricingType},
+                                           data-price1=${service.priceOneDay},
+                                           data-price2=${service.priceTwoDays},
+                                           data-price3=${service.priceThreeDays},
+                                           data-pricefull=${service.priceFullEvent}">
+
                                 <label class="form-check-label fw-bold">
-                                    <span th:text="${service.serviceName}"></span>
+
+                                    <span th:text="${service.serviceName}">
+                                    </span>
+
                                 </label>
+
                             </div>
-                        
+
+
+                            <!-- ================================================= -->
                             <!-- DETTAGLI SERVIZIO -->
+                            <!-- ================================================= -->
+
                             <div class="service-details ms-4 mt-3 d-none">
 
-                                <!-- SELECT MOTO -->
-                                <div th:if="${service.pricingType.name() == 'BIKE_BASED'}">
+
+                                <!-- ================================================= -->
+                                <!-- MOTO -->
+                                <!-- ================================================= -->
+
+                                <div th:if="${service.pricingType != null and service.pricingType.name() == 'BIKE_BASED'}">
+
                                     <div th:if="${#lists.isEmpty(service.availableBikes)}">
+
                                         <p class="text-danger">
                                             Non ci sono moto disponibili per questo evento.
                                         </p>
+
                                     </div>
+
+
                                     <div th:unless="${#lists.isEmpty(service.availableBikes)}">
-                                        <label class="form-label">Seleziona moto</label>
+
+                                        <label class="form-label">
+                                            Seleziona moto
+                                        </label>
+
                                         <select class="form-control bike-select">
-                                            <option value="">Seleziona moto</option>
-                                            <option th:each="bike : ${service.availableBikes}"
-                                                    th:value="${bike.id}"
-                                                    th:attr="data-price=${bike.dailyPrice}"
-                                                    th:text="${bike.name + ' - €' + bike.dailyPrice}">
+
+                                            <option value="">
+                                                Seleziona moto
                                             </option>
+
+                                            <option th:each="bike : ${service.availableBikes}"
+
+                                                    th:value="${bike.id}"
+
+                                                    th:attr="
+                                                        data-price=${bike.dailyPrice}"
+
+                                                    th:text="${bike.name + ' - €' + bike.dailyPrice}">
+
+                                            </option>
+
                                         </select>
+
                                     </div>
+
                                 </div>
 
+
+                                <!-- ================================================= -->
                                 <!-- DATE -->
+                                <!-- ================================================= -->
+
                                 <div class="mt-3">
-                                    <label class="form-label">Date</label>
+
+                                    <label class="form-label">
+                                        Date
+                                    </label>
+
                                     <div class="row">
-                                        <div class="col-md-4 mb-2" 
-                                                th:each="date : ${bookingForm.eventDates}">
+
+                                        <div class="col-md-4 mb-2"
+                                             th:each="date : ${bookingForm.eventDates}">
+
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input date-checkbox" th:value="${date}">
-                                                <label class="form-check-label" th:text="${date}">
+
+                                                <input type="checkbox"
+                                                       class="form-check-input date-checkbox"
+                                                       th:value="${date}">
+
+                                                <label class="form-check-label"
+                                                       th:text="${date}">
                                                 </label>
+
                                             </div>
+
                                         </div>
+
                                     </div>
+
                                 </div>
+
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- DESTRA -->
+
+            <!-- ================================================= -->
+            <!-- DESTRA - RIEPILOGO -->
+            <!-- ================================================= -->
+
             <div class="col-lg-4">
-                <div class="card bg-dark text-white border-danger position-sticky" style="top: 30px;">
+
+                <div class="card bg-dark text-white border-danger position-sticky"
+                     style="top: 30px;">
+
                     <div class="card-body">
-                        <h3>Riepilogo</h3>
+
+                        <h3>
+                            Riepilogo
+                        </h3>
+
                         <hr>
+
                         <div id="bookingSummary">
                             Nessun servizio selezionato
                         </div>
+
                         <hr>
-                        <h4>Totale: <span id="totalPrice">€ 0.00</span>
+
+                        <h4>
+                            Totale:
+                            <span id="totalPrice">
+                                € 0.00
+                            </span>
                         </h4>
+
                     </div>
+
                 </div>
+
+
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn-primary text-decoration-none px-5">Vai al riepilogo</button>
+
+                    <button type="submit"
+                            class="btn-primary text-decoration-none px-5">
+
+                        Vai al riepilogo
+
+                    </button>
+
                 </div>
+
             </div>
-        </div>     
+
+        </div>
+
     </form>
+
 </div>
+
 
 <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
 
 
-
 <script>
 
-function updateSummary() {
+document.addEventListener('DOMContentLoaded', function () {
 
-    const summary = document.getElementById('bookingSummary');
+    // =========================================================
+    // ELEMENTI PRINCIPALI
+    // =========================================================
 
-    const totalElement = document.getElementById('totalPrice');
+    const bookingForm =
+        document.getElementById('bookingForm');
 
-    let total = 0;
+    const summary =
+        document.getElementById('bookingSummary');
 
-    let html = '';
+    const totalElement =
+        document.getElementById('totalPrice');
 
-    document.querySelectorAll('.service-checkbox:checked').forEach(serviceCheckbox => {
 
-            const container = serviceCheckbox.closest('.mb-4');
+    // =========================================================
+    // CALCOLO PREZZO
+    // =========================================================
 
-            const serviceName = serviceCheckbox.dataset.name;
+    function updateSummary() {
 
-            const pricingType = serviceCheckbox.dataset.pricing;
+        let total = 0;
 
-            const selectedDates = container.querySelectorAll('.date-checkbox:checked').length;
+        let html = '';
 
-            const totalEventDates = container.querySelectorAll('.date-checkbox').length;
 
-            let price = 0;
+        document
+            .querySelectorAll('.service-checkbox:checked')
+            .forEach(function (serviceCheckbox) {
 
-            if (pricingType === 'FIXED') {
+                const container =
+                    serviceCheckbox.closest('.service-container');
 
-                price = parseFloat(serviceCheckbox.dataset.pricefull || 0);
 
-            } else if (pricingType === 'EVENT_BASED') {
+                if (!container) {
+                    return;
+                }
 
-                const totalEventDates = container.querySelectorAll('.date-checkbox').length;
 
-                if (selectedDates === 0) {
+                const serviceName =
+                    serviceCheckbox.dataset.name || 'Servizio';
 
+
+                const pricingType =
+                    serviceCheckbox.dataset.pricing || '';
+
+
+                const selectedDates =
+                    container.querySelectorAll(
+                        '.date-checkbox:checked'
+                    ).length;
+
+
+                const totalEventDates =
+                    container.querySelectorAll(
+                        '.date-checkbox'
+                    ).length;
+
+
+                let price = 0;
+
+
+                // =================================================
+                // FIXED
+                // =================================================
+
+                if (pricingType === 'FIXED') {
+
+                    price = parseFloat(
+                        serviceCheckbox.dataset.pricefull || '0'
+                    );
+
+                }
+
+
+                // =================================================
+                // EVENT BASED
+                // =================================================
+
+                else if (pricingType === 'EVENT_BASED') {
+
+                    if (selectedDates === 0) {
+
+                        price = 0;
+
+                    }
+
+                    else if (
+                        totalEventDates > 0 &&
+                        selectedDates === totalEventDates
+                    ) {
+
+                        price = parseFloat(
+                            serviceCheckbox.dataset.pricefull || '0'
+                        );
+
+                    }
+
+                    else if (selectedDates === 1) {
+
+                        price = parseFloat(
+                            serviceCheckbox.dataset.price1 || '0'
+                        );
+
+                    }
+
+                    else if (selectedDates === 2) {
+
+                        price = parseFloat(
+                            serviceCheckbox.dataset.price2 || '0'
+                        );
+
+                    }
+
+                    else if (selectedDates === 3) {
+
+                        price = parseFloat(
+                            serviceCheckbox.dataset.price3 || '0'
+                        );
+
+                    }
+
+                    else {
+
+                        price = 0;
+
+                    }
+
+                }
+
+
+                // =================================================
+                // BIKE BASED
+                // =================================================
+
+                else if (pricingType === 'BIKE_BASED') {
+
+                    const bikeSelect =
+                        container.querySelector('.bike-select');
+
+
+                    if (
+                        bikeSelect &&
+                        bikeSelect.value &&
+                        selectedDates > 0
+                    ) {
+
+                        const selectedOption =
+                            bikeSelect.selectedOptions[0];
+
+
+                        const bikePrice =
+                            parseFloat(
+                                selectedOption.dataset.price || '0'
+                            );
+
+
+                        price =
+                            bikePrice * selectedDates;
+
+                    }
+
+                }
+
+
+                // =================================================
+                // SICUREZZA PREZZO
+                // =================================================
+
+                if (isNaN(price)) {
                     price = 0;
-
-                } else if (selectedDates === totalEventDates) {
-
-                    price = parseFloat(
-                            serviceCheckbox.dataset.pricefull || 0
-                        );
-
-                } else if (selectedDates === 1) {
-
-                    price = parseFloat(
-                            serviceCheckbox.dataset.price1 || 0
-                        );
-
-                } else if (selectedDates === 2) {
-
-                    price = parseFloat(
-                            serviceCheckbox.dataset.price2 || 0
-                        );
-
-                } else if (selectedDates === 3) {
-
-                    price = parseFloat(
-                            serviceCheckbox.dataset.price3 || 0
-                        );
-
-                } else {
-
-                    price = 0;
                 }
 
-            } else if (pricingType === 'BIKE_BASED') {
 
-                const bikeSelect = container.querySelector('.bike-select');
+                total += price;
 
-                if (bikeSelect && bikeSelect.selectedOptions.length > 0) {
 
-                    const bikePrice = parseFloat(
-                            bikeSelect.selectedOptions[0].dataset.price || 0
-                        );
+                // =================================================
+                // RIEPILOGO SERVIZIO
+                // =================================================
 
-                    price = bikePrice * selectedDates;
-                }
-            }
+                html += `
+                    <div class="mb-2">
 
-            total += price;
+                        <strong>
+                            ${serviceName}
+                        </strong>
 
-            html += `
-                <div class="mb-2">
-                    <strong>${serviceName}</strong><br>
-                    € ${price.toFixed(2)}
-                </div>
-            `;
-        });
+                        <br>
 
-    if (html === '') {
+                        € ${price.toFixed(2)}
 
-        html = 'Nessun servizio selezionato';
-    }
+                    </div>
+                `;
 
-    summary.innerHTML = html;
-
-    totalElement.innerText = '€ ' + total.toFixed(2);
-}
-
-document.querySelectorAll('.service-checkbox').forEach(cb => {
-
-        cb.addEventListener('change', function() {
-
-            const details = this.closest('.mb-4').querySelector('.service-details');
-
-            details.classList.toggle('d-none', !this.checked);
-
-            updateSummary();
-        });
-    });
-
-document.querySelectorAll('.date-checkbox').forEach(cb => {
-
-        cb.addEventListener('change', updateSummary);
-    });
-
-document.querySelectorAll('.bike-select').forEach(select => {
-        select.addEventListener('change', updateSummary);
-    });
-
-    // INVIO JSON ALLA PAGINA DI RIEPILOGO
-    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-
-    e.preventDefault();
-
-    const request = {
-
-        eventId: Number(document.querySelector('input[name="eventId"]').value),
-
-        services: []
-    };
-
-    document.querySelectorAll('.service-checkbox:checked').forEach(serviceCheckbox => {
-
-                const container = serviceCheckbox.closest('.mb-4');
-
-                const serviceRequest = {
-
-                    serviceId: Number(serviceCheckbox.value),
-
-                    bikeId: null,
-
-                    selectedDates: []
-                };
-
-                const bikeSelect = container.querySelector('.bike-select');
-
-                if (bikeSelect && bikeSelect.value) {
-
-                    serviceRequest.bikeId = Number(bikeSelect.value);
-                }
-
-                container.querySelectorAll('.date-checkbox:checked').forEach(dateCheckbox => {
-
-                        serviceRequest.selectedDates.push(dateCheckbox.value);
-                    });
-
-                request.services.push(serviceRequest);
             });
 
-        const response = await fetch('/booking/review',
-                {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'
-                    },
-                    body: JSON.stringify(request)
+
+        // =========================================================
+        // NESSUN SERVIZIO
+        // =========================================================
+
+        if (html === '') {
+
+            html =
+                'Nessun servizio selezionato';
+
+        }
+
+
+        // =========================================================
+        // AGGIORNAMENTO DOM
+        // =========================================================
+
+        summary.innerHTML = html;
+
+        totalElement.innerText =
+            '€ ' + total.toFixed(2);
+
+    }
+
+
+    // =========================================================
+    // CHECKBOX SERVIZI
+    // =========================================================
+
+    document
+        .querySelectorAll('.service-checkbox')
+        .forEach(function (checkbox) {
+
+            checkbox.addEventListener(
+                'change',
+                function () {
+
+                    const container =
+                        this.closest('.service-container');
+
+
+                    if (!container) {
+                        return;
+                    }
+
+
+                    const details =
+                        container.querySelector(
+                            '.service-details'
+                        );
+
+
+                    if (details) {
+
+                        details.classList.toggle(
+                            'd-none',
+                            !this.checked
+                        );
+
+                    }
+
+
+                    updateSummary();
+
                 }
             );
 
-        const html = await response.text();
+        });
 
-        document.open();
-        document.write(html);
-        document.close();
-    });
 
-    
+    // =========================================================
+    // CHECKBOX DATE
+    // =========================================================
+
+    document
+        .querySelectorAll('.date-checkbox')
+        .forEach(function (checkbox) {
+
+            checkbox.addEventListener(
+                'change',
+                updateSummary
+            );
+
+        });
+
+
+    // =========================================================
+    // SELECT MOTO
+    // =========================================================
+
+    document
+        .querySelectorAll('.bike-select')
+        .forEach(function (select) {
+
+            select.addEventListener(
+                'change',
+                updateSummary
+            );
+
+        });
+
+
+    // =========================================================
+    // INVIO FORM
+    // =========================================================
+
+    bookingForm.addEventListener(
+        'submit',
+        async function (e) {
+
+            e.preventDefault();
+
+
+            // =====================================================
+            // REQUEST
+            // =====================================================
+
+            const request = {
+
+                eventId: Number(
+                    document.querySelector(
+                        'input[name="eventId"]'
+                    ).value
+                ),
+
+                paymentMethod: null,
+
+                services: []
+
+            };
+
+
+            // =====================================================
+            // SERVIZI SELEZIONATI
+            // =====================================================
+
+            document
+                .querySelectorAll('.service-checkbox:checked')
+                .forEach(function (serviceCheckbox) {
+
+                    const container =
+                        serviceCheckbox.closest(
+                            '.service-container'
+                        );
+
+
+                    if (!container) {
+                        return;
+                    }
+
+
+                    const serviceRequest = {
+
+                        serviceId:
+                            Number(
+                                serviceCheckbox.value
+                            ),
+
+                        bikeId: null,
+
+                        selectedDates: []
+
+                    };
+
+
+                    // =================================================
+                    // MOTO
+                    // =================================================
+
+                    const bikeSelect =
+                        container.querySelector(
+                            '.bike-select'
+                        );
+
+
+                    if (
+                        bikeSelect &&
+                        bikeSelect.value
+                    ) {
+
+                        serviceRequest.bikeId =
+                            Number(
+                                bikeSelect.value
+                            );
+
+                    }
+
+
+                    // =================================================
+                    // DATE
+                    // =================================================
+
+                    container
+                        .querySelectorAll(
+                            '.date-checkbox:checked'
+                        )
+                        .forEach(function (dateCheckbox) {
+
+                            serviceRequest
+                                .selectedDates
+                                .push(
+                                    dateCheckbox.value
+                                );
+
+                        });
+
+
+                    request.services.push(
+                        serviceRequest
+                    );
+
+                });
+
+
+            // =====================================================
+            // CONTROLLO
+            // =====================================================
+
+            if (request.services.length === 0) {
+
+                alert(
+                    'Seleziona almeno un servizio.'
+                );
+
+                return;
+
+            }
+
+
+            // =====================================================
+            // INVIO AL BACKEND
+            // =====================================================
+
+            try {
+
+                const response =
+                    await fetch(
+                        '/booking/review',
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type':
+                                    'application/json'
+                            },
+
+                            body:
+                                JSON.stringify(request)
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Errore HTTP: '
+                        + response.status
+                    );
+
+                }
+
+
+                const html =
+                    await response.text();
+
+
+                document.open();
+
+                document.write(html);
+
+                document.close();
+
+            } catch (error) {
+
+                console.error(
+                    'Errore invio prenotazione:',
+                    error
+                );
+
+                alert(
+                    'Si è verificato un errore durante la creazione della prenotazione.'
+                );
+
+            }
+
+        }
+    );
+
+
+    // =========================================================
+    // CALCOLO INIZIALE
+    // =========================================================
+
+    updateSummary();
+
+});
 
 </script>
 

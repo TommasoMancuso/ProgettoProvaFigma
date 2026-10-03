@@ -56,7 +56,7 @@
                     </li>
                     <!-- Menù per USER -->
                      <!-- PROFILO UTENTE -->
-                    <li sec:authorize="hasRole('USER')">
+                    <li sec:authorize="hasRole('USER') and !hasRole('ADMIN')">
                         <a class="dropdown-item" th:href="@{/user/myBookings}">
                             Le tue prenotazioni
                         </a>

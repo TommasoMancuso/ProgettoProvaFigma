@@ -91,4 +91,21 @@ List<Bike> findAvailableBikesForEdit(
 
     // RICERCA PER TELAIO
     boolean existsByChassisNumber(String chassisNumber);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(ba) = 0 THEN true ELSE false END
+        FROM BookingBikeAllocation ba
+        WHERE ba.bike.id = :bikeId
+        AND ba.booking.id <> :bookingId
+        AND NOT (
+            ba.rentalEndDate < :startDate
+            OR ba.rentalStartDate > :endDate
+        )
+    """)
+    boolean isAvailableForEdit(
+            @Param("bikeId") Long bikeId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("bookingId") Long bookingId
+    );
 }

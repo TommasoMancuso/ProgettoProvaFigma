@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import da_figma.dtos.BookingDetailDto;
-import da_figma.dtos.BookingTableDto;
 import da_figma.dtos.BookingRequestDto;
 import da_figma.dtos.BookingServiceRequestDto;
+import da_figma.dtos.BookingTableDto;
 import da_figma.dtos.UserBookingDto;
+import da_figma.enums.BookingPriceDifferenceType;
 import da_figma.enums.BookingStatus;
 import da_figma.enums.PricingType;
 import da_figma.models.Bike;
@@ -26,6 +27,7 @@ import da_figma.repositories.BikeRepository;
 import da_figma.repositories.BookingRepository;
 import da_figma.repositories.EventRepository;
 import da_figma.repositories.TeamServiceRepository;
+
 
 @Service
 public class BookingManagerService {
@@ -432,5 +434,395 @@ public class BookingManagerService {
                 
                 return dto;
         }
+
+        @Transactional
+        public Booking updateBooking(Long bookingId, BookingRequestDto request) {
+
+                String keycloakId = userContextService.getCurrentKeycloakId();
+
+                return updateBookingInternal( bookingId, request, keycloakId, BigDecimal.ZERO, false);
+        }
+
+
+        @Transactional
+        public Booking applyPendingModification(
+                Long bookingId,
+                BookingRequestDto request,
+                String keycloakId,
+                BigDecimal differenceAmount) {
+
+                return updateBookingInternal(bookingId, request, keycloakId, differenceAmount, true);
+        }
+
+
+
+        private Booking updateBookingInternal(Long bookingId, BookingRequestDto request,
+                                                String keycloakId, BigDecimal differenceAmount,
+                                                boolean paymentConfirmed) {
+
+                // =====================================================
+                // PRENOTAZIONE
+                // =====================================================
+
+                Booking booking =
+                        bookingRepository.findById(bookingId)
+                                .orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Prenotazione non trovata"));
+
+                // =====================================================
+                // SICUREZZA
+                // =====================================================
+
+                if (!booking.getUserKeycloakId().equals(keycloakId)) {
+
+                        throw new IllegalArgumentException(
+                                "Non puoi modificare questa prenotazione");
+                }
+
+                // =====================================================
+                // VALIDAZIONE REQUEST
+                // =====================================================
+
+                if (request == null) {
+
+                        throw new IllegalArgumentException(
+                                "Dati della prenotazione mancanti");
+                }
+
+                if (request.getEventId() == null) {
+
+                        throw new IllegalArgumentException(
+                                "Evento non specificato");
+                }
+
+                if (request.getServices() == null ||
+                        request.getServices().isEmpty()) {
+
+                        throw new IllegalArgumentException(
+                                "Deve essere presente almeno un servizio");
+                }
+
+                // =====================================================
+                // EVENTO
+                // =====================================================
+
+                Event event =
+                        eventRepository.findByIdForUpdate(
+                                request.getEventId()
+                        ).orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Evento non trovato"));
+
+                eventService.validateBooking(event);
+
+                // =====================================================
+                // NON PERMETTIAMO CAMBIO EVENTO
+                // =====================================================
+
+                if (!booking.getEvent().getId()
+                        .equals(event.getId())) {
+
+                        throw new IllegalArgumentException(
+                                "Non è possibile cambiare evento durante la modifica");
+                }
+
+                // =====================================================
+                // CALCOLO NUOVO PREZZO
+                // =====================================================
+
+                BigDecimal totalPrice =
+                        pricingService.calculatePrice(request);
+
+                // =====================================================
+                // NUOVI SERVIZI
+                // =====================================================
+
+                List<da_figma.models.BookingService>
+                        newBookingServices =
+                        new ArrayList<>();
+
+                // =====================================================
+                // NUOVE MOTO
+                // =====================================================
+
+                List<BookingBikeAllocation>
+                        newBikeAllocations =
+                        new ArrayList<>();
+
+                // =====================================================
+                // DATE GLOBALI
+                // =====================================================
+
+                LocalDate globalStartDate = null;
+                LocalDate globalEndDate = null;
+
+                // =====================================================
+                // COSTRUZIONE NUOVA CONFIGURAZIONE
+                // =====================================================
+
+                for (BookingServiceRequestDto serviceRequest :
+                        request.getServices()) {
+
+                        if (serviceRequest.getServiceId() == null) {
+
+                        throw new IllegalArgumentException(
+                                "Servizio non specificato");
+                        }
+
+                        if (serviceRequest.getSelectedDates() == null ||
+                                serviceRequest.getSelectedDates().isEmpty()) {
+
+                        throw new IllegalArgumentException(
+                                "Date mancanti");
+                        }
+
+                        // =================================================
+                        // SERVIZIO
+                        // =================================================
+
+                        TeamService service =
+                                serviceRepository.findById(
+                                        serviceRequest.getServiceId()
+                                ).orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Servizio non trovato"));
+
+                        // =================================================
+                        // DATE
+                        // =================================================
+
+                        List<LocalDate> dates =
+                                new ArrayList<>(
+                                        serviceRequest.getSelectedDates()
+                                );
+
+                        dates.sort(Comparator.naturalOrder());
+
+                        LocalDate startDate =
+                                dates.get(0);
+
+                        LocalDate endDate =
+                                dates.get(dates.size() - 1);
+
+                        // =================================================
+                        // DATE GLOBALI
+                        // =================================================
+
+                        if (globalStartDate == null ||
+                                startDate.isBefore(globalStartDate)) {
+
+                        globalStartDate = startDate;
+                        }
+
+                        if (globalEndDate == null ||
+                                endDate.isAfter(globalEndDate)) {
+
+                        globalEndDate = endDate;
+                        }
+
+                        // =================================================
+                        // BOOKING SERVICE
+                        // =================================================
+
+                        da_figma.models.BookingService bookingService =
+                                new da_figma.models.BookingService();
+
+                        bookingService.setBooking(booking);
+                        bookingService.setService(service);
+
+                        bookingService.setServiceStartDate(startDate);
+                        bookingService.setServiceEndDate(endDate);
+
+                        bookingService.setDays(dates.size());
+
+                        // =================================================
+                        // PREZZO SERVIZIO
+                        // =================================================
+
+                        BigDecimal singleServicePrice =
+                                pricingService.calculateSingleServicePrice(
+                                        event,
+                                        serviceRequest
+                                );
+
+                        bookingService.setPriceAtBooking(
+                                singleServicePrice
+                        );
+
+                        newBookingServices.add(bookingService);
+
+                        // =================================================
+                        // MOTO
+                        // =================================================
+
+                        if (service.getPricingType()
+                                == PricingType.BIKE_BASED) {
+
+                        if (serviceRequest.getBikeId() == null) {
+
+                                throw new IllegalArgumentException(
+                                        "Moto obbligatoria per il servizio "
+                                                + service.getName());
+                        }
+
+                        Bike bike =
+                                bikeRepository.findByIdForUpdate(
+                                        serviceRequest.getBikeId()
+                                ).orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Moto non trovata"));
+
+
+                        boolean available =
+                                bikeRepository.isAvailableForEdit(
+                                        bike.getId(),
+                                        startDate,
+                                        endDate,
+                                        bookingId
+                                );
+
+                        if (!available) {
+
+                                throw new IllegalArgumentException(
+                                        "Moto non disponibile nel periodo selezionato");
+                        }
+
+                        BookingBikeAllocation allocation =
+                                new BookingBikeAllocation();
+
+                        allocation.setBooking(booking);
+                        allocation.setBike(bike);
+
+                        allocation.setRentalStartDate(startDate);
+                        allocation.setRentalEndDate(endDate);
+
+                        newBikeAllocations.add(allocation);
+                        }
+                }
+
+                // =====================================================
+                // DATE GLOBALI
+                // =====================================================
+
+                if (globalStartDate == null ||
+                        globalEndDate == null) {
+
+                        throw new IllegalArgumentException(
+                                "Periodo prenotazione non valido");
+                }
+
+                // =====================================================
+                // SOSTITUZIONE SERVIZI
+                // =====================================================
+
+                booking.getBookingServices().clear();
+
+                for (da_figma.models.BookingService service :
+                        newBookingServices) {
+
+                        service.setBooking(booking);
+
+                        booking.getBookingServices().add(service);
+                }
+
+                // =====================================================
+                // SOSTITUZIONE MOTO
+                // =====================================================
+
+                booking.getBikeAllocations().clear();
+
+                for (BookingBikeAllocation allocation :
+                        newBikeAllocations) {
+
+                        allocation.setBooking(booking);
+
+                        booking.getBikeAllocations().add(allocation);
+                }
+
+                // =====================================================
+                // DATI PRENOTAZIONE
+                // =====================================================
+
+                booking.setEvent(event);
+
+                booking.setBookingStartDate(
+                        globalStartDate);
+
+                booking.setBookingEndDate(
+                        globalEndDate);
+
+                booking.setTotalPrice(totalPrice);
+
+                // =====================================================
+                // STATO PAGAMENTO
+                // =====================================================
+
+                if (paymentConfirmed) {
+
+                booking.setPaymentStatus("PAID");
+                }
+
+                return bookingRepository.save(booking);
+
+        }
+
+        @Transactional(readOnly = true)
+        public BigDecimal calculateBookingModificationDifference(Long bookingId,
+                                        BookingRequestDto request) {
+
+                String keycloakId = userContextService.getCurrentKeycloakId();
+
+                Booking booking = bookingRepository.findById(bookingId)
+                                .orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Prenotazione non trovata"));
+
+                if (!booking.getUserKeycloakId().equals(keycloakId)) {
+
+                        throw new IllegalArgumentException(
+                                "Non puoi modificare questa prenotazione");
+                }
+
+                if (!booking.getEvent().getId().equals(request.getEventId())) {
+
+                        throw new IllegalArgumentException(
+                                "Non è possibile cambiare evento");
+                }
+
+                BigDecimal newTotal = pricingService.calculatePrice(request);
+
+                BigDecimal alreadyPaid = BigDecimal.ZERO;
+
+                if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
+
+                        alreadyPaid = booking.getTotalPrice();
+                }
+
+                return newTotal.subtract(alreadyPaid);
+        }
+
+        public BookingPriceDifferenceType determineBookingPriceDifference(
+                                                        Long bookingId,
+                                                        BookingRequestDto request) {
+
+                BigDecimal difference = calculateBookingModificationDifference(
+                                bookingId,
+                                request
+                        );
+
+                if (difference.compareTo(BigDecimal.ZERO) > 0) {
+
+                        return BookingPriceDifferenceType.INCREASE;
+                }
+
+                if (difference.compareTo(BigDecimal.ZERO) < 0) {
+
+                        return BookingPriceDifferenceType.DECREASE;
+                }
+
+                return BookingPriceDifferenceType.NO_CHANGE;
+        }
+
         
 }
