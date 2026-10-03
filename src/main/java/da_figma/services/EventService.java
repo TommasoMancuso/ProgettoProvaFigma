@@ -307,4 +307,13 @@ public class EventService {
         event.setStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
     }
+
+    // LISTA EVENTI SOLO FUTURI PER UTENTE
+    public List<Event> getFutureEvents() {
+
+        return eventRepository.findByEndDateGreaterThanEqualAndStatusNot(
+            LocalDate.now(), EventStatus.CANCELLED
+        );
+    }
+
 }

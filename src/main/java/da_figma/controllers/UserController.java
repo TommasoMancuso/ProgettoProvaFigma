@@ -87,10 +87,11 @@ public class UserController {
     @GetMapping("/events")
     public String events(Model model){
 
-        model.addAttribute("events", eventService.getAllEvents());
+        model.addAttribute("events", eventService.getFutureEvents());
 
         return "events";
     }
+
 
     // ROTTA PER PAGINA DI DETTAGLIO EVENTI
     @GetMapping("/user/eventDetail/{id}")
@@ -189,16 +190,20 @@ public class UserController {
     // CONFERMA DOPO IL RIEPILGO E RINVIO A STRIPE
     @PostMapping("/user/myBookingUpdate/{id}/confirm")
     public String confirmMyBookingUpdate(
-                                        @PathVariable Long id, Model model,
-                                        @ModelAttribute BookingRequestDto request)
-                                        throws StripeException {
+                                @PathVariable Long id,
+                                Model model,
+                                @ModelAttribute BookingRequestDto request)
+                                throws StripeException {
 
         // =====================================================
         // TIPO DIFFERENZA PREZZO
         // =====================================================
 
-        BookingPriceDifferenceType differenceType = 
-                    bookingManagerService.determineBookingPriceDifference(id, request);
+        BookingPriceDifferenceType differenceType =
+                bookingManagerService.determineBookingPriceDifference(
+                        id,
+                        request
+                );
 
         // =====================================================
         // PREZZO AUMENTATO
@@ -207,7 +212,10 @@ public class UserController {
         if (differenceType == BookingPriceDifferenceType.INCREASE) {
 
             String checkoutUrl =
-                    stripeService.createModificationCheckoutSession(id, request);
+                    stripeService.createModificationCheckoutSession(
+                            id,
+                            request
+                    );
 
             return "redirect:" + checkoutUrl;
         }
@@ -218,15 +226,23 @@ public class UserController {
 
         if (differenceType == BookingPriceDifferenceType.NO_CHANGE) {
 
-            bookingManagerService.updateBooking(id, request);
+            bookingManagerService.updateBooking(
+                    id,
+                    request
+            );
 
-            model.addAttribute("bookingId", id);
-            model.addAttribute("difference", BigDecimal.ZERO);
+            model.addAttribute(
+                    "bookingId",
+                    id
+            );
+
+            model.addAttribute(
+                    "difference",
+                    BigDecimal.ZERO
+            );
 
             return "user/bookings/modificationSuccess";
         }
-
-
 
         // =====================================================
         // PREZZO DIMINUITO
@@ -235,17 +251,35 @@ public class UserController {
         if (differenceType == BookingPriceDifferenceType.DECREASE) {
 
             BigDecimal difference =
-                    bookingManagerService.calculateBookingModificationDifference(id,  request);
+                    bookingManagerService.calculateBookingModificationDifference(
+                            id,
+                            request
+                    );
 
-            bookingManagerService.applyBookingCredit(id, request, difference);
+            Booking updatedBooking =
+                    bookingManagerService.applyBookingCredit(
+                            id,
+                            request,
+                            difference
+                    );
 
-            model.addAttribute("bookingId", id);
+            model.addAttribute(
+                    "bookingId",
+                    id
+            );
 
-            model.addAttribute("difference", difference);
+            model.addAttribute(
+                    "difference",
+                    difference
+            );
+
+            model.addAttribute(
+                    "creditAmount",
+                    updatedBooking.getCreditAmount()
+            );
 
             return "user/bookings/modificationSuccess";
         }
-
 
         // =====================================================
         // CASO IMPOSSIBILE
@@ -255,6 +289,7 @@ public class UserController {
                 "Tipo di differenza prezzo non gestito"
         );
     }
+
 
     // CONFERMA MODIFICA PRENOTAZIONE
     @GetMapping("/user/myBookingModificationSuccess/{id}")

@@ -35,6 +35,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByCircuit_NameContainingIgnoreCase(String circuitName);
 
+    List<Event> findByEndDateGreaterThanEqualAndStatusNot(LocalDate date, EventStatus status);
+
+
     // =========================
     // PESSIMISTIC LOCK (BOOKING SAFE)
     // =========================

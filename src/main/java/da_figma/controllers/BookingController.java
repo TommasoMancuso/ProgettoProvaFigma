@@ -1,14 +1,11 @@
 package da_figma.controllers;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.stripe.exception.StripeException;
 
@@ -37,18 +34,19 @@ public class BookingController {
     // =========================================================
 
     @PostMapping("/review")
-    public String reviewBooking(
-                        @ModelAttribute BookingRequestDto request,
-                        Model model) {
+    public String bookingReview(
+                            @ModelAttribute BookingRequestDto request,
+                            Model model) {
 
         BookingReviewDto review = bookingReviewService.buildReview(request);
 
+        model.addAttribute( "bookingRequest", request);
+
         model.addAttribute("review", review);
 
-        model.addAttribute("bookingRequest", request);
-
-        return "user/bookingReview";
+        return "/user/bookingReview";
     }
+
 
 
     // =========================================================
