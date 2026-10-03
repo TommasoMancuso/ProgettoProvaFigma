@@ -73,6 +73,7 @@ public class EventService {
             dto.setUser(user);
             dto.setTotalPrice(booking.getTotalPrice());
             dto.setStatus(booking.getStatus());
+            dto.setCreditAmount(booking.getCreditAmount());
 
             result.add(dto);
         }

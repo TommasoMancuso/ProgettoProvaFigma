@@ -123,6 +123,7 @@
                                 <th class="bg-dark text-white">Email</th>
                                 <th class="bg-dark text-white">Totale</th>
                                 <th class="bg-dark text-white">Stato</th>
+                                <th class="bg-dark text-white">Credito dovuto</th>
                                 <th class="bg-dark text-white text-end">Actions</th>
                             </tr>
                             </thead>
@@ -133,6 +134,13 @@
                                 <td th:text="${booking.user.email}"></td>
                                 <td> € <span th:text="${booking.totalPrice}"></span></td>
                                 <td><span th:text="${booking.status}"></span></td>
+                                <td>
+                                    <span th:if="${booking.creditAmount != null and booking.creditAmount > 0}" class="text-danger fw-bold">€ 
+                                        <span th:text="${booking.creditAmount}"></span>
+                                    </span>
+                                    <span th:unless="${booking.creditAmount != null and booking.creditAmount > 0}"> - </span>
+                                </td>
+
 
                                 <!-- ACTIONS -->
 

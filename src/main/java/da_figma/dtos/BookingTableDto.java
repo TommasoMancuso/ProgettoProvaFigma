@@ -32,4 +32,7 @@ public class BookingTableDto {
     private BigDecimal totalPrice;
 
     private BookingStatus status;
+
+    private BigDecimal creditAmount;
+
 }

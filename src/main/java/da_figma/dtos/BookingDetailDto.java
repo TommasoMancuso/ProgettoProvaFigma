@@ -52,6 +52,9 @@ public class BookingDetailDto {
         private String paymentStatus;
 
         private BigDecimal totalPrice;
+
+        private BigDecimal creditAmount;
+
     }
 
     // =====================================================

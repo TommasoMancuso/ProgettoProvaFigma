@@ -141,6 +141,12 @@
                                 €
                                 <span th:text="${booking.booking.totalPrice}"></span>
                             </h4>
+                            <p th:if="${booking.booking.creditAmount != null and booking.booking.creditAmount > 0}" class="mb-0 text-danger">
+                                 <strong>Credito dovuto al cliente in seguito alla modifica della prenotazione:</strong>
+                                    €
+                                <span th:text="${booking.booking.creditAmount}"></span>
+                            </p>
+
                         </div>
                     </div>
                 </div>

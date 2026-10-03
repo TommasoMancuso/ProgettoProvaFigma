@@ -32,7 +32,7 @@
 
                 <div th:if="${difference.compareTo(T(java.math.BigDecimal).ZERO) < 0}">
                     <h2 class="mb-4">Modifica effettuata con successo</h2>
-                    <p>La tua prenotazione è stata modificatacorrettamente.</p>
+                    <p>La tua prenotazione è stata modificata correttamente.</p>
                     <p>A seguito della modifica hai maturato un credito di
                         <strong
                             th:text="${#numbers.formatDecimal(creditAmount, 1, 2) + ' €'}">

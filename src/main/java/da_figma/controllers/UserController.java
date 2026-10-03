@@ -168,20 +168,15 @@ public class UserController {
     // VAI A PAGINA RIEPILOGO MODIFICA
    @PostMapping("/user/myBookingUpdate/{id}")
     public String myBookingUpdate(
-            @PathVariable Long id,
-            @RequestBody BookingRequestDto request,
-            Model model) {
+                                    @PathVariable Long id,
+                                    @RequestBody BookingRequestDto request,
+                                    Model model) {
 
-        Booking booking =
-                bookingRepository.findById(id)
-                        .orElseThrow(() ->
+        Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                                 new IllegalArgumentException(
                                         "Prenotazione non trovata"));
 
-        BookingReviewDto review =
-                bookingReviewService.buildModificationReview(
-                        id,
-                        request);
+        BookingReviewDto review = bookingReviewService.buildModificationReview(id, request);
 
         model.addAttribute("bookingId", id);
         model.addAttribute("bookingRequest", request);
@@ -194,19 +189,16 @@ public class UserController {
     // CONFERMA DOPO IL RIEPILGO E RINVIO A STRIPE
     @PostMapping("/user/myBookingUpdate/{id}/confirm")
     public String confirmMyBookingUpdate(
-            @PathVariable Long id, Model model,
-            @ModelAttribute BookingRequestDto request)
-            throws StripeException {
+                                        @PathVariable Long id, Model model,
+                                        @ModelAttribute BookingRequestDto request)
+                                        throws StripeException {
 
         // =====================================================
         // TIPO DIFFERENZA PREZZO
         // =====================================================
 
-        BookingPriceDifferenceType differenceType =
-                bookingManagerService.determineBookingPriceDifference(
-                        id,
-                        request
-                );
+        BookingPriceDifferenceType differenceType = 
+                    bookingManagerService.determineBookingPriceDifference(id, request);
 
         // =====================================================
         // PREZZO AUMENTATO
@@ -215,10 +207,7 @@ public class UserController {
         if (differenceType == BookingPriceDifferenceType.INCREASE) {
 
             String checkoutUrl =
-                    stripeService.createModificationCheckoutSession(
-                            id,
-                            request
-                    );
+                    stripeService.createModificationCheckoutSession(id, request);
 
             return "redirect:" + checkoutUrl;
         }
@@ -245,10 +234,18 @@ public class UserController {
 
         if (differenceType == BookingPriceDifferenceType.DECREASE) {
 
-            bookingManagerService.updateBooking(id, request);
+            BigDecimal difference =
+                    bookingManagerService.calculateBookingModificationDifference(id,  request);
 
-            return "redirect:/user/myBookingDetail/" + id;
+            bookingManagerService.applyBookingCredit(id, request, difference);
+
+            model.addAttribute("bookingId", id);
+
+            model.addAttribute("difference", difference);
+
+            return "user/bookings/modificationSuccess";
         }
+
 
         // =====================================================
         // CASO IMPOSSIBILE

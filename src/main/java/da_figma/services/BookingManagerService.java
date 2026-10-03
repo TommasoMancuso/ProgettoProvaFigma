@@ -85,8 +85,7 @@ public class BookingManagerService {
                 
                 String keycloakId = userContextService.getCurrentKeycloakId();
                 
-                List<Booking> bookings =
-                bookingRepository.findByUserKeycloakId(keycloakId);
+                List<Booking> bookings = bookingRepository.findByUserKeycloakId(keycloakId);
                 
                 List<BookingTableDto> result = new ArrayList<>();
                 
@@ -357,6 +356,8 @@ public class BookingManagerService {
                 bookingInfo.setPaymentStatus(booking.getPaymentStatus());
                 
                 bookingInfo.setTotalPrice(booking.getTotalPrice());
+
+                bookingInfo.setCreditAmount(booking.getCreditAmount());
                 
                 bookingInfo.setBookingStartDate(booking.getBookingStartDate());
                 
@@ -732,8 +733,7 @@ public class BookingManagerService {
 
                 booking.getBikeAllocations().clear();
 
-                for (BookingBikeAllocation allocation :
-                        newBikeAllocations) {
+                for (BookingBikeAllocation allocation : newBikeAllocations) {
 
                         allocation.setBooking(booking);
 
@@ -746,13 +746,26 @@ public class BookingManagerService {
 
                 booking.setEvent(event);
 
-                booking.setBookingStartDate(
-                        globalStartDate);
+                booking.setBookingStartDate(globalStartDate);
 
-                booking.setBookingEndDate(
-                        globalEndDate);
+                booking.setBookingEndDate(globalEndDate);
 
                 booking.setTotalPrice(totalPrice);
+
+
+                // =====================================================
+                // CREDITO GENERATO DALLA MODIFICA
+                // =====================================================
+
+                BigDecimal creditAmount = BigDecimal.ZERO;
+
+                if (differenceAmount != null && differenceAmount.compareTo(BigDecimal.ZERO) < 0) {
+
+                        creditAmount = differenceAmount.abs();
+                }
+
+                booking.setCreditAmount(creditAmount);
+
 
                 // =====================================================
                 // STATO PAGAMENTO
@@ -760,8 +773,9 @@ public class BookingManagerService {
 
                 if (paymentConfirmed) {
 
-                booking.setPaymentStatus("PAID");
+                        booking.setPaymentStatus("PAID");
                 }
+
 
                 return bookingRepository.save(booking);
 
@@ -824,5 +838,21 @@ public class BookingManagerService {
                 return BookingPriceDifferenceType.NO_CHANGE;
         }
 
-        
+        @Transactional
+        public Booking applyBookingCredit(
+                                                Long bookingId,
+                                                BookingRequestDto request,
+                                                BigDecimal differenceAmount) {
+
+                String keycloakId = userContextService.getCurrentKeycloakId();
+
+                return updateBookingInternal(
+                        bookingId,
+                        request,
+                        keycloakId,
+                        differenceAmount,
+                        false
+                );
+        }
+
 }
