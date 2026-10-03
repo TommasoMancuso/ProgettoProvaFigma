@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1>MODIFICA <span>COMPLETATA</span></h1>
+            <p>La tua prenotazione è stata modificata correttamente.</p>
+        </div>
+    </section>
+
+    <div class="container py-5 text-center">
+        <div class="card bg-dark text-white border-danger">
+            <div class="card-body">
+                <!-- ================================================= -->
+                <!-- IMPORTO INVARIATO -->
+                <!-- ================================================= -->
+
+                <div th:if="${difference.compareTo(T(java.math.BigDecimal).ZERO) == 0}">
+                    <h2 class="mb-4">Modifica effettuata con successo</h2>
+                    <p>La tua prenotazione è stata modificata correttamente.</p>
+                    <p>Non è necessario effettuare alcun pagamento aggiuntivo.
+                    </p>
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CREDITO A FAVORE -->
+                <!-- ================================================= -->
+
+                <div th:if="${difference.compareTo(T(java.math.BigDecimal).ZERO) < 0}">
+                    <h2 class="mb-4">Modifica effettuata con successo</h2>
+                    <p>La tua prenotazione è stata modificatacorrettamente.</p>
+                    <p>A seguito della modifica hai maturato un credito di
+                        <strong
+                            th:text="${#numbers.formatDecimal(creditAmount, 1, 2) + ' €'}">
+                            0,00 €
+                        </strong>.
+                    </p>
+                    <p>
+                        Il nostro staff provvederà a ricontattarti
+                        per comunicarti le modalità di gestione
+                        del credito.
+                    </p>
+                </div>
+                <!-- ================================================= -->
+                <!-- RITORNO HOME -->
+                <!-- ================================================= -->
+
+                <a th:href="@{/}" class="btn-primary px-5 text-decoration-none">Torna alla Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

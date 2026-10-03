@@ -1,5 +1,7 @@
 package da_figma.controllers;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -192,7 +194,7 @@ public class UserController {
     // CONFERMA DOPO IL RIEPILGO E RINVIO A STRIPE
     @PostMapping("/user/myBookingUpdate/{id}/confirm")
     public String confirmMyBookingUpdate(
-            @PathVariable Long id,
+            @PathVariable Long id, Model model,
             @ModelAttribute BookingRequestDto request)
             throws StripeException {
 
@@ -229,8 +231,13 @@ public class UserController {
 
             bookingManagerService.updateBooking(id, request);
 
-            return "redirect:/user/myBookingDetail/" + id;
+            model.addAttribute("bookingId", id);
+            model.addAttribute("difference", BigDecimal.ZERO);
+
+            return "user/bookings/modificationSuccess";
         }
+
+
 
         // =====================================================
         // PREZZO DIMINUITO
@@ -251,6 +258,18 @@ public class UserController {
                 "Tipo di differenza prezzo non gestito"
         );
     }
+
+    // CONFERMA MODIFICA PRENOTAZIONE
+    @GetMapping("/user/myBookingModificationSuccess/{id}")
+    public String myBookingModificationSuccess(
+            @PathVariable Long id,
+            Model model) {
+
+        model.addAttribute("bookingId", id);
+
+        return "user/bookings/modificationSuccess";
+    }
+
 
     // Soft delete propria prenotazione
     @GetMapping("/user/myBookingDelete/{id}")
