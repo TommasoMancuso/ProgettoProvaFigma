@@ -41,6 +41,8 @@
                                             <th class="bg-dark text-white">Circuito</th>
                                             <th class="bg-dark text-white">Data inizio - data fine</th>
                                             <th class="bg-dark text-white">Totale</th>
+                                            <th class="bg-dark text-white">Stato</th>
+                                            <th class="bg-dark text-white">Credito</th>
                                             <th class="bg-dark text-white text-end">Azioni</th>
                                         </tr>
                                     </thead>
@@ -57,21 +59,44 @@
                                             </td>
                                             <td><span th:text="${booking.totalPrice} + ' €'">0 €</span>
                                             </td>
+                                            <td>
+                                                <span th:text="${booking.status}">STATO</span>
+                                            </td>
+
+                                            <td>
+                                                <span th:text="${booking.creditAmount} + ' €'">0 €</span>
+                                            </td>
+                                            <!-- AZIONI -->
                                             <td class="text-end">
+
                                                 <!-- DETTAGLI -->
-                                                <a th:href="@{/user/myBookingDetail/{id}(id=${booking.bookingId})}" class="btn btn-custom p-2" title="Visualizza dettagli">
+                                                <a th:href="@{/user/myBookingDetail/{id}(id=${booking.bookingId})}"
+                                                class="btn btn-custom p-2"
+                                                title="Visualizza dettagli">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
 
                                                 <!-- MODIFICA -->
-                                                <a th:href="@{/user/myBookingEdit/{id}(id=${booking.bookingId})}" class="btn btn-warning p-2" title="Modifica prenotazione">
+                                                <a th:if="${booking.status.name() != 'CANCELLED'}"
+                                                th:href="@{/user/myBookingEdit/{id}(id=${booking.bookingId})}"
+                                                class="btn btn-warning p-2"
+                                                title="Modifica prenotazione">
                                                     <i class="fa-solid fa-pen"></i>
                                                 </a>
 
                                                 <!-- ELIMINA -->
-                                                <a th:href="@{/user/MyBookingDelete/{id}(id=${booking.bookingId})}" class="btn btn-danger p-2" title="Elimina prenotazione" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?')">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </a>
+                                                <form th:if="${booking.status.name() != 'CANCELLED'}"
+                                                    th:action="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+                                                    method="post"
+                                                    style="display:inline;"
+                                                    onsubmit="return confirm('Sei sicuro di voler cancellare questa prenotazione?')">
+
+                                                    <button type="submit"
+                                                            class="btn btn-danger p-2"
+                                                            title="Cancella prenotazione">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     </tbody>

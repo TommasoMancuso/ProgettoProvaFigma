@@ -106,6 +106,8 @@ public class BookingManagerService {
                         dto.setTotalPrice(booking.getTotalPrice());
                         
                         dto.setStatus(booking.getStatus());
+
+                        dto.setCreditAmount(booking.getCreditAmount());
                         
                         // =========================
                         // EVENTO
@@ -854,5 +856,92 @@ public class BookingManagerService {
                         false
                 );
         }
+
+        @Transactional
+        public Booking cancelMyBooking(Long bookingId) {
+
+                String keycloakId = userContextService.getCurrentKeycloakId();
+
+                // =====================================================
+                // PRENOTAZIONE
+                // =====================================================
+
+                Booking booking = bookingRepository.findById(bookingId)
+                                .orElseThrow(() ->
+                                        new IllegalArgumentException(
+                                                "Prenotazione non trovata"));
+
+                // =====================================================
+                // SICUREZZA
+                // =====================================================
+
+                if (!booking.getUserKeycloakId().equals(keycloakId)) {
+
+                        throw new IllegalArgumentException(
+                                "Non puoi cancellare questa prenotazione");
+                }
+
+                // =====================================================
+                // CONTROLLO STATO
+                // =====================================================
+
+                if (booking.getStatus() == BookingStatus.CANCELLED) {
+
+                        throw new IllegalArgumentException(
+                                "La prenotazione è già stata cancellata");
+                }
+
+                // =====================================================
+                // CREDITO
+                // =====================================================
+
+                BigDecimal currentCredit = booking.getCreditAmount();
+
+                if (currentCredit == null) {
+                        currentCredit = BigDecimal.ZERO;
+                }
+
+                BigDecimal cancellationCredit = BigDecimal.ZERO;
+
+                if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
+
+                        cancellationCredit = booking.getTotalPrice();
+                }
+
+                booking.setCreditAmount(
+                        currentCredit.add(cancellationCredit)
+                );
+
+                // =====================================================
+                // EVENTO
+                // =====================================================
+
+                Event event = booking.getEvent();
+
+                if (booking.getStatus() == BookingStatus.CONFIRMED) {
+
+                        eventService.unregisterBooking(event);
+                }
+
+                // =====================================================
+                // LIBERA LA MOTO
+                // =====================================================
+
+                booking.getBikeAllocations().clear();
+
+                // =====================================================
+                // CANCELLA PRENOTAZIONE
+                // =====================================================
+
+                booking.setStatus(BookingStatus.CANCELLED);
+
+                // =====================================================
+                // SALVATAGGIO
+                // =====================================================
+
+                return bookingRepository.save(booking);
+        }
+
+
 
 }

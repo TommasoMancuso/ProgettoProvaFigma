@@ -269,11 +269,14 @@ public class UserController {
 
 
     // Soft delete propria prenotazione
-    @GetMapping("/user/myBookingDelete/{id}")
-    public String myBookingDelete(){
-        
+   @PostMapping("/bookings/cancel/{id}")
+    public String cancelBooking(@PathVariable Long id) {
+
+        bookingManagerService.cancelMyBooking(id);
+
         return "redirect:/user/myBookings";
     }
+
     
 
 }
