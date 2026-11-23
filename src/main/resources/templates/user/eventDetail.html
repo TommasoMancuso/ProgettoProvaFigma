@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<!-- HERO -->
+<section class="rtp-hero">
+    <div class="rtp-hero-overlay"></div>
+    <div class="rtp-container">
+        <h1 th:text="${event.name}"></h1>
+    </div>
+</section>
+
+<!-- DETTAGLI EVENTO -->
+<section class="container py-5">
+    <div class="row align-items-center g-5">
+
+        <!-- FOTO CIRCUITO -->
+         <div class="col-12 col-md-6 text-center">
+                <img th:src="${event.circuit.image}" alt="Foto circuito" class="img-fluid section-image rounded shadow">
+            </div>
+
+        <!-- DATI EVENTO -->
+        <div class="col-12 col-md-6">
+            <div class="card bg-dark text-white staffDetailCard border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Informazioni evento</h3>
+                    <p>
+                        <strong>Organizzatore:</strong>
+                        <span th:text="${event.organizer}"></span>
+                    </p>
+                    <p>
+                        <strong>Data inizio:</strong>
+                        <span th:text="${event.startDate}"></span>
+                    </p>
+                    <p>
+                        <strong>Data fine:</strong>
+                        <span th:text="${event.endDate}"></span>
+                    </p>
+                    <p>
+                        <strong>Stato:</strong>
+                        <span th:text="${event.status}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CIRCUITO -->
+        <div class="col-12 col-md-6">
+            <div class="card bg-dark text-white staffDetailCard border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Circuito</h3>
+                    <p>
+                        <strong>Nome:</strong>
+                        <span th:text="${event.circuit.name}"></span>
+                    </p>
+                    <p>
+                        <strong>Paese:</strong>
+                        <span th:text="${event.circuit.country}"></span>
+                    </p>
+                    <p>
+                        <strong>Lunghezza:</strong>
+                        <span th:text="${event.circuit.lengthMeters}"></span> m
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVIZI DISPONIBILI -->
+        <div class="col-12 col-md-6">
+            <div class="card bg-dark text-white staffDetailCard border-danger">
+                <div class="card-body">
+                    <h3 class="mb-4">Servizi disponibili</h3>
+                    <div th:if="${#lists.isEmpty(event.servicePrices)}">
+                        Nessun servizio configurato
+                    </div>
+                    <ul th:unless="${#lists.isEmpty(event.servicePrices)}">
+                        <li class="py-2" th:each="price : ${event.servicePrices}">
+                            <span th:text="${price.service.name}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- DESCRIZIONE -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-dark text-white border-danger">
+                <div class="card-body">
+                    <h3 class="mb-3">Descrizione</h3>
+                    <p th:text="${event.description}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AZIONI -->
+    <div class="text-center mt-5">
+        <a th:href="@{/user/booking/{eventId}(eventId=${event.id})}" class="btn-primary text-decoration-none me-3">
+            Prenota ora
+        </a>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">
+            <i class="fa-solid fa-arrow-left"></i>
+            Torna indietro
+        </button>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+<script th:replace="~{fragments/scriptjs :: scriptjs}"></script>
+
+</body>
+</html>

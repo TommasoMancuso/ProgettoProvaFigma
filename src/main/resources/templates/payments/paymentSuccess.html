@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="it">
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>
+        <div class="rtp-container">
+            <h1>PAGAMENTO <span>COMPLETATO</span></h1>
+            <p>La prenotazione è stata registrata correttamente.</p>
+        </div>
+    </section>
+
+    <div class="container py-5 text-center">
+        <div class="card bg-dark text-white border-danger">
+            <div class="card-body">
+                <h2 class="mb-4">Pagamento effettuato con successo</h2>
+                <p>Grazie per la tua prenotazione.</p>
+                <a th:href="@{/}" class="btn-primary px-5 text-decoration-none">
+                    Torna alla Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

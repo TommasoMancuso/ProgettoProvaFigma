@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+
+    <!-- =========================================================
+         HERO
+    ========================================================== -->
+    <section class="rtp-hero-booking">
+        <div class="rtp-hero-overlay"></div>
+
+        <div class="rtp-container">
+            <h1>
+                RIEPILOGO
+                <span class="spanBooking">MODIFICA PRENOTAZIONE</span>
+            </h1>
+
+            <p>Controlla le modifiche prima di confermarle.</p>
+        </div>
+    </section>
+
+
+    <!-- =========================================================
+         CONTENUTO
+    ========================================================== -->
+    <div class="container py-5">
+
+        <div class="row justify-content-center">
+
+            <!-- =====================================================
+                 SINISTRA
+            ====================================================== -->
+            <div class="col-md-7">
+
+                <div class="card bg-dark text-white border-danger">
+
+                    <div class="card-body">
+
+                        <h3 class="mb-4">
+                            Riepilogo modifica
+                        </h3>
+
+
+                        <!-- =================================================
+                             EVENTO
+                        ================================================== -->
+                        <div class="mb-4">
+
+                            <h5>Evento</h5>
+
+                            <p class="mb-1">
+                                <strong th:text="${review.eventName}"></strong>
+                            </p>
+
+                            <p class="mb-1">
+                                Circuito:
+                                <span th:text="${review.circuitName}"></span>
+                            </p>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             MOTO
+                        ================================================== -->
+                        <div class="mb-4"
+                             th:if="${review.bikeName != null}">
+
+                            <h5>Moto selezionata</h5>
+
+                            <p th:text="${review.bikeName}"></p>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <!-- =================================================
+                             SERVIZI
+                        ================================================== -->
+
+                        <h5 class="mb-3">
+                            Nuova configurazione
+                        </h5>
+
+
+                        <div th:each="service : ${review.services}"
+                             class="border rounded p-3 mb-3">
+
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <!-- =========================================
+                                     SERVIZIO + DATE
+                                ========================================== -->
+
+                                <div>
+
+                                    <h6 th:text="${service.serviceName}"></h6>
+
+                                    <div>
+
+                                        <strong>Date:</strong>
+
+                                        <ul class="mb-0">
+
+                                            <li th:each="date : ${service.dates}"
+                                                th:text="${date}">
+                                            </li>
+
+                                        </ul>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- =========================================
+                                     PREZZO SERVIZIO
+                                ========================================== -->
+
+                                <div class="text-end">
+
+                                    <strong class="text-white"
+                                            th:text="'€ ' + ${service.price}">
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <!-- =================================================
+                             RIEPILOGO PREZZI
+                        ================================================== -->
+
+                        <h5 class="mb-3">
+                            Riepilogo prezzo
+                        </h5>
+
+
+                        <!-- =================================================
+                             TOTALE ATTUALE
+                        ================================================== -->
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Totale attuale:
+                            </span>
+
+                            <strong
+                                th:text="'€ ' + ${review.originalTotalPrice}">
+                            </strong>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             NUOVO TOTALE
+                        ================================================== -->
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Nuovo totale:
+                            </span>
+
+                            <strong
+                                th:text="'€ ' + ${review.totalPrice}">
+                            </strong>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <!-- =================================================
+                             DIFFERENZA
+                        ================================================== -->
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+
+                            <strong>
+                                Differenza:
+                            </strong>
+
+
+                            <!-- =============================================
+                                 PREZZO AUMENTATO
+                            ============================================== -->
+
+                            <strong
+                                class="text-danger"
+                                th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                th:text="'+ € ' + ${review.differenceAmount}">
+                            </strong>
+
+
+                            <!-- =============================================
+                                 PREZZO UGUALE
+                            ============================================== -->
+
+                            <strong
+                                class="text-white"
+                                th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                th:text="'€ 0.00'">
+                            </strong>
+
+
+                            <!-- =============================================
+                                 PREZZO DIMINUITO
+                            ============================================== -->
+
+                            <strong
+                                class="text-success"
+                                th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) < 0}"
+                                th:text="'- € ' + ${review.differenceAmount.abs()}">
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 DESTRA
+            ====================================================== -->
+
+            <div class="col-md-4">
+
+                <!-- =================================================
+                     FORM MODIFICA
+                ================================================== -->
+
+                <form th:action="@{/user/myBookingUpdate/{id}/confirm(id=${bookingId})}"
+                      method="post"
+                      class="stripe">
+
+
+                    <!-- =================================================
+                         BOOKING ID
+                    ================================================== -->
+
+                    <input type="hidden"
+                           name="bookingId"
+                           th:value="${bookingId}">
+
+
+                    <!-- =================================================
+                         EVENT ID
+                    ================================================== -->
+
+                    <input type="hidden"
+                           name="eventId"
+                           th:value="${bookingRequest.eventId}">
+
+
+                    <!-- =================================================
+                         SERVIZI
+                    ================================================== -->
+
+                    <div th:each="service, stat : ${bookingRequest.services}">
+
+                        <input type="hidden"
+                               th:name="'services[' + ${stat.index} + '].serviceId'"
+                               th:value="${service.serviceId}">
+
+                        <input type="hidden"
+                               th:name="'services[' + ${stat.index} + '].bikeId'"
+                               th:value="${service.bikeId}">
+
+
+                        <!-- =============================================
+                             DATE
+                        ============================================== -->
+
+                        <div th:each="date, dStat : ${service.selectedDates}">
+
+                            <input type="hidden"
+                                   th:name="'services[' + ${stat.index} + '].selectedDates[' + ${dStat.index} + ']'"
+                                   th:value="${date}">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PAGAMENTO
+                    ================================================== -->
+
+                    <div class="card bg-dark text-white border-danger">
+
+                        <div class="card-body">
+
+                            <h4 class="mb-3">
+                                Modifica prenotazione
+                            </h4>
+
+
+                            <!-- =========================================
+                                 PREZZO AUMENTATO
+                            ========================================== -->
+
+                            <div th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+
+                                <p class="mb-4">
+
+                                    Il prezzo della prenotazione è aumentato.
+
+                                    Per confermare la modifica dovrai
+                                    pagare la differenza.
+
+                                </p>
+
+
+                                <div class="alert alert-danger">
+
+                                    <strong>
+                                        Importo da pagare:
+                                    </strong>
+
+                                    <span
+                                        th:text="'€ ' + ${review.differenceAmount}">
+                                    </span>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     METODO DI PAGAMENTO
+                                ====================================== -->
+
+                                <h5 class="mb-3">
+                                    Metodo di pagamento
+                                </h5>
+
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="paymentMethod"
+                                           value="CARD"
+                                           checked>
+
+                                    <label class="form-check-label">
+                                        Pagamento con carta
+                                    </label>
+
+                                </div>
+
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="paymentMethod"
+                                           value="KLARNA">
+
+                                    <label class="form-check-label">
+                                        Pagamento in tre rate con Klarna
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================================
+                                 NESSUNA DIFFERENZA
+                            ========================================== -->
+
+                            <div th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) == 0}">
+
+                                <p class="mb-4">
+
+                                    Il prezzo della prenotazione
+                                    non cambia.
+
+                                    La modifica verrà applicata
+                                    direttamente.
+
+                                </p>
+
+
+                                <div class="alert alert-light">
+
+                                    <strong>
+                                        Nessun pagamento richiesto.
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================================
+                                 PREZZO DIMINUITO
+                            ========================================== -->
+
+                            <div th:if="${review.differenceAmount != null
+                                        and review.differenceAmount.compareTo(T(java.math.BigDecimal).ZERO) < 0}">
+
+                                <p class="mb-4">
+
+                                    Il prezzo della prenotazione
+                                    è diminuito.
+
+                                    La modifica verrà applicata
+                                    direttamente.
+
+                                </p>
+
+
+                                <div class="alert alert-success">
+
+                                    <strong>
+                                        Credito maturato:
+                                    </strong>
+
+                                    <span
+                                        th:text="'€ ' + ${review.differenceAmount.abs()}">
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CONFERMA
+                    ================================================== -->
+
+                    <div class="text-center py-3">
+
+                        <button type="submit"
+                                class="btn-primary px-5">
+
+                            Conferma modifica
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+
+</body>
+
+</html>

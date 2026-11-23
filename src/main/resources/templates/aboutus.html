@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- Hero section -->
+    <section class="rtp-hero">
+        <div class="rtp-hero-overlay"></div>       
+        <div class="rtp-container">
+            <div class="rtp-badge">RACE TECH PRO</div>
+            <h1>IL NOSTRO  <span>STAFF</span></h1>
+            <p>Tecnici super qualificati per elevare le tue prestazioni <br>e quelle della tua moto!</p>
+        </div>
+    </section>
+
+    <!-- Staff members -->
+
+    <div th:each="user, stat : ${users}">
+        <!-- FOTO SINISTRA -->
+        <section th:if="${stat.index % 2 == 0}" class="section dark-section">
+            <div class="container grid-two">
+                <div>
+                    <img th:src="${user.profileImage}" class="section-image"/>
+                </div>
+                <div>
+                    <span class="badge" th:text="${user.fullName}"></span>
+                    <h2 th:text="${user.teamRole.name}"></h2>
+                    <p th:text="${user.bio}"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOTO DESTRA -->
+        <section th:if="${stat.index % 2 != 0}" class="section dark-section">
+            <div class="container grid-two">
+                <div>
+                    <span class="badge" th:text="${user.fullName}"></span>
+                    <h2 th:text="${user.teamRole.name}"></h2>
+                    <p th:text="${user.bio}"></p>
+                </div>
+                <div>
+                    <img th:src="${user.profileImage}" class="section-image"/>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:replace="~{fragments/bootstrap :: bootstrap}"></script>
+    
+</body>
+</html>

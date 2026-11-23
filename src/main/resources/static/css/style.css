@@ -1,0 +1,657 @@
+/* =========================
+   RESET & BASE
+   ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+  line-height: 1.6;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.logo-icon{
+  background-color: red;
+  font-size: xx-large;
+  border-radius: 10%;
+}
+
+/* =========================
+   CONTAINER
+   ========================= */
+
+.container,
+.rtp-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =========================
+   NAVBAR
+   ========================= */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  background: #111;
+  z-index: 1000;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+}
+
+.nav-content {
+ width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.nav-links {
+ margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #e63946;
+}
+
+/* =========================
+   DROPDOWN NAVBAR
+   ========================= */
+
+.dropdown-menu {
+  background-color: #111;
+  border: 1px solid #222;
+}
+
+.dropdown-item {
+  color: white;
+}
+
+.dropdown-item:hover {
+  background-color: #e63946;
+  color: white !important;
+}
+
+.dropdown-divider {
+  border-color: #333;
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.btn-primary,
+.rtp-btn,
+.rtp-btn-primary {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.btn-primary,
+.rtp-btn-primary {
+  background: #e63946;
+  color: white;
+}
+
+/* =========================
+   HOME HERO
+   ========================= */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 100px;
+  background: center/cover no-repeat;
+  display: flex;
+  align-items: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-left: 50px;
+}
+
+.hero h1 {
+  font-size: 72px;
+  margin: 20px 0;
+}
+
+.hero h1 span {
+  color: #e63946;
+}
+
+.hero p {
+  max-width: 600px;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Frecce carosello */
+
+/* =========================
+   HERO CAROUSEL BUTTONS
+   ========================= */
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 55px;
+  height: 55px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(0,0,0,0.45);
+  color: white;
+
+  font-size: 32px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
+}
+
+.carousel-btn:hover {
+  background: #e63946;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-btn.left {
+  left: 30px;
+}
+
+.carousel-btn.right {
+  right: 30px;
+}
+
+/* =========================
+   HOME SECTIONS
+   ========================= */
+
+.section {
+  padding: 50px 0;
+}
+
+.dark-section {
+  background: #161616;
+}
+
+/* MESSAGGI */
+
+.alert{
+  margin-top: 90px;
+  padding: 10px;
+}
+
+/* =========================
+   HOME GRID (IMPORTANTISSIMO)
+   ========================= */
+
+.grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* =========================
+   HOME COMPONENTI
+   ========================= */
+
+.badge {
+  display: inline-block;
+  padding: 15px 15px;
+  background: rgba(230,57,70,0.2);
+  color: #e63946;
+  border-radius: 999px;
+  font-size: larger;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.section-image {
+  max-height: 340px;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+}
+
+.staffDetailCard{
+  height: 340px;
+}
+
+.stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.stats h3 {
+  color: #e63946;
+  font-size: 36px;
+}
+
+.service {
+  margin-top: 25px;
+}
+
+.service h3 {
+  margin-bottom: 8px;
+}
+
+/* =========================
+   SERVICES PAGE (rtp-*)
+   ========================= */
+
+.rtp-hero {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 100px;
+  padding-bottom: 30px;
+  background: #111;
+}
+
+.rtp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.1);
+  
+}
+
+.rtp-hero h1 {
+  font-size: 52px;
+  margin: 20px 0;
+}
+
+.rtp-hero h1 span {
+  color: #e63946;
+}
+
+.rtp-hero p {
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 18px;
+  color: #ccc;
+}
+
+.rtp-badge {
+  display: inline-block;
+  padding: 10px 18px;
+  background: rgba(230,57,70,0.2);
+  color: #e63946;
+  border-radius: 999px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* HERO BOOKING E REVIEW */
+
+.rtp-hero-booking{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 60px;
+  padding-bottom: 0;
+  background: #111;
+}
+
+.spanBooking{
+  color: #e63946;
+}
+
+/* =========================
+   SERVICES GRID
+   ========================= */
+
+.rtp-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.rtp-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.rtp-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* =========================
+   CARDS SERVICES
+   ========================= */
+
+.rtp-card {
+  background: #16161d;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+  transition: 0.2s ease;
+}
+
+.rtp-card:hover {
+  transform: translateY(-4px);
+  border-color: #e63946;
+}
+
+.rtp-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.rtp-card-body {
+  padding: 18px;
+}
+
+.rtp-card-body p {
+  color: #bbb;
+  font-size: 14px;
+}
+
+.rtp-card-body ul {
+  margin: 12px 0;
+  padding-left: 18px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* =========================
+   MINI CARDS
+   ========================= */
+
+.rtp-mini-card {
+  background: #1a1a22;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #222;
+}
+
+/* =========================
+   CTA
+   ========================= */
+
+.rtp-cta {
+  margin-top: 50px;
+  padding: 90px 20px;
+  text-align: center;
+  background: #e63946;
+}
+
+.btnCustom{
+  background-color: whitesmoke;
+  color: #222;
+  border: 1px solid #222;
+}
+
+.btnCustom:hover{
+  border: 1px solid whitesmoke;
+}
+
+.btn-custom{
+  background-color: lightblue;
+  color: white;
+}
+
+/* CARDS EVENTI */
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.event-card-body {
+    flex-grow: 1;
+}
+
+.event-card-footer {
+    margin-top: auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.footer {
+  background: #111;
+  padding: 50px 0 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+hr{
+  border: none;
+  height: 2px;
+  background: #333;
+  margin: 20px 0;
+}
+
+.underFooter{
+ color: whitesmoke;
+ text-decoration: none;
+}
+
+.underFooter:hover{
+  color: #e63946;
+}
+
+/* TITOLI */
+.titles{
+  margin-top: 80px;
+  font-size: 72px;
+  padding: 20px;
+}
+
+form{
+  border-top: 1px solid #e63946;
+  border-bottom: 1px solid #e63946;
+}
+
+.stripe{
+  border: none;
+}
+
+/* FORMS */
+.form-control{
+  border: 2px solid #e63946;
+}
+
+.form-select{
+  border: 2px solid #e63946;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+.mobile-toggle {
+  display: none;
+}
+
+.mobile-menu.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .grid-two,
+  .rtp-grid-2,
+  .rtp-grid-3,
+  .rtp-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* =========================
+   MOBILE NAVBAR
+   ========================= */
+
+  .nav-links,
+  .navbar .btn-primary {
+    display: none;
+  }
+
+  .mobile-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+  }
+
+  /* MENU MOBILE */
+
+  .mobile-menu {
+    position: absolute;
+    top: 80px;
+    left: 0;
+
+    width: 100%;
+
+    background: #111;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
+
+    border-top: 1px solid #222;
+
+    z-index: 999;
+  }
+
+  .mobile-menu a {
+    color: white;
+    text-decoration: none;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #222;
+  }
+
+  .mobile-menu a:hover {
+    color: #e63946;
+  }
+
+  /* Hero section */
+
+  .hero h1 {
+    font-size: 48px;
+  }
+
+   .hero-content {
+    padding-left: 0;
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  /* =========================
+   MOBILE CAROUSEL ARROWS
+   ========================= */
+
+  .carousel-btn {
+    top: 60%;
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+
+  .carousel-btn.left {
+    left: 15px;
+  }
+
+  .carousel-btn.right {
+    right: 15px;
+}
+
+  .stats {
+    flex-direction: column;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  
+}
